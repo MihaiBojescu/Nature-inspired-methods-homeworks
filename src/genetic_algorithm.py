@@ -1,35 +1,254 @@
+import random
 import typing as t
 import numpy as np
 import numpy.typing as npt
 
+DecodedIndividual = t.Tuple[any, np.float32]
 
-class GeneticAlgorithm:
-    population: npt.NDArray[np.float32]
-    fitness_function: t.Callable[[np.float32], np.float32]
-    criteria_function: t.Callable[[t.List[t.Tuple[np.float32, np.float32]]], np.float32]
-    selection_function: t.Callable[[npt.NDArray[np.float32]], npt.NDArray[np.float32]]
-    crossover_function: t.Callable[[np.float32, np.float32], np.float32]
-    mutation_chance: np.float16
+
+class Individual:
+    _genes: npt.NDArray[np.uint8]
+    _fitness: np.float32
+    _encode: t.Callable[[any], npt.NDArray[np.uint8]]
+    _decode: t.Callable[[npt.NDArray[np.uint8]], any]
+    _fitness_function: t.Callable[[any], np.float32]
 
     def __init__(
         self,
-        generate_initial_population: t.Callable[[], npt.NDArray[np.float32]],
-        fitness_function: t.Callable[[np.float32], np.float32],
-        criteria_function: t.Callable[[npt.NDArray[np.float32]], bool],
-        selection_function: t.Callable[[npt.NDArray[np.float32]], npt.NDArray[np.float32]],
-        crossover_function: t.Callable[[np.float32, np.float32], np.float32],
-        mutation_chance: np.float16
+        genes: npt.NDArray[np.uint8],
+        encode: t.Callable[[any], npt.NDArray[np.uint8]],
+        decode: t.Callable[[npt.NDArray[np.uint8]], any],
+        fitness_function: t.Callable[[any], np.float32],
     ) -> None:
-        self.population = generate_initial_population()
-        self.fitness_function = fitness_function
-        self.criteria_function = criteria_function
-        self.selection_function = selection_function
-        self.crossover_function = crossover_function
-        self.mutation_chance = mutation_chance
+        self._genes = encode(genes)
+        self._fitness = fitness_function(genes)
+        self._encode = encode
+        self._decode = decode
+        self._fitness_function = fitness_function
 
-    def run(self):
-        population_fitness = [(individual, self.fitness_function(individual)) for individual in self.population]
+    @staticmethod
+    def from_encoded_genes(
+        genes: npt.NDArray[np.uint8],
+        encode: t.Callable[[any], npt.NDArray[np.uint8]],
+        decode: t.Callable[[npt.NDArray[np.uint8]], any],
+        fitness_function: t.Callable[[any], np.float32],
+    ):
+        return Individual(decode(genes), encode, decode, fitness_function)
 
-        while self.criteria_function(population_fitness):
-            break
+    @staticmethod
+    def from_decoded_individual(
+        decoded_individual: DecodedIndividual,
+        encode: t.Callable[[any], npt.NDArray[np.uint8]],
+        decode: t.Callable[[npt.NDArray[np.uint8]], any],
+        fitness_function: t.Callable[[any], np.float32],
+    ):
+        return Individual(decoded_individual[0], encode, decode, fitness_function)
 
+    def encode(self) -> t.Tuple[npt.NDArray[np.uint8], np.float32]:
+        return (self._genes, self._fitness)
+
+    def decode(self) -> t.Tuple[any, np.float32]:
+        return (self._decode(self._genes), self._fitness)
+
+    def get_genes(self) -> npt.NDArray[np.uint8]:
+        return self._genes
+
+    def set_genes(self, genes: npt.NDArray[np.uint8]):
+        self._genes = genes
+        self._fitness = self._fitness_function(self._decode(self._genes))
+
+    def get_fitness(self) -> np.float32:
+        return self._fitness
+
+
+class BinaryGeneticAlgorithm:
+    _population: list[Individual]
+    _encode: t.Callable[[any], npt.NDArray[np.uint8]]
+    _decode: t.Callable[[npt.NDArray[np.uint8]], any]
+    _fitness_function: t.Callable[[any], np.float32]
+    _criteria_function: t.Callable[[np.int64, t.List[DecodedIndividual]], bool]
+    _selection_function: t.Callable[
+        [t.List[DecodedIndividual]],
+        t.Tuple[DecodedIndividual, DecodedIndividual],
+    ]
+    _crossover_point: np.uint32
+    _crossover_bit: np.uint8
+    _crossover_byte: np.uint32
+    _mutation_chance: np.float16
+
+    def __init__(
+        self,
+        encode: t.Callable[[any], npt.NDArray[np.uint8]],
+        decode: t.Callable[[npt.NDArray[np.uint8]], any],
+        generate_initial_population: t.Callable[[], t.List[any]],
+        fitness_function: t.Callable[[any], np.float32],
+        criteria_function: t.Callable[[np.int64, t.List[DecodedIndividual]], bool],
+        selection_function: t.Callable[
+            [t.List[DecodedIndividual]],
+            t.Tuple[DecodedIndividual, DecodedIndividual],
+        ],
+        crossover_point: np.uint32,
+        mutation_chance: np.float16,
+    ) -> None:
+        self._population = [
+            Individual(genes, encode, decode, fitness_function)
+            for genes in generate_initial_population()
+        ]
+        self._encode = encode
+        self._decode = decode
+        self._fitness_function = fitness_function
+        self._criteria_function = criteria_function
+        self._selection_function = selection_function
+        self._crossover_point = crossover_point
+        self._crossover_bit = np.uint8(self._crossover_point % 8)
+        self._crossover_byte = np.uint32(self._crossover_point / 8)
+        self._mutation_chance = mutation_chance
+
+    def run(self) -> any:
+        generations = np.int64(0)
+
+        while not self._criteria_function(
+            generations, [individual.decode() for individual in self._population]
+        ):
+            print(f"Generation: {generations}")
+            self._population.sort(
+                key=lambda individual: individual.get_fitness(), reverse=True
+            )
+
+            next_generation = []
+
+            for _ in range(0, len(self._population) // 2):
+                parent_1, parent_2 = self._selection_function(
+                    [individual.decode() for individual in self._population]
+                )
+                parent_1 = Individual.from_decoded_individual(
+                    parent_1, self._encode, self._decode, self._fitness_function
+                )
+                parent_2 = Individual.from_decoded_individual(
+                    parent_2, self._encode, self._decode, self._fitness_function
+                )
+
+                child_1, child_2 = self._crossover_function(parent_1, parent_2)
+
+                child_1 = self._mutate(child_1)
+                child_2 = self._mutate(child_2)
+
+                next_generation.extend([child_1, child_2])
+
+            self._population = next_generation
+            generations += 1
+
+        self._population.sort(
+            key=lambda individual: individual.get_fitness(), reverse=True
+        )
+
+        return self._population[0].decode()[0]
+
+
+    def _crossover_function(
+        self, parent_1: Individual, parent_2: Individual
+    ) -> t.Tuple[Individual, Individual]:
+        parent_1_genes = parent_1.get_genes()
+        parent_2_genes = parent_2.get_genes()
+
+        crossover_gene_1, crossover_gene_2 = self._get_crossover_genes(
+            parent_1_genes, parent_2_genes
+        )
+        bit_mask_1, bit_mask_2 = self._get_bit_masks()
+        joint_gene_1, joint_gene_2 = self._get_joint_genes(
+            crossover_gene_1, crossover_gene_2, bit_mask_1, bit_mask_2
+        )
+
+        child_1_genes = np.concatenate(
+            (
+                np.fromiter(
+                    [parent_1_genes[i] for i in range(0, self._crossover_byte - 1)],
+                    dtype=np.uint8,
+                ),
+                np.array([joint_gene_1], dtype=np.uint8),
+                np.fromiter(
+                    [
+                        parent_2_genes[i]
+                        for i in range(
+                            self._crossover_byte + 1, parent_2_genes.shape[0]
+                        )
+                    ],
+                    dtype=np.uint8,
+                ),
+            )
+        )
+        child_2_genes = np.concatenate(
+            (
+                np.fromiter(
+                    [parent_2_genes[i] for i in range(0, self._crossover_byte - 1)],
+                    dtype=np.uint8,
+                ),
+                np.array([joint_gene_2], dtype=np.uint8),
+                np.fromiter(
+                    [
+                        parent_1_genes[i]
+                        for i in range(
+                            self._crossover_byte + 1, parent_1_genes.shape[0]
+                        )
+                    ],
+                    dtype=np.uint8,
+                ),
+            )
+        )
+
+        child_1 = Individual.from_encoded_genes(
+            child_1_genes, self._encode, self._decode, self._fitness_function
+        )
+        child_2 = Individual.from_encoded_genes(
+            child_2_genes, self._encode, self._decode, self._fitness_function
+        )
+
+        return child_1, child_2
+
+    def _get_crossover_genes(
+        self,
+        parent_1_genes: npt.NDArray[np.uint8],
+        parent_2_genes: npt.NDArray[np.uint8],
+    ) -> t.Tuple[np.uint8, np.uint8]:
+        parent_1_crossover_gene = parent_1_genes[self._crossover_byte]
+        parent_2_crossover_gene = parent_2_genes[self._crossover_byte]
+
+        return parent_1_crossover_gene, parent_2_crossover_gene
+
+    def _get_bit_masks(self) -> t.Tuple[np.uint8, np.uint8]:
+        bit_mask_1 = 0
+        bit_mask_2 = 0
+
+        for i in range(0, self._crossover_bit):
+            bit_mask_1 |= 1 << i
+
+        for i in range(self._crossover_bit, 8):
+            bit_mask_2 |= 1 << i
+
+        return bit_mask_1, bit_mask_2
+
+    def _get_joint_genes(
+        self,
+        crossover_gene_1: np.uint8,
+        crossover_gene_2: np.uint8,
+        bit_mask_1: np.uint8,
+        bit_mask_2: np.uint8,
+    ) -> t.Tuple[np.uint8, np.uint8]:
+        joint_gene_1 = (crossover_gene_1 & bit_mask_1) | (crossover_gene_2 & bit_mask_2)
+        joint_gene_2 = (crossover_gene_2 & bit_mask_1) | (crossover_gene_1 & bit_mask_2)
+
+        return joint_gene_1, joint_gene_2
+
+    def _mutate(self, child: Individual):
+        if random.random() > self._mutation_chance:
+            return child
+
+        child_genes = child.get_genes().copy()
+        position = random.randint(0, child_genes.shape[0] - 1)
+        bit = random.randint(0, 7)
+        mask = np.uint8(0 | 1 << bit)
+
+        child_genes[position] ^= mask
+        child.set_genes(child_genes)
+
+        return child
