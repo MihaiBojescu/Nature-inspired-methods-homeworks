@@ -50,14 +50,17 @@ class Individual:
     def decode(self) -> t.Tuple[any, np.float32]:
         return (self._decode(self._genes), self._fitness)
 
-    def get_genes(self) -> npt.NDArray[np.uint8]:
+    @property
+    def genes(self) -> npt.NDArray[np.uint8]:
         return self._genes
-
-    def set_genes(self, genes: npt.NDArray[np.uint8]):
+    
+    @genes.setter
+    def genes(self, genes: npt.NDArray[np.uint8]):
         self._genes = genes
         self._fitness = self._fitness_function(self._decode(self._genes))
 
-    def get_fitness(self) -> np.float32:
+    @property
+    def fitness(self) -> np.float32:
         return self._fitness
 
 
@@ -101,7 +104,7 @@ class BinaryGeneticAlgorithm:
         self._selection_function = selection_function
         self._crossover_point = crossover_point
         self._crossover_bit = np.uint8(self._crossover_point % 8)
-        self._crossover_byte = np.uint32(self._crossover_point / 8)
+        self._crossover_byte = np.uint32(self._crossover_point // 8)
         self._mutation_chance = mutation_chance
 
     def run(self) -> any:
@@ -112,7 +115,7 @@ class BinaryGeneticAlgorithm:
         ):
             print(f"Generation: {generations}")
             self._population.sort(
-                key=lambda individual: individual.get_fitness(), reverse=True
+                key=lambda individual: individual.fitness, reverse=True
             )
 
             next_generation = []
@@ -139,7 +142,7 @@ class BinaryGeneticAlgorithm:
             generations += 1
 
         self._population.sort(
-            key=lambda individual: individual.get_fitness(), reverse=True
+            key=lambda individual: individual.fitness, reverse=True
         )
 
         return self._population[0].decode()[0]
@@ -148,8 +151,8 @@ class BinaryGeneticAlgorithm:
     def _crossover_function(
         self, parent_1: Individual, parent_2: Individual
     ) -> t.Tuple[Individual, Individual]:
-        parent_1_genes = parent_1.get_genes()
-        parent_2_genes = parent_2.get_genes()
+        parent_1_genes = parent_1.genes
+        parent_2_genes = parent_2.genes
 
         crossover_gene_1, crossover_gene_2 = self._get_crossover_genes(
             parent_1_genes, parent_2_genes
@@ -243,12 +246,12 @@ class BinaryGeneticAlgorithm:
         if random.random() > self._mutation_chance:
             return child
 
-        child_genes = child.get_genes().copy()
+        child_genes = child.genes.copy()
         position = random.randint(0, child_genes.shape[0] - 1)
         bit = random.randint(0, 7)
         mask = np.uint8(0 | 1 << bit)
 
         child_genes[position] ^= mask
-        child.set_genes(child_genes)
+        child.genes = child_genes
 
         return child
