@@ -41,7 +41,7 @@ way to hybridise the genetic algorithm with the hill climbing algorithm, thus ga
 
 \section{Genetic algorithms}
 
-\subsection{What is a genetic algorithm}
+\subsection{Definition}
 A genetic algorithm represents a way to solve problems from the combinatorial, numerical, optimisation, timetabling and
 scheduling, robotics etc. spaces, in general being very weakly coupled to problems, thus can be used in multiple
 problem spaces with rather little modifications.
@@ -112,6 +112,10 @@ As a high-level view, the algorithm performs the following steps:
     \item Return the most ``fit'' individual in the population, represented by the individual on which the $fitness$ function returned the highest score.
 \end{enumerate}
 
+\subsection{Time complexity}
+The time complexity of genetic algorithms can be difficult to determine as it depends on many factors such as the size of the population,
+the number of generations and the specifics of the algorithm. In general, this would be considered $\mathcal{O}(n^2)$ or $\mathcal{O}(n^3)$.
+
 \subsection{Fitness function}
 The fitness function represents the function we want to optimise for. Due to the selection process of the genetic
 algorithm returning the 2 most ``fit'' individuals, and using them as seeds for the children of the next generation,
@@ -128,8 +132,6 @@ The algorithm includes a crossover function. The crossover takes the 2 given ind
     \item For child $child_1$, the $bit_i < bit_{crossover}$ bits from the parent $parent_1$'s genes and $bit_i \ge bit_{crossover}$ bits from the $parent_2$'s genes are borrowed.
     \item For child $child_2$, the $bit_i < bit_{crossover}$ bits from the parent $parent_2$'s genes and $bit_i \ge bit_{crossover}$ bits from the $parent_1$'s genes are borrowed.
 \end{enumerate}
-
-\break
 
 For a parent $parent_1.genes = 01010101$, a parent $parent_2.genes = 10101010$, and a crossover bit $bit_{crossover} = 3$, the results would be:
 
@@ -153,6 +155,106 @@ in case the individual performs higher (possibly even significantly so), the ind
 The algorithm does not aim to provide the best solution first-try, thus it needs time for it to improve. Given enough time
 (expressed in generations), it can provide better solutions, as the ``fitness'' of the individual increases.
 
+\section{Hill Climbing algorithm}
 
+\subsection{Definition}
+Hill climbing is a mathematical optimisation technique belonging to the family of local search. The algorithm is iterative
+and starts with an arbitrary solution to a given problem, which attempts to perfect by performing incremental changes.
+
+The algorithm may regrettably become ensnared within local optima, precluding its ability to escape from such configurations.
+Nevertheless, it continues to find utility across diverse problem domains, owing to its computational efficiency and swift derivation of an acceptably effective solution.
+
+\subsection{Notations}
+Step:
+\begin{equation} Step \in \mathbb{Q}, Step \ne 0 \end{equation}
+
+Acceleration:
+\begin{equation} Acceleration \in \mathbb{Q}, Acceleration \ne 0 \end{equation}
+
+Precision:
+\begin{equation} Precision \in \mathbb{Q}, Precision \ne 0 \end{equation}
+
+Iterations:
+\begin{equation} Iterations \in \mathbb{N}, Iterations \in [-1, +\inf) \end{equation}
+
+Function to optimise:
+\begin{equation} f : \mathbb{R} \rightarrow \mathbb{R},  \end{equation}
+
+
+\subsection{High-level implementation}
+As a high-level view, the algorithm performs the following steps:
+\begin{enumerate}
+    \item Picks an $x_{best}$ at random.
+    \item Set $iteration = 0$.
+    \item Set $score_{before} = NULL$.
+    \item Set $step_{best} = step$.
+    \item Set $score_{best} = f(x_{best})$.
+    \item While $iteration < iterations \lor score_{before} = NULL \lor |score_{best} - score_{before}| > precision$:
+    \begin{enumerate}
+        \item For each step $step_i \in \{\\step_{best} * acceleration, \\step_{best} * -acceleration, \\step_{best} * 1 / acceleration, \\step_{best} * -1 / acceleration\\\}$:
+        \begin{enumerate}
+            \item If $f(x_{best} + step_i) > score_{best}$, perform $step_{best} = step_i$, $score_{best} = f(x_{best} + step_i)$, $x_{best} = x_{best} + step_i$.
+        \end{enumerate} 
+        \item Peform $iteration = iteration + 1$.
+    \end{enumerate}
+    \item Return $x_{best}$.
+\end{enumerate}
+
+\subsection{Time complexity}
+The algorithm has a low time complexity of $\mathcal{O}(n)$, thus it is usually implemented on systems that would need an
+aproximate solution, them often being realtime systems.
+
+\subsection{Continuous space hill climbing}
+Since the optima of a problem might not be found using a value $x$ that are modified using discreet value, we will have to resume
+to modifying the value $x$ in a continuous manner.
+
+In order to perform the above, we will continuously use a parameter named $acceleration$, parameter which will improve $x$
+in smaller increments for each iteration. This way, the algorithm can find the optima of a given problem with a higher precision
+than a discreet space hill climber.
+
+In order to perform this, we will call the $f$ function on each  $x * step_i$, where:
+\begin{multline}
+    step_i \in \{\\step_{best} * acceleration, \\step_{best} * -acceleration, \\step_{best} * 1 / acceleration, \\step_{best} * -1 / acceleration\\\}
+\end{multline}
+
+\section{Hybridisation}
+
+\subsection{Motivation}
+While the 2 algorithms can be used independently of each other and can in turn produce good results, they can also be
+merged into 1 single algorithm that performs both functions at the same time in the hopes that the solutions are found faster.
+
+\subsection{High-level implementation}
+As a high-level view, the algorithm performs the following steps:
+\begin{enumerate}
+    \item While $generations < generations_{limit}$:
+    \begin{enumerate}
+        \item Run the binary genetic algorithm, returning $Population_{decoded}$
+        \item For each $individual_{decoded} \in Population_{decoded}$:
+        \begin{enumerate}
+            \item Run the hill climbing algorithm on the individual $individual_{decoded}$, returning $individual_{decoded}'$
+            \item Run $individual_{decoded} = individual_{decoded}'$
+        \end{enumerate}
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Time complexity}
+While the algorithm appears to have a low complexity at first, this would have the complexity $\mathcal{O}(n^2 + n)$, as both
+the genetic and the hill climbing algorithms are run in tandem.
+
+\subsection{Testing}
+During testing with a function $f : [0, 31] \rightarrow \mathbb{R}, f(x) = x^3 - 60*x^2 + 900*x + 100$ with an maxima of $10$ in the given domain, the algorithm:
+\begin{enumerate}
+    \item Did not escape the given boundaries (issue encountered with the genetic algorithm).
+    \item Did provide a better approximation of the solution (issue encountered with the hillclimber algorithm).
+\end{enumerate}
+
+Thus, the hybridisation provided a better solution for the given problem.
+
+
+\begin{thebibliography}{00}
+\bibitem{b1} Luchian Henri; Eugen Croitoru. ``Genetic algorithms (2022)'', Faculty of Computer Science of University ``Alexandru Ioan Cuza'' of Iași.
+\bibitem{b1} Russell, Stuart J.; Norvig, Peter (2003). ``Artificial Intelligence: A Modern Approach (2nd ed.)'', Upper Saddle River, New Jersey: Prentice Hall, pp. 111-114, ISBN 0-13-790395-2 
+\bibitem{b1} Banzhaf, Wolfgang; Nordin, Peter; Keller, Robert; Francone, Frank (1998). ``Genetic Programming - An Introduction''. San Francisco, CA: Morgan Kaufmann. ISBN 978-1558605107.
+\end{thebibliography}
 
 \end{document}
