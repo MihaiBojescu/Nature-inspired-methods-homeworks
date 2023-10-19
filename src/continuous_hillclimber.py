@@ -36,10 +36,10 @@ class ContinuousHillclimber:
             ]
         )
 
-    def run(self):
+    def run(self, initial_x: t.Union[None, np.float32] = None):
         ran_iterations = 0
         best_step = self.step
-        best_x = np.random.uniform(self.interval[0], self.interval[1])
+        best_x = np.random.uniform(self.interval[0], self.interval[1]) if initial_x is None else initial_x
         best_score = self.fx(best_x)
         before_score = None
 
