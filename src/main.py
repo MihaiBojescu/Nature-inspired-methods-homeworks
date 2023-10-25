@@ -15,7 +15,7 @@ def main():
         step=np.float32(0.1),
         acceleration=np.float32(0.1),
         precision=np.finfo(np.float32).eps,
-        iterations=None,
+        iterations=100,
     )
     hillclimber_result = hillclimber_algorithm.run()
 
@@ -33,34 +33,32 @@ def main():
         criteria_function=lambda generation, population: generation > 100,
         selection_function=selection_function,
         crossover_point=np.uint32(5),
-        mutation_chance=np.float16(0.1),
+        mutation_chance=np.float16(0.01),
     )
     genetic_result = genetic_algorithm.run()
 
     print(genetic_result)
 
-
     hybrid_algorithm = HybridAlgorithm(
         generate_initial_population=lambda: [
             np.float32(random.random() * 31) for _ in range(0, 100)
         ],
-        iterations=5,
-        
+        generations=5,
         genetic_algorithm_encode=lambda x: np.frombuffer(
             np.array([x], dtype=np.float32).tobytes(), dtype=np.uint8
         ),
-        genetic_algorithm_decode=lambda x: np.frombuffer(x.tobytes(), dtype=np.float32)[0],
-        genetic_algorithm_fitness_function=lambda x: x**3 - 60 * (x**2) + 900 * x + 100,
-        genetic_algorithm_criteria_function=lambda generation, population: generation > 5,
+        genetic_algorithm_decode=lambda x: np.frombuffer(x.tobytes(), dtype=np.float32)[
+            0
+        ],
         genetic_algorithm_selection_function=selection_function,
         genetic_algorithm_crossover_point=np.uint32(5),
-        genetic_algorithm_mutation_chance=np.float16(0.1),
-
+        genetic_algorithm_mutation_chance=np.float16(0.01),
+        hillclimber_run_times=10,
         hillclimber_interval=(np.float32(0.0), np.float32(31.0)),
         hillclimber_step=np.float32(0.1),
         hillclimber_acceleration=np.float32(0.1),
         hillclimber_precision=np.finfo(np.float32).eps,
-        hillclimber_iterations=5,
+        fx=lambda x: x**3 - 60 * (x**2) + 900 * x + 100,
     )
     hybrid_result = hybrid_algorithm.run()
 
