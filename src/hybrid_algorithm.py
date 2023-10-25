@@ -123,7 +123,7 @@ class HybridAlgorithm:
         generation = np.int32(0)
 
         while generation < self._generations:
-            print(f"Generation: {generation}")
+            print(f"Hybrid algorithm generation: {generation}")
 
             self._run_genetic_algorithm()
             self._run_hillclimber(generation)

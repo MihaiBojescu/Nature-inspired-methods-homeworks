@@ -48,7 +48,7 @@ class ContinuousHillclimber:
             or (before_score is None)
             or (np.abs(best_score - before_score) > self._precision)
         ):
-            print(f"Generation: {generation}")
+            print(f"Continuous hillclimber eneration: {generation}")
             before_score = best_score
 
             for step_candidate in self._step_candidates:
