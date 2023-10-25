@@ -186,7 +186,7 @@ class BinaryGeneticAlgorithm:
         for position in range(0, child_genes.shape[0]):
             mask = np.uint8(0)
 
-            for bit in range(0, 7):
+            for bit in range(0, 8):
                 if random.random() > self._mutation_chance:
                     continue
 
