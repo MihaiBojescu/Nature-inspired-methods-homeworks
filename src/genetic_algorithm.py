@@ -243,15 +243,16 @@ class BinaryGeneticAlgorithm:
         return joint_gene_1, joint_gene_2
 
     def _mutate(self, child: Individual):
-        if random.random() > self._mutation_chance:
-            return child
-
         child_genes = child.genes.copy()
-        position = random.randint(0, child_genes.shape[0] - 1)
-        bit = random.randint(0, 7)
-        mask = np.uint8(0 | 1 << bit)
 
-        child_genes[position] ^= mask
+        for position in range(0, child_genes.shape[0]):
+            for bit in range(0, 7):
+                if random.random() > self._mutation_chance:
+                    continue
+                
+                mask = np.uint8(0 | 1 << bit)
+                child.genes[position] ^= mask
+
         child.genes = child_genes
 
         return child
