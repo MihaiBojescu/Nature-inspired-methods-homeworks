@@ -53,7 +53,7 @@ class Individual:
     @property
     def genes(self) -> npt.NDArray[np.uint8]:
         return self._genes
-    
+
     @genes.setter
     def genes(self, genes: npt.NDArray[np.uint8]):
         self._genes = genes
@@ -141,12 +141,9 @@ class BinaryGeneticAlgorithm:
             self._population = next_generation
             generations += 1
 
-        self._population.sort(
-            key=lambda individual: individual.fitness, reverse=True
-        )
+        self._population.sort(key=lambda individual: individual.fitness, reverse=True)
 
         return self._population[0].decode()[0]
-
 
     def _crossover_function(
         self, parent_1: Individual, parent_2: Individual
@@ -246,12 +243,15 @@ class BinaryGeneticAlgorithm:
         child_genes = child.genes.copy()
 
         for position in range(0, child_genes.shape[0]):
+            mask = np.uint8(0)
+
             for bit in range(0, 7):
                 if random.random() > self._mutation_chance:
                     continue
-                
-                mask = np.uint8(0 | 1 << bit)
-                child.genes[position] ^= mask
+
+                mask |= 1 << bit
+
+            child_genes[position] ^= mask
 
         child.genes = child_genes
 
