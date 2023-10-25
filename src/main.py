@@ -15,7 +15,7 @@ def main():
         step=np.float32(0.1),
         acceleration=np.float32(0.1),
         precision=np.finfo(np.float32).eps,
-        iterations=100,
+        generations=100,
     )
     hillclimber_result = hillclimber_algorithm.run()
 
@@ -58,6 +58,7 @@ def main():
         hillclimber_step=np.float32(0.1),
         hillclimber_acceleration=np.float32(0.1),
         hillclimber_precision=np.finfo(np.float32).eps,
+        hillclimber_generations=10,
         fx=lambda x: x**3 - 60 * (x**2) + 900 * x + 100,
     )
     hybrid_result = hybrid_algorithm.run()

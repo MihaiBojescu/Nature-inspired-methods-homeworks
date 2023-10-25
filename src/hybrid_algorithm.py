@@ -82,6 +82,7 @@ class HybridAlgorithm:
         hillclimber_step: np.float32,
         hillclimber_acceleration: np.float32,
         hillclimber_precision: np.float32,
+        hillclimber_generations: t.Union[None, np.int32],
         fx: t.Callable[[any], np.float32],
     ) -> None:
         self._population = [
@@ -116,7 +117,7 @@ class HybridAlgorithm:
             step=hillclimber_step,
             acceleration=hillclimber_acceleration,
             precision=hillclimber_precision,
-            iterations=1,
+            generations=hillclimber_generations,
         )
 
     def run(self):

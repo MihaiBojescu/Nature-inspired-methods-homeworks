@@ -19,14 +19,14 @@ class ContinuousHillclimber:
         step: np.float32,
         acceleration: np.float32,
         precision: np.float32 = np.finfo(np.float32).eps,
-        iterations: t.Union[None, np.int32] = None,
+        generations: t.Union[None, np.int32] = None,
     ) -> None:
         self._fx = fx
         self._interval = interval
         self._step = step
         self._acceleration = acceleration
         self._precision = precision
-        self._generations = iterations
+        self._generations = generations
         self._step_candidates = np.array(
             [
                 self._acceleration,
@@ -39,14 +39,27 @@ class ContinuousHillclimber:
     def run(self, initial_x: t.Union[None, np.float32] = None):
         generation = 0
         best_step = self._step
-        best_x = np.random.uniform(self._interval[0], self._interval[1]) if initial_x is None else initial_x
+        best_x = (
+            np.random.uniform(self._interval[0], self._interval[1])
+            if initial_x is None
+            else initial_x
+        )
         best_score = self._fx(best_x)
         before_score = None
 
         while (
-            (self._generations is not None and generation < self._generations)
-            or (before_score is None)
-            or (np.abs(best_score - before_score) > self._precision)
+            (before_score is None)
+            or (
+                self._generations is None
+                and np.abs(best_score - before_score) > self._precision
+            )
+            or (
+                self._generations is not None
+                and (
+                    generation < self._generations
+                    and np.abs(best_score - before_score) > self._precision
+                )
+            )
         ):
             print(f"Continuous hillclimber eneration: {generation}")
             before_score = best_score
@@ -64,7 +77,9 @@ class ContinuousHillclimber:
             if not (self._interval[0] < best_x < self._interval[1]):
                 best_step = self._step
                 best_x = (
-                    self._interval[0] if best_x > self._interval[1] else self._interval[1]
+                    self._interval[0]
+                    if best_x > self._interval[1]
+                    else self._interval[1]
                 )
                 best_score = self._fx(best_x)
 
