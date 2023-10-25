@@ -18,6 +18,7 @@ class OneShotBinaryGeneticAlgorithm(BinaryGeneticAlgorithm):
         ],
         crossover_point: np.uint32,
         mutation_chance: np.float16,
+        debug: bool = False,
     ) -> None:
         self._encode = encode
         self._decode = decode
@@ -27,8 +28,10 @@ class OneShotBinaryGeneticAlgorithm(BinaryGeneticAlgorithm):
         self._crossover_bit = np.uint8(self._crossover_point % 8)
         self._crossover_byte = np.uint32(self._crossover_point // 8)
         self._mutation_chance = mutation_chance
+        self._debug = debug
 
     def run(self, population: list[Individual]) -> any:
+        self._print()
         population.sort(key=lambda individual: individual.fitness, reverse=True)
         next_generation = []
 
@@ -55,20 +58,25 @@ class OneShotBinaryGeneticAlgorithm(BinaryGeneticAlgorithm):
 
         return population
 
+    def _print(self) -> None:
+        if self._debug:
+            print(f"One-shot genetic algorithm")
+
 
 class HybridAlgorithm:
     _population: list[Individual]
-    _generations: np.int32
+    _generations: np.uint64
     _genetic_algorithm_encode: t.Callable[[any], npt.NDArray[np.uint8]]
     _hillclimber_run_interval: int
     _genetic_algorithm: OneShotBinaryGeneticAlgorithm
     _hillclimber_algorithm: ContinuousHillclimber
     _fx: t.Callable[[np.float32], np.float32]
+    _debug: bool
 
     def __init__(
         self,
         generate_initial_population: t.Callable[[], t.List[any]],
-        generations: np.int32,
+        generations: np.uint64,
         genetic_algorithm_encode: t.Callable[[any], npt.NDArray[np.uint8]],
         genetic_algorithm_decode: t.Callable[[npt.NDArray[np.uint8]], any],
         genetic_algorithm_selection_function: t.Callable[
@@ -82,8 +90,9 @@ class HybridAlgorithm:
         hillclimber_step: np.float32,
         hillclimber_acceleration: np.float32,
         hillclimber_precision: np.float32,
-        hillclimber_generations: t.Union[None, np.int32],
+        hillclimber_generations: t.Union[None, np.uint64],
         fx: t.Callable[[any], np.float32],
+        debug: bool = False,
     ) -> None:
         self._population = [
             Individual(
@@ -102,6 +111,7 @@ class HybridAlgorithm:
             else 1
         )
         self._fx = fx
+        self._debug = debug
 
         self._genetic_algorithm = OneShotBinaryGeneticAlgorithm(
             encode=genetic_algorithm_encode,
@@ -110,6 +120,7 @@ class HybridAlgorithm:
             selection_function=genetic_algorithm_selection_function,
             crossover_point=genetic_algorithm_crossover_point,
             mutation_chance=genetic_algorithm_mutation_chance,
+            debug=debug,
         )
         self._hillclimber_algorithm = ContinuousHillclimber(
             fx=fx,
@@ -118,13 +129,14 @@ class HybridAlgorithm:
             acceleration=hillclimber_acceleration,
             precision=hillclimber_precision,
             generations=hillclimber_generations,
+            debug=debug,
         )
 
     def run(self):
-        generation = np.int32(0)
+        generation = np.uint64(0)
 
         while generation < self._generations:
-            print(f"Hybrid algorithm generation: {generation}")
+            self._print(generation)
 
             self._run_genetic_algorithm()
             self._run_hillclimber(generation)
@@ -134,6 +146,10 @@ class HybridAlgorithm:
         self._population.sort(key=lambda individual: individual.fitness, reverse=True)
 
         return self._population[0].decode()[0]
+
+    def _print(self, generation: np.uint64) -> None:
+        if self._debug:
+            print(f"Hybrid algorithm generation: {generation}")
 
     def _run_genetic_algorithm(self):
         self._population = self._genetic_algorithm.run(self._population)

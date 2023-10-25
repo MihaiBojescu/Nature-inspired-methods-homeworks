@@ -10,7 +10,7 @@ class BinaryGeneticAlgorithm:
     _encode: t.Callable[[any], npt.NDArray[np.uint8]]
     _decode: t.Callable[[npt.NDArray[np.uint8]], any]
     _fitness_function: t.Callable[[any], np.float32]
-    _criteria_function: t.Callable[[np.int64, t.List[DecodedIndividual]], bool]
+    _criteria_function: t.Callable[[np.uint64, t.List[DecodedIndividual]], bool]
     _selection_function: t.Callable[
         [t.List[DecodedIndividual]],
         t.Tuple[DecodedIndividual, DecodedIndividual],
@@ -19,6 +19,7 @@ class BinaryGeneticAlgorithm:
     _crossover_bit: np.uint8
     _crossover_byte: np.uint32
     _mutation_chance: np.float16
+    _debug: bool
 
     def __init__(
         self,
@@ -26,13 +27,14 @@ class BinaryGeneticAlgorithm:
         decode: t.Callable[[npt.NDArray[np.uint8]], any],
         generate_initial_population: t.Callable[[], t.List[any]],
         fitness_function: t.Callable[[any], np.float32],
-        criteria_function: t.Callable[[np.int64, t.List[DecodedIndividual]], bool],
+        criteria_function: t.Callable[[np.uint64, t.List[DecodedIndividual]], bool],
         selection_function: t.Callable[
             [t.List[DecodedIndividual]],
             t.Tuple[DecodedIndividual, DecodedIndividual],
         ],
         crossover_point: np.uint32,
         mutation_chance: np.float16,
+        debug: bool = False,
     ) -> None:
         self._population = [
             Individual(genes, encode, decode, fitness_function)
@@ -47,14 +49,15 @@ class BinaryGeneticAlgorithm:
         self._crossover_bit = np.uint8(self._crossover_point % 8)
         self._crossover_byte = np.uint32(self._crossover_point // 8)
         self._mutation_chance = mutation_chance
+        self._debug = debug
 
     def run(self) -> any:
-        generations = np.int64(0)
+        generation = np.uint64(0)
 
         while not self._criteria_function(
-            generations, [individual.decode() for individual in self._population]
+            generation, [individual.decode() for individual in self._population]
         ):
-            print(f"Genetic algorithm generation: {generations}")
+            self._print(generation)
             self._population.sort(
                 key=lambda individual: individual.fitness, reverse=True
             )
@@ -80,11 +83,15 @@ class BinaryGeneticAlgorithm:
                 next_generation.extend([child_1, child_2])
 
             self._population = next_generation
-            generations += 1
+            generation += 1
 
         self._population.sort(key=lambda individual: individual.fitness, reverse=True)
 
         return self._population[0].decode()[0]
+
+    def _print(self, generation: int) -> None:
+        if self._debug:
+            print(f"Genetic algorithm generation: {generation}")
 
     def _crossover_function(
         self, parent_1: Individual, parent_2: Individual

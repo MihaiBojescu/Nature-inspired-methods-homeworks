@@ -9,8 +9,9 @@ class ContinuousHillclimber:
     _step: np.float32
     _acceleration: np.float32
     _precision: np.float32
-    _generations: t.Union[None, np.int32]
+    _generations: t.Union[None, np.uint64]
     _step_candidates: npt.NDArray[np.float32]
+    _debug: bool
 
     def __init__(
         self,
@@ -19,7 +20,8 @@ class ContinuousHillclimber:
         step: np.float32,
         acceleration: np.float32,
         precision: np.float32 = np.finfo(np.float32).eps,
-        generations: t.Union[None, np.int32] = None,
+        generations: t.Union[None, np.uint64] = None,
+        debug: bool = False,
     ) -> None:
         self._fx = fx
         self._interval = interval
@@ -35,6 +37,7 @@ class ContinuousHillclimber:
                 -1 / self._acceleration,
             ]
         )
+        self._debug = debug
 
     def run(self, initial_x: t.Union[None, np.float32] = None):
         generation = 0
@@ -61,7 +64,7 @@ class ContinuousHillclimber:
                 )
             )
         ):
-            print(f"Continuous hillclimber eneration: {generation}")
+            self._print(generation)
             before_score = best_score
 
             for step_candidate in self._step_candidates:
@@ -86,3 +89,7 @@ class ContinuousHillclimber:
             generation += 1
 
         return best_x
+
+    def _print(self, generation: np.uint64) -> None:
+        if self._debug:
+            print(f"Continuous hillclimber algorithm generation: {generation}")
