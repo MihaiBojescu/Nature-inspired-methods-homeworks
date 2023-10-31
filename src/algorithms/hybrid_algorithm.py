@@ -1,9 +1,9 @@
 import typing as t
 import numpy as np
 import numpy.typing as npt
-from continuous_hillclimber import ContinuousHillclimber
-from genetic_algorithm import BinaryGeneticAlgorithm
-from individual import DecodedIndividual, Individual
+from algorithms.continuous_hillclimber import ContinuousHillclimber
+from algorithms.genetic_algorithm import BinaryGeneticAlgorithm
+from data.individual import DecodedIndividual, Individual
 
 
 class HybridAlgorithm(BinaryGeneticAlgorithm):
@@ -25,39 +25,28 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
         ],
         crossover_points: t.List[np.uint32],
         mutation_chance: np.float16,
-
         hillclimber_run_interval: np.uint32,
         hillclimber_step: np.float32 = np.float32(0.1),
         hillclimber_acceleration: np.float32 = np.float32(0.1),
         hillclimber_precision: np.float32 = np.finfo(np.float32).eps,
-
         debug: bool = False,
     ) -> None:
-        self._population = [
-            Individual(genes, encode, decode, fitness_function)
-            for genes in generate_initial_population()
-        ]
-        self._encode = encode
-        self._decode = decode
-        self._fitness_function = fitness_function
-        self._criteria_function = criteria_function
-        self._selection_function = selection_function
-        self._crossover_bits = [
-            np.uint8(crossover_point % 8) for crossover_point in crossover_points
-        ]
-        self._crossover_bytes = [
-            np.uint8(crossover_point // 8) for crossover_point in crossover_points
-        ]
-        self._mutation_chance = mutation_chance
-
-        self._generation = np.uint64(0)
+        super.__init__(
+            encode=encode,
+            decode=decode,
+            generate_initial_population=generate_initial_population,
+            fitness_function=fitness_function,
+            criteria_function=criteria_function,
+            selection_function=selection_function,
+            crossover_points=crossover_points,
+            mutation_chance=mutation_chance,
+            debug=debug
+        )
 
         self._hillclimber_run_interval = hillclimber_run_interval
         self._hillclimber_step = hillclimber_step
         self._hillclimber_acceleration = hillclimber_acceleration
         self._hillclimber_precision = hillclimber_precision
-
-        self._debug = debug
 
     def step(self):
         self._print(self._generation)
@@ -104,7 +93,7 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
                 acceleration=self._hillclimber_acceleration,
                 precision=self._hillclimber_precision,
                 generations=-1,
-                debug=self._debug
+                debug=self._debug,
             )
             optimised_individual, _ = hill_climber.step()
             encoded_individual = self._encode(optimised_individual)

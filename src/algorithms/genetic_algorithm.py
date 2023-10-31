@@ -2,7 +2,7 @@ import random
 import typing as t
 import numpy as np
 import numpy.typing as npt
-from individual import DecodedIndividual, Individual
+from data.individual import DecodedIndividual, Individual
 
 
 class BinaryGeneticAlgorithm:
@@ -99,7 +99,7 @@ class BinaryGeneticAlgorithm:
         return self._population
 
     @property
-    def decoded_population(self) -> t.List[Individual]:
+    def decoded_population(self) -> t.List[t.Tuple[any, np.float32]]:
         return [individual.decode() for individual in self._population]
 
     def _print(self, generation: int) -> None:

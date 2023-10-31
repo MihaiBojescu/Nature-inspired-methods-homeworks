@@ -75,7 +75,7 @@ class ContinuousHillclimber:
 
         return self._best_x, self._generation
 
-    def step(self) -> t.Tuple[np.float32, np.float32, np.float32]:
+    def step(self) -> t.Tuple[np.float32, np.float32]:
         self._print(self._generation)
         self._before_best_score = self._best_score
 

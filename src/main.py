@@ -3,9 +3,9 @@
 import math
 import random
 import numpy as np
-from continuous_hillclimber import ContinuousHillclimber
-from genetic_algorithm import BinaryGeneticAlgorithm
-from hybrid_algorithm import HybridAlgorithm
+from algorithms.continuous_hillclimber import ContinuousHillclimber
+from algorithms.genetic_algorithm import BinaryGeneticAlgorithm
+from algorithms.hybrid_algorithm import HybridAlgorithm
 
 
 def main():
