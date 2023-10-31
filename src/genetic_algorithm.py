@@ -88,8 +88,8 @@ class BinaryGeneticAlgorithm:
 
             next_generation.extend([child_1, child_2])
 
-        next_generation.sort(key=lambda individual: individual.fitness, reverse=True)
         self._population = next_generation
+        self._population.sort(key=lambda individual: individual.fitness, reverse=True)
         self._generation += 1
 
         return self._population

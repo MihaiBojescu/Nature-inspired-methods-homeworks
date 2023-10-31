@@ -4,99 +4,109 @@ import numpy.typing as npt
 from continuous_hillclimber import ContinuousHillclimber
 from genetic_algorithm import BinaryGeneticAlgorithm
 from individual import DecodedIndividual, Individual
-from one_shot_genetic_algorithm import OneShotBinaryGeneticAlgorithm
 
 
-class HybridAlgorithm:
-    _generations: np.uint64
-    _genetic_algorithm_encode: t.Callable[[any], npt.NDArray[np.uint8]]
-    _hillclimber_run_interval: int
-    _genetic_algorithm: OneShotBinaryGeneticAlgorithm
-    _hillclimber_algorithm: ContinuousHillclimber
-    _fx: t.Callable[[np.float32], np.float32]
-    _debug: bool
+class HybridAlgorithm(BinaryGeneticAlgorithm):
+    _hillclimber_run_interval: np.uint32
+    _hillclimber_step: np.float32
+    _hillclimber_acceleration: np.float32
+    _hillclimber_precision: np.float32
 
     def __init__(
         self,
+        encode: t.Callable[[any], npt.NDArray[np.uint8]],
+        decode: t.Callable[[npt.NDArray[np.uint8]], any],
         generate_initial_population: t.Callable[[], t.List[any]],
-        generations: np.uint64,
-        genetic_algorithm_encode: t.Callable[[any], npt.NDArray[np.uint8]],
-        genetic_algorithm_decode: t.Callable[[npt.NDArray[np.uint8]], any],
-        genetic_algorithm_selection_function: t.Callable[
+        fitness_function: t.Callable[[any], np.float32],
+        criteria_function: t.Callable[[np.uint64, t.List[DecodedIndividual]], bool],
+        selection_function: t.Callable[
             [t.List[DecodedIndividual]],
             t.Tuple[DecodedIndividual, DecodedIndividual],
         ],
-        genetic_algorithm_crossover_points: t.List[np.uint32],
-        genetic_algorithm_mutation_chance: np.float16,
-        hillclimber_run_times: int,
-        hillclimber_interval: t.Tuple[np.float32, np.float32],
-        hillclimber_step: np.float32,
-        hillclimber_acceleration: np.float32,
-        hillclimber_precision: np.float32,
-        hillclimber_generations: t.Union[None, np.uint64],
-        fx: t.Callable[[any], np.float32],
+        crossover_points: t.List[np.uint32],
+        mutation_chance: np.float16,
+
+        hillclimber_run_interval: np.uint32,
+        hillclimber_step: np.float32 = np.float32(0.1),
+        hillclimber_acceleration: np.float32 = np.float32(0.1),
+        hillclimber_precision: np.float32 = np.finfo(np.float32).eps,
+
         debug: bool = False,
     ) -> None:
-        self._generations = generations
-        self._genetic_algorithm_encode = genetic_algorithm_encode
-        self._hillclimber_run_interval = (
-            generations // hillclimber_run_times
-            if generations > hillclimber_run_times
-            else 1
-        )
-        self._fx = fx
+        self._population = [
+            Individual(genes, encode, decode, fitness_function)
+            for genes in generate_initial_population()
+        ]
+        self._encode = encode
+        self._decode = decode
+        self._fitness_function = fitness_function
+        self._criteria_function = criteria_function
+        self._selection_function = selection_function
+        self._crossover_bits = [
+            np.uint8(crossover_point % 8) for crossover_point in crossover_points
+        ]
+        self._crossover_bytes = [
+            np.uint8(crossover_point // 8) for crossover_point in crossover_points
+        ]
+        self._mutation_chance = mutation_chance
+
+        self._generation = np.uint64(0)
+
+        self._hillclimber_run_interval = hillclimber_run_interval
+        self._hillclimber_step = hillclimber_step
+        self._hillclimber_acceleration = hillclimber_acceleration
+        self._hillclimber_precision = hillclimber_precision
+
         self._debug = debug
 
-        self._genetic_algorithm = BinaryGeneticAlgorithm(
-            generate_initial_population=generate_initial_population,
-            encode=genetic_algorithm_encode,
-            decode=genetic_algorithm_decode,
-            fitness_function=fx,
-            criteria_function=lambda: None,
-            selection_function=genetic_algorithm_selection_function,
-            crossover_points=genetic_algorithm_crossover_points,
-            mutation_chance=genetic_algorithm_mutation_chance,
-            debug=debug,
-        )
-        self._hillclimber_algorithm = ContinuousHillclimber(
-            fx=fx,
-            interval=hillclimber_interval,
-            step=hillclimber_step,
-            acceleration=hillclimber_acceleration,
-            precision=hillclimber_precision,
-            generations=hillclimber_generations,
-            debug=debug,
-        )
+    def step(self):
+        self._print(self._generation)
+        self._population.sort(key=lambda individual: individual.fitness, reverse=True)
+        next_generation = []
 
-    def run(self):
-        generation = np.uint64(0)
+        for _ in range(0, len(self._population) // 2):
+            parent_1, parent_2 = self._selection_function(self.decoded_population)
+            parent_1 = Individual.from_decoded_individual(
+                parent_1, self._encode, self._decode, self._fitness_function
+            )
+            parent_2 = Individual.from_decoded_individual(
+                parent_2, self._encode, self._decode, self._fitness_function
+            )
 
-        while generation < self._generations:
-            self._print(generation)
+            child_1, child_2 = self._crossover(parent_1, parent_2)
 
-            self._run_genetic_algorithm()
-            self._run_hillclimber(generation)
+            child_1 = self._mutate(child_1)
+            child_2 = self._mutate(child_2)
 
-            generation += 1
+            next_generation.extend([child_1, child_2])
 
-        self._genetic_algorithm.population.sort(key=lambda individual: individual.fitness, reverse=True)
+        self._population = next_generation
+        self._run_hillclimber()
+        self._population.sort(key=lambda individual: individual.fitness, reverse=True)
+        self._generation += 1
 
-        return self._genetic_algorithm.population[0].decode()[0]
+        return self._population
 
     def _print(self, generation: np.uint64) -> None:
         if self._debug:
             print(f"Hybrid algorithm generation: {generation}")
 
-    def _run_genetic_algorithm(self):
-        self._genetic_algorithm.step(self._genetic_algorithm.population)
-
-    def _run_hillclimber(self, generation: int):
-        if generation % self._hillclimber_run_interval != 0:
+    def _run_hillclimber(self):
+        if self._generation % self._hillclimber_run_interval != 0:
             return
 
-        for i, individual in enumerate(self._genetic_algorithm.population):
+        for i, individual in enumerate(self._population):
             decoded_individual = individual.decode()[0]
-            optimised_individual, _ = self._hillclimber_algorithm.run(decoded_individual)
-            encoded_individual = self._genetic_algorithm_encode(optimised_individual)
+            hill_climber = ContinuousHillclimber(
+                fx=self._fitness_function,
+                initial_x=decoded_individual,
+                step=self._hillclimber_step,
+                acceleration=self._hillclimber_acceleration,
+                precision=self._hillclimber_precision,
+                generations=-1,
+                debug=self._debug
+            )
+            optimised_individual, _ = hill_climber.step()
+            encoded_individual = self._encode(optimised_individual)
 
-            self._genetic_algorithm.population[i].genes = encoded_individual
+            self._population[i].genes = encoded_individual
