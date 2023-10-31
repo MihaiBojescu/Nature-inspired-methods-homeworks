@@ -18,6 +18,9 @@ class BinaryGeneticAlgorithm:
     _crossover_bits: t.List[np.uint8]
     _crossover_bytes: t.List[np.uint32]
     _mutation_chance: np.float16
+
+    _generation: np.uint64
+
     _debug: bool
 
     def __init__(
@@ -51,30 +54,26 @@ class BinaryGeneticAlgorithm:
             np.uint8(crossover_point // 8) for crossover_point in crossover_points
         ]
         self._mutation_chance = mutation_chance
+
+        self._generation = np.uint64(0)
+
         self._debug = debug
 
     def run(self) -> t.Tuple[any, np.uint64, t.List[Individual]]:
-        generation = np.uint64(0)
-
-        while not self._criteria_function(generation, self.decoded_population):
-            self._print(generation)
-            self._population.sort(
-                key=lambda individual: individual.fitness, reverse=True
-            )
-            self._population = self.step(self._population)
-            generation += 1
-
         self._population.sort(key=lambda individual: individual.fitness, reverse=True)
 
-        return self._population[0].decode()[0], generation, self._population
+        while not self._criteria_function(self._generation, self.decoded_population):
+            self.step()
 
-    def step(self, population: t.List[Individual]):
+        return self._population[0].decode()[0], self._generation, self._population
+
+    def step(self):
+        self._print(self._generation)
+        self._population.sort(key=lambda individual: individual.fitness, reverse=True)
         next_generation = []
 
-        for _ in range(0, len(population) // 2):
-            parent_1, parent_2 = self._selection_function(
-                [individual.decode() for individual in population]
-            )
+        for _ in range(0, len(self._population) // 2):
+            parent_1, parent_2 = self._selection_function(self.decoded_population)
             parent_1 = Individual.from_decoded_individual(
                 parent_1, self._encode, self._decode, self._fitness_function
             )
@@ -89,7 +88,11 @@ class BinaryGeneticAlgorithm:
 
             next_generation.extend([child_1, child_2])
 
-        return next_generation
+        next_generation.sort(key=lambda individual: individual.fitness, reverse=True)
+        self._population = next_generation
+        self._generation += 1
+
+        return self._population
 
     @property
     def population(self) -> t.List[Individual]:
