@@ -32,12 +32,12 @@ def main():
         fitness_function=lambda x: x**3 - 60 * (x**2) + 900 * x + 100,
         criteria_function=lambda generation, population: generation > 100,
         selection_function=selection_function,
-        crossover_point=np.uint32(5),
-        mutation_chance=np.float16(0.01),
+        crossover_points=[np.uint32(4), np.uint32(9)],
+        mutation_chance=np.float16(0.0001),
     )
     genetic_result = genetic_algorithm.run()
 
-    print(genetic_result)
+    print(genetic_result[0])
 
     hybrid_algorithm = HybridAlgorithm(
         generate_initial_population=lambda: [
@@ -51,7 +51,7 @@ def main():
             0
         ],
         genetic_algorithm_selection_function=selection_function,
-        genetic_algorithm_crossover_point=np.uint32(5),
+        genetic_algorithm_crossover_points=[np.uint32(4), np.uint32(9)],
         genetic_algorithm_mutation_chance=np.float16(0.01),
         hillclimber_run_times=10,
         hillclimber_interval=(np.float32(0.0), np.float32(31.0)),
