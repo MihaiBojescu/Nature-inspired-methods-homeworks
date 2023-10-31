@@ -39,7 +39,9 @@ class ContinuousHillclimber:
         )
         self._debug = debug
 
-    def run(self, initial_x: t.Union[None, np.float32] = None):
+    def run(
+        self, initial_x: t.Union[None, np.float32] = None
+    ) -> t.Tuple[np.float32, np.uint64]:
         generation = 0
         best_step = self._step
         best_x = (
@@ -48,47 +50,64 @@ class ContinuousHillclimber:
             else initial_x
         )
         best_score = self._fx(best_x)
-        before_score = None
+        before_best_score = None
 
         while (
-            (before_score is None)
+            (before_best_score is None)
             or (
                 self._generations is None
-                and np.abs(best_score - before_score) > self._precision
+                and np.abs(best_score - before_best_score) > self._precision
             )
             or (
                 self._generations is not None
                 and (
                     generation < self._generations
-                    and np.abs(best_score - before_score) > self._precision
+                    and np.abs(best_score - before_best_score) > self._precision
                 )
             )
         ):
             self._print(generation)
-            before_score = best_score
-
-            for step_candidate in self._step_candidates:
-                step = best_step * step_candidate
-                x = best_x + step
-                score = self._fx(x)
-
-                if score > best_score:
-                    best_step = step
-                    best_x = x
-                    best_score = score
-
-            if not (self._interval[0] < best_x < self._interval[1]):
-                best_step = self._step
-                best_x = (
-                    self._interval[0]
-                    if best_x > self._interval[1]
-                    else self._interval[1]
-                )
-                best_score = self._fx(best_x)
-
+            before_best_score = best_score
+            new_best_x, new_best_step, new_best_score = self.step(
+                before_best_x=best_x,
+                before_best_step=best_step,
+                before_best_score=before_best_score,
+            )
+            best_x = new_best_x
+            best_step = new_best_step
+            best_score = new_best_score
             generation += 1
 
         return best_x
+
+    def step(
+        self,
+        before_best_x: np.float32,
+        before_best_step: np.float32,
+        before_best_score: np.float32,
+    ) -> t.Tuple[np.float32, np.float32, np.float32]:
+        best_x = before_best_x
+        best_step = before_best_step
+        best_score = before_best_score
+
+        for step_candidate in self._step_candidates:
+            step = best_step * step_candidate
+            x = best_x + step
+            score = self._fx(x)
+
+            if score > best_score:
+                best_step = step
+                best_x = x
+                best_score = score
+
+        if not (self._interval[0] < best_x < self._interval[1]):
+            best_step = self._step
+            best_x = (
+                self._interval[0] if best_x > self._interval[1] else self._interval[1]
+            )
+            best_score = self._fx(best_x)
+
+        return best_x, best_step, best_score
 
     def _print(self, generation: np.uint64) -> None:
         if self._debug:
