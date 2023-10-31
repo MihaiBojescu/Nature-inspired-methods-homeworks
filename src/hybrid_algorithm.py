@@ -2,12 +2,12 @@ import typing as t
 import numpy as np
 import numpy.typing as npt
 from continuous_hillclimber import ContinuousHillclimber
+from genetic_algorithm import BinaryGeneticAlgorithm
 from individual import DecodedIndividual, Individual
 from one_shot_genetic_algorithm import OneShotBinaryGeneticAlgorithm
 
 
 class HybridAlgorithm:
-    _population: list[Individual]
     _generations: np.uint64
     _genetic_algorithm_encode: t.Callable[[any], npt.NDArray[np.uint8]]
     _hillclimber_run_interval: int
@@ -26,7 +26,7 @@ class HybridAlgorithm:
             [t.List[DecodedIndividual]],
             t.Tuple[DecodedIndividual, DecodedIndividual],
         ],
-        genetic_algorithm_crossover_point: np.uint32,
+        genetic_algorithm_crossover_points: t.List[np.uint32],
         genetic_algorithm_mutation_chance: np.float16,
         hillclimber_run_times: int,
         hillclimber_interval: t.Tuple[np.float32, np.float32],
@@ -37,15 +37,6 @@ class HybridAlgorithm:
         fx: t.Callable[[any], np.float32],
         debug: bool = False,
     ) -> None:
-        self._population = [
-            Individual(
-                genes,
-                genetic_algorithm_encode,
-                genetic_algorithm_decode,
-                fx,
-            )
-            for genes in generate_initial_population()
-        ]
         self._generations = generations
         self._genetic_algorithm_encode = genetic_algorithm_encode
         self._hillclimber_run_interval = (
@@ -56,12 +47,14 @@ class HybridAlgorithm:
         self._fx = fx
         self._debug = debug
 
-        self._genetic_algorithm = OneShotBinaryGeneticAlgorithm(
+        self._genetic_algorithm = BinaryGeneticAlgorithm(
+            generate_initial_population=generate_initial_population,
             encode=genetic_algorithm_encode,
             decode=genetic_algorithm_decode,
             fitness_function=fx,
+            criteria_function=lambda: None,
             selection_function=genetic_algorithm_selection_function,
-            crossover_point=genetic_algorithm_crossover_point,
+            crossover_points=genetic_algorithm_crossover_points,
             mutation_chance=genetic_algorithm_mutation_chance,
             debug=debug,
         )
@@ -86,24 +79,24 @@ class HybridAlgorithm:
 
             generation += 1
 
-        self._population.sort(key=lambda individual: individual.fitness, reverse=True)
+        self._genetic_algorithm.population.sort(key=lambda individual: individual.fitness, reverse=True)
 
-        return self._population[0].decode()[0]
+        return self._genetic_algorithm.population[0].decode()[0]
 
     def _print(self, generation: np.uint64) -> None:
         if self._debug:
             print(f"Hybrid algorithm generation: {generation}")
 
     def _run_genetic_algorithm(self):
-        self._population = self._genetic_algorithm.run(self._population)
+        self._genetic_algorithm.step(self._genetic_algorithm.population)
 
     def _run_hillclimber(self, generation: int):
         if generation % self._hillclimber_run_interval != 0:
             return
 
-        for i, individual in enumerate(self._population):
+        for i, individual in enumerate(self._genetic_algorithm.population):
             decoded_individual = individual.decode()[0]
-            optimised_individual = self._hillclimber_algorithm.run(decoded_individual)
+            optimised_individual, _ = self._hillclimber_algorithm.run(decoded_individual)
             encoded_individual = self._genetic_algorithm_encode(optimised_individual)
 
-            self._population[i].genes = encoded_individual
+            self._genetic_algorithm.population[i].genes = encoded_individual
