@@ -56,9 +56,7 @@ class BinaryGeneticAlgorithm:
     def run(self) -> t.Tuple[any, np.uint64, t.List[Individual]]:
         generation = np.uint64(0)
 
-        while not self._criteria_function(
-            generation, [individual.decode() for individual in self._population]
-        ):
+        while not self._criteria_function(generation, self.decoded_population):
             self._print(generation)
             self._population.sort(
                 key=lambda individual: individual.fitness, reverse=True
@@ -92,6 +90,14 @@ class BinaryGeneticAlgorithm:
             next_generation.extend([child_1, child_2])
 
         return next_generation
+
+    @property
+    def population(self) -> t.List[Individual]:
+        return self._population
+
+    @property
+    def decoded_population(self) -> t.List[Individual]:
+        return [individual.decode() for individual in self._population]
 
     def _print(self, generation: int) -> None:
         if self._debug:
