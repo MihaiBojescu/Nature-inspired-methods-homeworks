@@ -1,3 +1,4 @@
+import math
 import random
 import typing as t
 import numpy as np
@@ -7,6 +8,8 @@ from metered_algorithms.metered_continuous_hillclimber import (
 from metered_algorithms.metered_genetic_algorithm import MeteredBinaryGenericAlgorithm
 from metered_algorithms.metered_hybrid_algorithm import MeteredHybridAlgorithm
 from util.graph import graph_genetic_algorithm, graph_hillclimber
+
+module = "H1'"
 
 
 def h1p(x: np.uint32):
@@ -30,17 +33,19 @@ def run_hillclimber():
     )
     hillclimber_result = hillclimber_algorithm.run()
 
-    print(f"Continuous hillclimber results: {hillclimber_result}")
+    print(f"{module} - Continuous hillclimber results: {hillclimber_result}")
     graph_hillclimber(
-        "Hillclimber results: Best X", "X", hillclimber_algorithm.metrics_best_x
+        f"{module} - Hillclimber results: Best X",
+        "X",
+        hillclimber_algorithm.metrics_best_x,
     )
     graph_hillclimber(
-        "Hillclimber results: Best step",
+        f"{module} - Hillclimber results: Best step",
         "step",
         hillclimber_algorithm.metrics_best_step,
     )
     graph_hillclimber(
-        "Hillclimber results: Best score",
+        f"{module} - Hillclimber results: Best score",
         "score",
         hillclimber_algorithm.metrics_best_score,
     )
@@ -63,13 +68,13 @@ def run_binary_genetic_algorithm():
     )
     genetic_result = genetic_algorithm.run()
 
-    print(f"Binary genetic algorithm results: {genetic_result}")
+    print(f"{module} - Binary genetic algorithm results: {genetic_result}")
     graph_genetic_algorithm(
-        "Genetic algorithm: values",
+        f"{module} - Genetic algorithm: values",
         genetic_algorithm.metrics_values,
     )
     graph_genetic_algorithm(
-        "Genetic algorithm: Fitness",
+        f"{module} - Genetic algorithm: Fitness",
         genetic_algorithm.metrics_fitness,
     )
 
@@ -92,13 +97,13 @@ def run_hybric_algorithm():
     )
     hybrid_result = hybrid_algorithm.run()
 
-    print(f"Hybrid algorithm results: {hybrid_result}")
+    print(f"{module} - Hybrid algorithm results: {hybrid_result}")
     graph_genetic_algorithm(
-        "Hybrid algorithm: Values",
+        f"{module} - Hybrid algorithm: Values",
         hybrid_algorithm.metrics_values,
     )
     graph_genetic_algorithm(
-        "Hybrid algorithm: Fitness",
+        f"{module} - Hybrid algorithm: Fitness",
         hybrid_algorithm.metrics_fitness,
     )
 
