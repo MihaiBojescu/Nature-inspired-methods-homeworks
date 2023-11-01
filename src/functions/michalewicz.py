@@ -14,8 +14,10 @@ module = "Michalewicz"
 def michalewicz(x: t.List[np.float32]):
     m = 10
     return -np.sum(
-        [np.sin(x[i]) * (np.sin(i * x[i] ** 2 / np.pi)) for i in range(len(x))]
-        ** (2 * m)
+        [
+            np.sin(x[i]) * (np.sin(i * x[i] ** 2 / np.pi)) ** (2 * m)
+            for i in range(len(x))
+        ]
     )
 
 
@@ -38,7 +40,9 @@ def run_hillclimber(dimensions: int):
     )
     hillclimber_result = hillclimber_algorithm.run()
 
-    print(f"{module}(dimensions = {dimensions}) - Continuous hillclimber results: {hillclimber_result}")
+    print(
+        f"{module}(dimensions = {dimensions}) - Continuous hillclimber results: {hillclimber_result}"
+    )
     graph_hillclimber(
         f"{module}(dimensions = {dimensions}) - Hillclimber results: Best X",
         "X",
@@ -83,7 +87,9 @@ def run_binary_genetic_algorithm(dimensions: int):
     )
     genetic_result = genetic_algorithm.run()
 
-    print(f"{module}(dimensions = {dimensions}) - Binary genetic algorithm results: {genetic_result}")
+    print(
+        f"{module}(dimensions = {dimensions}) - Binary genetic algorithm results: {genetic_result}"
+    )
     graph_genetic_algorithm(
         f"{module}(dimensions = {dimensions}) - Genetic algorithm: values",
         genetic_algorithm.metrics_values,
@@ -122,7 +128,9 @@ def run_hybric_algorithm(dimensions: int):
     )
     hybrid_result = hybrid_algorithm.run()
 
-    print(f"{module}(dimensions = {dimensions}) - Hybrid algorithm results: {hybrid_result}")
+    print(
+        f"{module}(dimensions = {dimensions}) - Hybrid algorithm results: {hybrid_result}"
+    )
     graph_genetic_algorithm(
         f"{module}(dimensions = {dimensions}) - Hybrid algorithm: Values",
         hybrid_algorithm.metrics_values,

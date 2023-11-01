@@ -14,7 +14,7 @@ module = "Griewangk"
 def griewangk(x: t.List[np.float32]):
     return (
         np.sum([x[i] ** 2 / 4000 for i in range(len(x))])
-        - np.prod([np.cos(x[i] / np.sqrt[i]) for i in range(len(x))])
+        - np.prod([np.cos(x[i] / np.sqrt(x[i])) for i in range(len(x))])
         + 1
     )
 
