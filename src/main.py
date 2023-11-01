@@ -3,13 +3,16 @@
 import math
 import random
 import numpy as np
-from algorithms.continuous_hillclimber import ContinuousHillclimber
-from algorithms.genetic_algorithm import BinaryGeneticAlgorithm
-from algorithms.hybrid_algorithm import HybridAlgorithm
+from metered_algorithms.metered_continuous_hillclimber import (
+    MeteredContinuousHillclimber,
+)
+from metered_algorithms.metered_genetic_algorithm import MeteredBinaryGenericAlgorithm
+from metered_algorithms.metered_hybrid_algorithm import MeteredHybridAlgorithm
+from util.graph import graph_hillclimber
 
 
 def main():
-    hillclimber_algorithm = ContinuousHillclimber(
+    hillclimber_algorithm = MeteredContinuousHillclimber(
         fx=lambda x: x**3 - 60 * (x**2) + 900 * x + 100,
         initial_x=(np.float32(0.0), np.float32(31.0)),
         step=np.float32(0.1),
@@ -20,8 +23,21 @@ def main():
     hillclimber_result = hillclimber_algorithm.run()
 
     print(hillclimber_result)
+    graph_hillclimber(
+        "Hillclimber results: Best X", "X", hillclimber_algorithm.metrics_best_x
+    )
+    graph_hillclimber(
+        "Hillclimber results: Best step",
+        "step",
+        hillclimber_algorithm.metrics_best_step,
+    )
+    graph_hillclimber(
+        "Hillclimber results: Best score",
+        "score",
+        hillclimber_algorithm.metrics_best_score,
+    )
 
-    genetic_algorithm = BinaryGeneticAlgorithm(
+    genetic_algorithm = MeteredBinaryGenericAlgorithm(
         encode=lambda x: np.frombuffer(
             np.array([x], dtype=np.float32).tobytes(), dtype=np.uint8
         ),
@@ -39,7 +55,7 @@ def main():
 
     print(genetic_result)
 
-    hybrid_algorithm = HybridAlgorithm(
+    hybrid_algorithm = MeteredHybridAlgorithm(
         encode=lambda x: np.frombuffer(
             np.array([x], dtype=np.float32).tobytes(), dtype=np.uint8
         ),

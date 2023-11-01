@@ -4,7 +4,9 @@ from algorithms.continuous_hillclimber import ContinuousHillclimber
 
 
 class MeteredContinuousHillclimber(ContinuousHillclimber):
-    _metrics: t.List[t.Tuple[np.uint64, np.float32]]
+    _metrics_best_x: t.List[t.Tuple[np.uint64, np.float32]]
+    _metrics_best_step: t.List[t.Tuple[np.uint64, np.float32]]
+    _metrics_best_score: t.List[t.Tuple[np.uint64, np.float32]]
 
     def __init__(
         self,
@@ -25,7 +27,9 @@ class MeteredContinuousHillclimber(ContinuousHillclimber):
             generations=generations,
             debug=debug,
         )
-        self._metrics = []
+        self._metrics_best_x = []
+        self._metrics_best_step = []
+        self._metrics_best_score = []
 
     def run(self) -> t.Tuple[np.float32, np.uint64]:
         while (
@@ -44,10 +48,20 @@ class MeteredContinuousHillclimber(ContinuousHillclimber):
             )
         ):
             self.step()
-            self._metrics.append((self._generation, self._best_x))
+            self._metrics_best_x.append((self._generation, self._best_x))
+            self._metrics_best_step.append((self._generation, self._best_step))
+            self._metrics_best_score.append((self._generation, self._best_score))
 
         return self._best_x, self._generation
 
     @property
-    def metrics(self) -> t.List[t.Tuple[np.uint64, np.float32]]:
-        return self._metrics
+    def metrics_best_x(self) -> t.List[t.Tuple[np.uint64, np.float32]]:
+        return self._metrics_best_x
+
+    @property
+    def metrics_best_step(self) -> t.List[t.Tuple[np.uint64, np.float32]]:
+        return self._metrics_best_step
+
+    @property
+    def metrics_best_score(self) -> t.List[t.Tuple[np.uint64, np.float32]]:
+        return self._metrics_best_score

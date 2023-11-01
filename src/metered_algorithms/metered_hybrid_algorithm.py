@@ -6,7 +6,7 @@ from data.individual import DecodedIndividual, Individual
 
 
 class MeteredHybridAlgorithm(HybridAlgorithm):
-    _metrics: t.List[t.Tuple[t.uint64, t.List[np.float32]]]
+    _metrics: t.List[t.Tuple[np.uint64, t.List[np.float32]]]
 
     def __init__(
         self,
@@ -59,5 +59,5 @@ class MeteredHybridAlgorithm(HybridAlgorithm):
         return self._population[0].decode()[0], self._generation, self._population
 
     @property
-    def metrics(self) -> t.List[t.Tuple[t.uint64, t.List[np.float32]]]:
+    def metrics(self) -> t.List[t.Tuple[np.uint64, t.List[np.float32]]]:
         return self._metrics
