@@ -31,7 +31,7 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
         hillclimber_precision: np.float32 = np.finfo(np.float32).eps,
         debug: bool = False,
     ) -> None:
-        super.__init__(
+        super().__init__(
             encode=encode,
             decode=decode,
             generate_initial_population=generate_initial_population,
@@ -40,7 +40,7 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
             selection_function=selection_function,
             crossover_points=crossover_points,
             mutation_chance=mutation_chance,
-            debug=debug
+            debug=debug,
         )
 
         self._hillclimber_run_interval = hillclimber_run_interval
