@@ -55,6 +55,10 @@ def main():
 
     print(genetic_result)
     graph_genetic_algorithm(
+        "Genetic algorithm: values",
+        genetic_algorithm.metrics_values,
+    )
+    graph_genetic_algorithm(
         "Genetic algorithm: Fitness",
         genetic_algorithm.metrics_fitness,
     )
@@ -77,6 +81,10 @@ def main():
     hybrid_result = hybrid_algorithm.run()
 
     print(hybrid_result)
+    graph_genetic_algorithm(
+        "Hybrid algorithm: Values",
+        hybrid_algorithm.metrics_values,
+    )
     graph_genetic_algorithm(
         "Hybrid algorithm: Fitness",
         hybrid_algorithm.metrics_fitness,

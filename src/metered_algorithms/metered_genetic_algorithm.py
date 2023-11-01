@@ -6,7 +6,8 @@ from data.individual import DecodedIndividual, Individual
 
 
 class MeteredBinaryGenericAlgorithm(BinaryGeneticAlgorithm):
-    _metrics_fitness: t.List[t.Tuple[np.uint64, t.List[np.float32]]]
+    _metrics_values: t.List[t.Tuple[np.uint64, any]]
+    _metrics_fitness: t.List[t.Tuple[np.uint64, np.float32]]
 
     def __init__(
         self,
@@ -34,6 +35,7 @@ class MeteredBinaryGenericAlgorithm(BinaryGeneticAlgorithm):
             mutation_chance=mutation_chance,
             debug=debug,
         )
+        self._metrics_values = []
         self._metrics_fitness = []
 
     def run(self) -> t.Tuple[any, np.uint64, t.List[Individual]]:
@@ -41,15 +43,17 @@ class MeteredBinaryGenericAlgorithm(BinaryGeneticAlgorithm):
 
         while not self._criteria_function(self._generation, self.decoded_population):
             self.step()
-            self._metrics_fitness.append(
-                (
-                    self._generation,
-                    [individual[1] for individual in self.decoded_population],
-                )
-            )
+
+            for individual in self.decoded_population:
+                self._metrics_values.append((self._generation, individual[0]))
+                self._metrics_fitness.append((self._generation, individual[1]))
 
         return self._population[0].decode()[0], self._generation, self._population
 
     @property
-    def metrics_fitness(self) -> t.List[t.Tuple[np.uint64, t.List[np.float32]]]:
+    def metrics_values(self) -> t.List[t.Tuple[np.uint64, any]]:
+        return self._metrics_values
+
+    @property
+    def metrics_fitness(self) -> t.List[t.Tuple[np.uint64, np.float32]]:
         return self._metrics_fitness
