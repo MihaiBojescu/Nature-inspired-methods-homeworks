@@ -8,7 +8,7 @@ from metered_algorithms.metered_continuous_hillclimber import (
 )
 from metered_algorithms.metered_genetic_algorithm import MeteredBinaryGenericAlgorithm
 from metered_algorithms.metered_hybrid_algorithm import MeteredHybridAlgorithm
-from util.graph import graph_hillclimber
+from util.graph import graph_genetic_algorithm, graph_hillclimber
 
 
 def main():
@@ -54,6 +54,10 @@ def main():
     genetic_result = genetic_algorithm.run()
 
     print(genetic_result)
+    graph_genetic_algorithm(
+        "Genetic algorithm: Fitness",
+        genetic_algorithm.metrics_fitness,
+    )
 
     hybrid_algorithm = MeteredHybridAlgorithm(
         encode=lambda x: np.frombuffer(
@@ -73,6 +77,10 @@ def main():
     hybrid_result = hybrid_algorithm.run()
 
     print(hybrid_result)
+    graph_genetic_algorithm(
+        "Hybrid algorithm: Fitness",
+        hybrid_algorithm.metrics_fitness,
+    )
 
 
 def selection_function(population):
