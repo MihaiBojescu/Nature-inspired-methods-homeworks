@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 
 def graph_hillclimber(
-    name: str, y_label: str, metrics: t.List[t.Tuple[np.uint64, np.float32]]
+    name: str, y_label: str, metrics: t.List[t.Tuple[np.uint64, np.float32]], show=False
 ):
     x, y = zip(*metrics)
 
@@ -18,16 +18,18 @@ def graph_hillclimber(
 
     os.makedirs("./outputs", exist_ok=True)
     plt.savefig(f"./outputs/{name}.svg", format="svg")
-    plt.show()
+
+    if show:
+        plt.show()
 
 
 def graph_genetic_algorithm(
-    name: str, metrics: t.List[t.Tuple[np.uint64, t.List[np.float32]]]
+    name: str, metrics: t.List[t.Tuple[np.uint64, t.List[np.float32]]], show=False
 ):
     x, ys = zip(*metrics)
 
     plt.figure(figsize=(10, 6))
-    plt.plot(x, ys, 'o')
+    plt.plot(x, ys, "o")
 
     plt.title(name)
     plt.xlabel("Generations")
@@ -35,5 +37,6 @@ def graph_genetic_algorithm(
 
     os.makedirs("./outputs", exist_ok=True)
     plt.savefig(f"./outputs/{name}.svg", format="svg")
-    plt.show()
-    pass
+
+    if show:
+        plt.show()

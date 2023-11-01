@@ -38,17 +38,17 @@ def run_hillclimber(dimensions: int):
     )
     hillclimber_result = hillclimber_algorithm.run()
 
-    print(f"{module} - Continuous hillclimber results: {hillclimber_result}")
+    print(f"{module}(dimensions = {dimensions}) - Continuous hillclimber results: {hillclimber_result}")
     graph_hillclimber(
-        f"{module} - Hillclimber results: Best X", "X", hillclimber_algorithm.metrics_best_x
+        f"{module}(dimensions = {dimensions}) - Hillclimber results: Best X", "X", hillclimber_algorithm.metrics_best_x
     )
     graph_hillclimber(
-        f"{module} - Hillclimber results: Best step",
+        f"{module}(dimensions = {dimensions}) - Hillclimber results: Best step",
         "step",
         hillclimber_algorithm.metrics_best_step,
     )
     graph_hillclimber(
-        f"{module} - Hillclimber results: Best score",
+        f"{module}(dimensions = {dimensions}) - Hillclimber results: Best score",
         "score",
         hillclimber_algorithm.metrics_best_score,
     )
@@ -81,13 +81,13 @@ def run_binary_genetic_algorithm(dimensions: int):
     )
     genetic_result = genetic_algorithm.run()
 
-    print(f"{module} - Binary genetic algorithm results: {genetic_result}")
+    print(f"{module}(dimensions = {dimensions}) - Binary genetic algorithm results: {genetic_result}")
     graph_genetic_algorithm(
-        f"{module} - Genetic algorithm: values",
+        f"{module}(dimensions = {dimensions}) - Genetic algorithm: values",
         genetic_algorithm.metrics_values,
     )
     graph_genetic_algorithm(
-        f"{module} - Genetic algorithm: Fitness",
+        f"{module}(dimensions = {dimensions}) - Genetic algorithm: Fitness",
         genetic_algorithm.metrics_fitness,
     )
 
@@ -120,13 +120,13 @@ def run_hybric_algorithm(dimensions: int):
     )
     hybrid_result = hybrid_algorithm.run()
 
-    print(f"{module} - Hybrid algorithm results: {hybrid_result}")
+    print(f"{module}(dimensions = {dimensions}) - Hybrid algorithm results: {hybrid_result}")
     graph_genetic_algorithm(
-        f"{module} - Hybrid algorithm: Values",
+        f"{module}(dimensions = {dimensions}) - Hybrid algorithm: Values",
         hybrid_algorithm.metrics_values,
     )
     graph_genetic_algorithm(
-        f"{module} - Hybrid algorithm: Fitness",
+        f"{module}(dimensions = {dimensions}) - Hybrid algorithm: Fitness",
         hybrid_algorithm.metrics_fitness,
     )
 
