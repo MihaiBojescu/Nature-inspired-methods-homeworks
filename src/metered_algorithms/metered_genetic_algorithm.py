@@ -1,3 +1,4 @@
+import time
 import typing as t
 import numpy as np
 import numpy.typing as npt
@@ -6,6 +7,7 @@ from data.individual import DecodedIndividual, Individual
 
 
 class MeteredBinaryGenericAlgorithm(BinaryGeneticAlgorithm):
+    _metrics_runtime: t.List[t.Tuple[np.uint64, np.uint64]]
     _metrics_values: t.List[t.Tuple[np.uint64, any]]
     _metrics_fitness: t.List[t.Tuple[np.uint64, np.float32]]
 
@@ -35,20 +37,29 @@ class MeteredBinaryGenericAlgorithm(BinaryGeneticAlgorithm):
             mutation_chance=mutation_chance,
             debug=debug,
         )
+        self._metrics_runtime = []
         self._metrics_values = []
         self._metrics_fitness = []
 
     def run(self) -> t.Tuple[any, np.uint64, t.List[Individual]]:
+        then = time.time_ns()
         self._population.sort(key=lambda individual: individual.fitness, reverse=True)
 
         while not self._criteria_function(self._generation, self.decoded_population):
             self.step()
+
+            now = time.time_ns()
+            self._metrics_runtime.append((self._generation, now - then))
 
             for individual in self.decoded_population:
                 self._metrics_values.append((self._generation, individual[0]))
                 self._metrics_fitness.append((self._generation, individual[1]))
 
         return self._population[0].decode()[0], self._generation, self._population
+
+    @property
+    def metrics_runtime(self) -> t.List[t.Tuple[np.uint64, np.uint64]]:
+        return self._metrics_runtime
 
     @property
     def metrics_values(self) -> t.List[t.Tuple[np.uint64, any]]:

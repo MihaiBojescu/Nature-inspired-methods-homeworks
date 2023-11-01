@@ -1,9 +1,11 @@
+import time
 import typing as t
 import numpy as np
 from algorithms.continuous_hillclimber import ContinuousHillclimber
 
 
 class MeteredContinuousHillclimber(ContinuousHillclimber):
+    _metrics_runtime: t.List[t.Tuple[np.uint64, np.uint64]]
     _metrics_best_x: t.List[t.Tuple[np.uint64, np.float32]]
     _metrics_best_step: t.List[t.Tuple[np.uint64, np.float32]]
     _metrics_best_score: t.List[t.Tuple[np.uint64, np.float32]]
@@ -27,11 +29,14 @@ class MeteredContinuousHillclimber(ContinuousHillclimber):
             generations=generations,
             debug=debug,
         )
+        self._metrics_runtime = []
         self._metrics_best_x = []
         self._metrics_best_step = []
         self._metrics_best_score = []
 
     def run(self) -> t.Tuple[np.float32, np.uint64]:
+        then = time.time_ns()
+
         while (
             (self._before_best_score is None)
             or (
@@ -48,11 +53,18 @@ class MeteredContinuousHillclimber(ContinuousHillclimber):
             )
         ):
             self.step()
+
+            now = time.time_ns()
+            self._metrics_runtime.append((self._generation, now - then))
             self._metrics_best_x.append((self._generation, self._best_x))
             self._metrics_best_step.append((self._generation, self._best_step))
             self._metrics_best_score.append((self._generation, self._best_score))
 
         return self._best_x, self._generation
+
+    @property
+    def metrics_runtime(self) -> t.List[t.Tuple[np.uint64, np.uint64]]:
+        return self._metrics_runtime
 
     @property
     def metrics_best_x(self) -> t.List[t.Tuple[np.uint64, np.float32]]:
