@@ -31,7 +31,7 @@ def graph_genetic_algorithm(
 
     plt.title(name)
     plt.xlabel("Generations")
-    plt.ylabel(f"Fitness")
+    plt.ylabel("Fitness")
 
     os.makedirs("./outputs", exist_ok=True)
     plt.savefig(f"./outputs/{name}.svg", format="svg")
