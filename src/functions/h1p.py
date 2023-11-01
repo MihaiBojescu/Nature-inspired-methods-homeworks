@@ -7,7 +7,7 @@ from metered_algorithms.metered_continuous_hillclimber import (
 )
 from metered_algorithms.metered_genetic_algorithm import MeteredBinaryGenericAlgorithm
 from metered_algorithms.metered_hybrid_algorithm import MeteredHybridAlgorithm
-from util.graph import graph_genetic_algorithm, graph_hillclimber
+from util.import_export import save_metrics
 
 module = "H1'"
 
@@ -34,20 +34,25 @@ def run_hillclimber():
     hillclimber_result = hillclimber_algorithm.run()
 
     print(f"{module} - Continuous hillclimber results: {hillclimber_result}")
-    graph_hillclimber(
-        f"{module} - Hillclimber results: Best X",
-        "X",
+    save_metrics(
+        f"{module} - Continuous hillclimber results: Runtime",
+        hillclimber_algorithm.metrics_runtime,
+        ("generation", "runtime"),
+    )
+    save_metrics(
+        f"{module} - Continuous hillclimber results: Best x",
         hillclimber_algorithm.metrics_best_x,
+        ("generation", "x"),
     )
-    graph_hillclimber(
-        f"{module} - Hillclimber results: Best step",
-        "step",
-        hillclimber_algorithm.metrics_best_step,
+    save_metrics(
+        f"{module} - Continuous hillclimber results: Best step",
+        hillclimber_algorithm.metrics_best_x,
+        ("generation", "step"),
     )
-    graph_hillclimber(
-        f"{module} - Hillclimber results: Best score",
-        "score",
-        hillclimber_algorithm.metrics_best_score,
+    save_metrics(
+        f"{module} - Continuous hillclimber results: Best score",
+        hillclimber_algorithm.metrics_best_x,
+        ("generation", "score"),
     )
 
 
@@ -69,13 +74,20 @@ def run_binary_genetic_algorithm():
     genetic_result = genetic_algorithm.run()
 
     print(f"{module} - Binary genetic algorithm results: {genetic_result}")
-    graph_genetic_algorithm(
-        f"{module} - Genetic algorithm: values",
-        genetic_algorithm.metrics_values,
+    save_metrics(
+        f"{module} - Binary genetic algorithm results: Runtime",
+        genetic_algorithm.metrics_runtime,
+        ("generation", "runtime"),
     )
-    graph_genetic_algorithm(
-        f"{module} - Genetic algorithm: Fitness",
+    save_metrics(
+        f"{module} - Binary genetic algorithm results: Values",
+        genetic_algorithm.metrics_values,
+        ("generation", "value"),
+    )
+    save_metrics(
+        f"{module} - Binary genetic algorithm results: Fitness",
         genetic_algorithm.metrics_fitness,
+        ("generation", "fitness"),
     )
 
 
@@ -98,13 +110,20 @@ def run_hybric_algorithm():
     hybrid_result = hybrid_algorithm.run()
 
     print(f"{module} - Hybrid algorithm results: {hybrid_result}")
-    graph_genetic_algorithm(
-        f"{module} - Hybrid algorithm: Values",
-        hybrid_algorithm.metrics_values,
+    save_metrics(
+        f"{module} - Hybrid algorithm results: Runtime",
+        hybrid_algorithm.metrics_runtime,
+        ("generation", "runtime"),
     )
-    graph_genetic_algorithm(
-        f"{module} - Hybrid algorithm: Fitness",
+    save_metrics(
+        f"{module} - Hybrid algorithm results: Values",
+        hybrid_algorithm.metrics_values,
+        ("generation", "value"),
+    )
+    save_metrics(
+        f"{module} - Hybrid algorithm results: Fitness",
         hybrid_algorithm.metrics_fitness,
+        ("generation", "fitness"),
     )
 
 

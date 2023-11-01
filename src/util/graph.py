@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 
 def graph_hillclimber(
-    name: str, y_label: str, metrics: t.List[t.Tuple[np.uint64, np.float32]], show=False
+    name: str, y_label: str, metrics: t.List[t.Tuple[np.uint64, any]], show=False
 ):
     x, y = zip(*metrics)
 
@@ -24,12 +24,12 @@ def graph_hillclimber(
 
 
 def graph_genetic_algorithm(
-    name: str, metrics: t.List[t.Tuple[np.uint64, t.List[np.float32]]], show=False
+    name: str, metrics: t.List[t.Tuple[np.uint64, any]], show=False
 ):
-    x, ys = zip(*metrics)
+    x, y = zip(*metrics)
 
     plt.figure(figsize=(10, 6))
-    plt.plot(x, ys, "o")
+    plt.plot(x, y, "o")
 
     plt.title(name)
     plt.xlabel("Generations")
