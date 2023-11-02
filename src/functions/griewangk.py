@@ -147,12 +147,12 @@ def run_hybric_algorithm(dimensions: int):
         ("generation", "runtime"),
     )
     save_metrics(
-        f"{module}(dimensions = {dimensions}) - Hybrid genetic algorithm results: Values",
+        f"{module}(dimensions = {dimensions}) - Hybrid algorithm results: Values",
         hybrid_algorithm.metrics_values,
         ("generation", "value"),
     )
     save_metrics(
-        f"{module}(dimensions = {dimensions}) - Hybrid genetic algorithm results: Fitness",
+        f"{module}(dimensions = {dimensions}) - Hybrid algorithm results: Fitness",
         hybrid_algorithm.metrics_fitness,
         ("generation", "fitness"),
     )

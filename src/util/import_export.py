@@ -27,7 +27,7 @@ def load_metrics(name: str) -> t.List[t.Tuple[int, any]]:
         for row in reader:
             if len(row) == len(header):
                 metric = (
-                    int(row[0]),
+                    int(float(row[0])),
                     row[1],
                 )
                 metrics.append(metric)

@@ -5,6 +5,14 @@ from functions.h1p import run_h1p
 from functions.michalewicz import run_michalewicz
 from functions.rastringin import run_rastrigin
 from functions.rosenbrock_valley import run_rosenbrock_valley
+from util.graph import (
+    draw_binary_genetic_algorithm_fitness,
+    draw_binary_genetic_algorithm_runtime,
+    draw_continuous_hillclimber_best_score,
+    draw_continuous_hillclimber_runtime,
+    draw_hybrid_algorithm_fitness,
+    draw_hybrid_algorithm_runtime,
+)
 
 
 def main():
@@ -29,6 +37,13 @@ def main():
 
     for thread in threads:
         thread.join()
+
+    draw_continuous_hillclimber_best_score(2)
+    draw_continuous_hillclimber_runtime(2)
+    draw_binary_genetic_algorithm_fitness(2)
+    draw_binary_genetic_algorithm_runtime(2)
+    draw_hybrid_algorithm_fitness(2)
+    draw_hybrid_algorithm_runtime(2)
 
 
 if __name__ == "__main__":
