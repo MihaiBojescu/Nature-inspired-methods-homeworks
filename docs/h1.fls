@@ -347,6 +347,229 @@ INPUT /usr/share/texmf-dist/tex/latex/graphics/mathcolor.ltx
 INPUT /usr/share/texmf-dist/tex/latex/graphics/mathcolor.ltx
 INPUT /usr/share/texmf-dist/tex/latex/graphics/mathcolor.ltx
 INPUT /usr/share/texmf-dist/tex/latex/graphics/mathcolor.ltx
+INPUT /usr/share/texmf-dist/tex/latex/svg/svg.sty
+INPUT /usr/share/texmf-dist/tex/latex/svg/svg.sty
+INPUT /usr/share/texmf-dist/tex/latex/svg/svg.sty
+INPUT /usr/share/texmf-dist/tex/latex/svg/svg.sty
+INPUT /usr/share/texmf-dist/tex/latex/svg/svg.sty
+INPUT /usr/share/texmf-dist/tex/latex/svg/svg.sty
+INPUT /usr/share/texmf-dist/tex/latex/svg/svg.sty
+INPUT /usr/share/texmf-dist/tex/latex/svg/svg.sty
+INPUT /usr/share/texmf-dist/tex/latex/svg/svg.sty
+INPUT /usr/share/texmf-dist/tex/latex/svg/svg.sty
+INPUT /usr/share/texmf-dist/tex/latex/svg/svg.sty
+INPUT /usr/share/texmf-dist/tex/generic/iftex/iftex.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrbase.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrbase.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrbase.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrbase.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrbase.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrbase.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrbase.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrbase.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrbase.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrbase.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrbase.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile-hook.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile-hook.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile-hook.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile-hook.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile-hook.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile-hook.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile-hook.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile-hook.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile-hook.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile-hook.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlfile-hook.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlogo.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlogo.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlogo.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlogo.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlogo.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlogo.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlogo.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlogo.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlogo.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlogo.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlogo.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlogo.sty
+INPUT /usr/share/texmf-dist/tex/latex/graphics/keyval.sty
+INPUT /usr/share/texmf-dist/tex/latex/koma-script/scrlogo.sty
+INPUT /usr/share/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+INPUT /usr/share/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+INPUT /usr/share/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+INPUT /usr/share/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+INPUT /usr/share/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+INPUT /usr/share/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+INPUT /usr/share/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+INPUT /usr/share/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+INPUT /usr/share/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+INPUT /usr/share/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+INPUT /usr/share/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+INPUT /usr/share/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+INPUT /usr/share/texmf-dist/tex/latex/graphics/graphicx.sty
+INPUT /usr/share/texmf-dist/tex/latex/tools/shellesc.sty
+INPUT /usr/share/texmf-dist/tex/latex/tools/shellesc.sty
+INPUT /usr/share/texmf-dist/tex/latex/tools/shellesc.sty
+INPUT /usr/share/texmf-dist/tex/latex/tools/shellesc.sty
+INPUT /usr/share/texmf-dist/tex/latex/tools/shellesc.sty
+INPUT /usr/share/texmf-dist/tex/latex/tools/shellesc.sty
+INPUT /usr/share/texmf-dist/tex/latex/tools/shellesc.sty
+INPUT /usr/share/texmf-dist/tex/latex/tools/shellesc.sty
+INPUT /usr/share/texmf-dist/tex/latex/tools/shellesc.sty
+INPUT /usr/share/texmf-dist/tex/latex/tools/shellesc.sty
+INPUT /usr/share/texmf-dist/tex/latex/tools/shellesc.sty
+INPUT /usr/share/texmf-dist/tex/latex/ifplatform/ifplatform.sty
+INPUT /usr/share/texmf-dist/tex/latex/ifplatform/ifplatform.sty
+INPUT /usr/share/texmf-dist/tex/latex/ifplatform/ifplatform.sty
+INPUT /usr/share/texmf-dist/tex/latex/ifplatform/ifplatform.sty
+INPUT /usr/share/texmf-dist/tex/latex/ifplatform/ifplatform.sty
+INPUT /usr/share/texmf-dist/tex/latex/ifplatform/ifplatform.sty
+INPUT /usr/share/texmf-dist/tex/latex/ifplatform/ifplatform.sty
+INPUT /usr/share/texmf-dist/tex/latex/ifplatform/ifplatform.sty
+INPUT /usr/share/texmf-dist/tex/latex/ifplatform/ifplatform.sty
+INPUT /usr/share/texmf-dist/tex/latex/ifplatform/ifplatform.sty
+INPUT /usr/share/texmf-dist/tex/latex/ifplatform/ifplatform.sty
+INPUT /usr/share/texmf-dist/tex/latex/tools/shellesc.sty
+INPUT /usr/share/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+INPUT /usr/share/texmf-dist/tex/generic/catchfile/catchfile.sty
+INPUT /usr/share/texmf-dist/tex/generic/catchfile/catchfile.sty
+INPUT /usr/share/texmf-dist/tex/generic/catchfile/catchfile.sty
+INPUT /usr/share/texmf-dist/tex/generic/catchfile/catchfile.sty
+INPUT /usr/share/texmf-dist/tex/generic/catchfile/catchfile.sty
+INPUT /usr/share/texmf-dist/tex/generic/catchfile/catchfile.sty
+INPUT /usr/share/texmf-dist/tex/generic/catchfile/catchfile.sty
+INPUT /usr/share/texmf-dist/tex/generic/catchfile/catchfile.sty
+INPUT /usr/share/texmf-dist/tex/generic/catchfile/catchfile.sty
+INPUT /usr/share/texmf-dist/tex/generic/catchfile/catchfile.sty
+INPUT /usr/share/texmf-dist/tex/generic/catchfile/catchfile.sty
+INPUT /usr/share/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+INPUT /usr/share/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+INPUT /usr/share/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+INPUT /usr/share/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+INPUT /usr/share/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+INPUT /usr/share/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+INPUT /usr/share/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+INPUT /usr/share/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+INPUT /usr/share/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+INPUT /usr/share/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+INPUT /usr/share/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+INPUT /usr/share/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+INPUT /usr/share/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+INPUT /usr/share/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+INPUT /usr/share/texmf-dist/tex/generic/iftex/iftex.sty
+INPUT /usr/share/texmf-dist/tex/generic/iftex/ifluatex.sty
+INPUT /usr/share/texmf-dist/tex/generic/iftex/ifluatex.sty
+INPUT /usr/share/texmf-dist/tex/generic/iftex/ifluatex.sty
+INPUT /usr/share/texmf-dist/tex/generic/iftex/ifluatex.sty
+INPUT /usr/share/texmf-dist/tex/generic/iftex/ifluatex.sty
+INPUT /usr/share/texmf-dist/tex/generic/iftex/ifluatex.sty
+INPUT /usr/share/texmf-dist/tex/generic/iftex/ifluatex.sty
+INPUT /usr/share/texmf-dist/tex/generic/iftex/ifluatex.sty
+INPUT /usr/share/texmf-dist/tex/generic/iftex/ifluatex.sty
+INPUT /usr/share/texmf-dist/tex/generic/iftex/ifluatex.sty
+INPUT /usr/share/texmf-dist/tex/generic/iftex/ifluatex.sty
+INPUT /usr/share/texmf-dist/tex/generic/iftex/iftex.sty
+INPUT /dev/null
+INPUT /dev/null
+INPUT /dev/null
+INPUT ./h1.w18
+INPUT h1.w18
+INPUT h1.w18
+INPUT /usr/share/texmf-dist/tex/latex/xcolor/xcolor.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent-nometadata.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent-nometadata.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent-nometadata.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent-nometadata.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent-nometadata.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent-nometadata.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent-nometadata.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent-nometadata.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent-nometadata.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent-nometadata.sty
+INPUT /usr/share/texmf-dist/tex/latex/transparent/transparent-nometadata.sty
+INPUT /usr/share/texmf-dist/tex/generic/iftex/iftex.sty
+INPUT /usr/share/texmf-dist/tex/latex/auxhook/auxhook.sty
+INPUT /usr/share/texmf-dist/tex/latex/auxhook/auxhook.sty
+INPUT /usr/share/texmf-dist/tex/latex/auxhook/auxhook.sty
+INPUT /usr/share/texmf-dist/tex/latex/auxhook/auxhook.sty
+INPUT /usr/share/texmf-dist/tex/latex/auxhook/auxhook.sty
+INPUT /usr/share/texmf-dist/tex/latex/auxhook/auxhook.sty
+INPUT /usr/share/texmf-dist/tex/latex/auxhook/auxhook.sty
+INPUT /usr/share/texmf-dist/tex/latex/auxhook/auxhook.sty
+INPUT /usr/share/texmf-dist/tex/latex/auxhook/auxhook.sty
+INPUT /usr/share/texmf-dist/tex/latex/auxhook/auxhook.sty
+INPUT /usr/share/texmf-dist/tex/latex/auxhook/auxhook.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+INPUT /usr/share/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+INPUT /usr/share/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/utilities/pgfutil-latex.def
+INPUT /usr/share/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/pgf.revision.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/pgf.revision.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/utilities/pgfkeyslibraryfiltered.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg
+INPUT /usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-pdftex.def
+INPUT /usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-pdftex.def
+INPUT /usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-common-pdf.def
+INPUT /usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.code.tex
+INPUT /usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.code.tex
 INPUT /usr/share/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 INPUT /usr/share/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 INPUT /usr/share/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
@@ -442,6 +665,72 @@ INPUT /usr/share/texmf-dist/fonts/vf/adobe/times/ptmb7t.vf
 INPUT /usr/share/texmf-dist/fonts/tfm/adobe/times/ptmb8r.tfm
 INPUT /usr/share/texmf-dist/fonts/vf/adobe/times/ptmrc7t.vf
 INPUT /usr/share/texmf-dist/fonts/tfm/adobe/times/ptmr8r.tfm
+INPUT ../images/hillclimber best score(dimension = 2).svg
+INPUT ../images/hillclimber best score(dimension = 2).svg
+INPUT ../images/hillclimber best score(dimension = 2).svg
+INPUT ./svg-inkscape/hillclimber best score(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hillclimber best score(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hillclimber best score(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hillclimber best score(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hillclimber best score(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hillclimber best score(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hillclimber best score(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hillclimber best score(dimension = 2)_svg-raw.png
+INPUT ../images/hillclimber runtimes(dimension = 2).svg
+INPUT ../images/hillclimber runtimes(dimension = 2).svg
+INPUT ../images/hillclimber runtimes(dimension = 2).svg
+INPUT ./svg-inkscape/hillclimber runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hillclimber runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hillclimber runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hillclimber runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hillclimber runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hillclimber runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hillclimber runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hillclimber runtimes(dimension = 2)_svg-raw.png
+INPUT ../images/binary genetic algorithm fitness(dimension = 2).svg
+INPUT ../images/binary genetic algorithm fitness(dimension = 2).svg
+INPUT ../images/binary genetic algorithm fitness(dimension = 2).svg
+INPUT ./svg-inkscape/binary genetic algorithm fitness(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/binary genetic algorithm fitness(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/binary genetic algorithm fitness(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/binary genetic algorithm fitness(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/binary genetic algorithm fitness(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/binary genetic algorithm fitness(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/binary genetic algorithm fitness(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/binary genetic algorithm fitness(dimension = 2)_svg-raw.png
+INPUT ../images/binary genetic algorithm runtimes(dimension = 2).svg
+INPUT ../images/binary genetic algorithm runtimes(dimension = 2).svg
+INPUT ../images/binary genetic algorithm runtimes(dimension = 2).svg
+INPUT ./svg-inkscape/binary genetic algorithm runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/binary genetic algorithm runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/binary genetic algorithm runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/binary genetic algorithm runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/binary genetic algorithm runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/binary genetic algorithm runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/binary genetic algorithm runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/binary genetic algorithm runtimes(dimension = 2)_svg-raw.png
+INPUT ../images/hybrid algorithm fitness(dimension = 2).svg
+INPUT ../images/hybrid algorithm fitness(dimension = 2).svg
+INPUT ../images/hybrid algorithm fitness(dimension = 2).svg
+INPUT ./svg-inkscape/hybrid algorithm fitness(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hybrid algorithm fitness(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hybrid algorithm fitness(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hybrid algorithm fitness(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hybrid algorithm fitness(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hybrid algorithm fitness(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hybrid algorithm fitness(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hybrid algorithm fitness(dimension = 2)_svg-raw.png
+INPUT ../images/hybrid algorithm runtimes(dimension = 2).svg
+INPUT ../images/hybrid algorithm runtimes(dimension = 2).svg
+INPUT ../images/hybrid algorithm runtimes(dimension = 2).svg
+INPUT ./svg-inkscape/hybrid algorithm runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hybrid algorithm runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hybrid algorithm runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hybrid algorithm runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hybrid algorithm runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hybrid algorithm runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hybrid algorithm runtimes(dimension = 2)_svg-raw.png
+INPUT ./svg-inkscape/hybrid algorithm runtimes(dimension = 2)_svg-raw.png
 INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmr6.tfm
 INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmmi6.tfm
 INPUT /usr/share/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm

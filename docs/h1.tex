@@ -8,6 +8,7 @@
 \usepackage{siunitx}
 \usepackage{textcomp}
 \usepackage{xcolor}
+\usepackage[inkscapeformat=png]{svg}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
@@ -25,7 +26,7 @@ bojescu.mihai@gmail.com}
 
 
 \begin{abstract}
-This document aims to detail the implementation of a binary genetic algorithm, a hill climbing algorithm
+This document aims to detail the implementation of binary genetic algorithms, hill climbing algorithms
 and how the former could be hybridised using the latter.
 \end{abstract}
 
@@ -34,126 +35,11 @@ genetic algorithm, hill climber algorithm, nature inspired methods, hybridisatio
 \end{IEEEkeywords}
 
 \section{Introduction}
-This document aims to detail how a binary genetic algorithm and how a hill climbing algorithm is implemented.
-The former represents a ``weak'' method that can be used to solve a pleothera of problems. The latter represents
-an effective algorithm of the local-search class. In addition to the previously stated, the document details a
-way to hybridise the genetic algorithm with the hill climbing algorithm, thus gaining a better performance.
-
-\section{Genetic algorithms}
-
-\subsection{Definition}
-A genetic algorithm represents a way to solve problems from the combinatorial, numerical, optimisation, timetabling and
-scheduling, robotics etc. spaces, in general being very weakly coupled to problems, thus can be used in multiple
-problem spaces with rather little modifications.
-
-\subsection{Notations}
-Individual:
-\begin{equation} Individual = (genes, value_{fitness}) \end{equation}
-\begin{equation} genes = \{x | x \in \{0, 1\}\} \end{equation}
-\begin{equation} value_{fitness} \in \mathbb{Q} \end{equation}
-\begin{equation} Individual_{decode} = (decode(genes), value_{fitness}) \end{equation}
-
-Population:
-\begin{equation} Population = \{individual_1, individual_2, \dots\} \end{equation}
-\begin{multline} Population_{decoded} = \{\\individual_{1_{decoded}},\\individual_{2_{decoded}},\\\dots\\\} \end{multline}
-
-Population:
-\begin{equation} Population = \{individual_1, individual_2, \dots\} \end{equation}
-
-Number of individuals in a population:
-\begin{equation} |Population| = n, n \in \mathbb{N}, n \geq 1 \end{equation}
-
-Number of generations:
-\begin{equation} generation \in \mathbb{N} \end{equation}
-
-Encode individual to binary function:
-\begin{equation} encode : x \rightarrow \{v | v \in \{0, 1\}\} \end{equation}
-
-Decode individual from binary function:
-\begin{equation} decode : \{v | v \in \{0, 1\}\} \rightarrow x \end{equation}
-
-Criteria function:
-\begin{multline} criteria : (\\Population_{decoded},\\ Population_{fitness}, \\generation\\) \rightarrow \{True, False\} \end{multline}
-
-Fitness function:
-\begin{equation} fitness : individual_{decoded} \rightarrow \mathbb{Q} \end{equation}
-
-Selection function:
-\begin{multline} select : (\\individual_{decoded}, \\individual_{decoded}\\) \rightarrow (\\individual_{decoded}, \\individual_{decoded}\\) \end{multline}
-
-Mutation function:
-\begin{equation} mutate : individual \rightarrow individual \end{equation}
-
-Crossover point:
-\begin{equation} bit_{crossover} \in \mathbb{N} \end{equation}
-
-Mutation chance:
-\begin{equation} mutation \in \mathbb{Q}, mutation \in [0, 1] \end{equation}
-
-\subsection{High-level implementation}
-As a high-level view, the algorithm performs the following steps:
-\begin{enumerate}
-    \item Generate a population of $n$ binary-encoded individuals randomly.
-    \item While the criteria function $criteria$ does not return $True$, be the criteria number of generations, ``fitness'' values of the population or something else:
-    \begin{enumerate}
-        \item Calculate the ``fitness'' of each individual in the population using the function $fitness$.
-        \item Sort the population by the ``fitness'' value.
-        \item Create a new and empty population set, $Population'$.
-        \item For $n / 2$ iterations:
-        \begin{enumerate}
-            \item Perform the selection of parents for the next individuals using the $selection$ function.
-            \item Crossover the 2 selected parents at the $crossover$ bit, generating 2 children, $child_1$, $child_2$.
-            \item Mutate $child_1$, given the $mutate$ function and the $mutation$ chance using an internal mutation function.
-            \item Mutate $child_2$, given the $mutate$ function and the $mutation$ chance.
-            \item Add $child_1$ and $child_2$ to $Population'$
-        \end{enumerate}
-        \item Perform $Population = Population'$
-    \end{enumerate}
-    \item Return the most ``fit'' individual in the population, represented by the individual on which the $fitness$ function returned the highest score.
-\end{enumerate}
-
-\subsection{Time complexity}
-The time complexity of genetic algorithms can be difficult to determine as it depends on many factors such as the size of the population,
-the number of generations and the specifics of the algorithm. In general, this would be considered $\mathcal{O}(n^2)$ or $\mathcal{O}(n^3)$.
-
-\subsection{Fitness function}
-The fitness function represents the function we want to optimise for. Due to the selection process of the genetic
-algorithm returning the 2 most ``fit'' individuals, and using them as seeds for the children of the next generation,
-this can be infered.
-
-\subsection{Selection function}
-The selection function aims to select 2 of the most ``fit'' individuals from the population. This function is provided
-by the user of the genetic algorithm in order to improve the flexibility of the algorithm.
-
-\subsection{Crossover function}
-The algorithm includes a crossover function. The crossover takes the 2 given individuals $parent_1$, $parent_2$ and performs the following:
-
-\begin{enumerate}
-    \item For child $child_1$, the $bit_i < bit_{crossover}$ bits from the parent $parent_1$'s genes and $bit_i \ge bit_{crossover}$ bits from the $parent_2$'s genes are borrowed.
-    \item For child $child_2$, the $bit_i < bit_{crossover}$ bits from the parent $parent_2$'s genes and $bit_i \ge bit_{crossover}$ bits from the $parent_1$'s genes are borrowed.
-\end{enumerate}
-
-For a parent $parent_1.genes = 01010101$, a parent $parent_2.genes = 10101010$, and a crossover bit $bit_{crossover} = 3$, the results would be:
-
-\begin{enumerate}
-    \item $child_1.genes = 01101010$
-    \item $child_2.genes = 10010101$
-\end{enumerate}
-
-\subsection{Mutation function}
-The mutation function aims to increase the possibility of a greater solution and the chance of escaping
-the local optima of the final solution. In this function, a random bit $bit_i$ of the individual's genes
-is flipped and the individual is returned.
-
-Having this performed, the new individual might have a lower or higher ``fitness'' than the rest of the population,
-``fitness'' which will be captured by the $fitness$ and later ``judged'' by the $select$ functions.
-
-In case the individual performs lower due to the change, the individual is dropped. The other way around is also possible:
-in case the individual performs higher (possibly even significantly so), the individual is promoted by the $select$ function.
-
-\subsection{Generations}
-The algorithm does not aim to provide the best solution first-try, thus it needs time for it to improve. Given enough time
-(expressed in generations), it can provide better solutions, as the ``fitness'' of the individual increases.
+This document aims to detail how binary genetic algorithms and hill climbing algorithms are implemented, and a method
+on how they could be hybridised in order to potentially achieve better results. The former represents a ``weak'' method
+that can be used to solve a pleothera of problems. The latter represents an effective algorithm of the local-search class.
+In this document, the hybrid algorithm is an extension of the binary genetic algorithm in which hillclimbing is used after
+$n$ steps.
 
 \section{Hill Climbing algorithm}
 
@@ -201,7 +87,7 @@ As a high-level view, the algorithm performs the following steps:
 \end{enumerate}
 
 \subsection{Time complexity}
-The algorithm has a low time complexity of $\mathcal{O}(n)$, thus it is usually implemented on systems that would need an
+The algorithm has a low time complexity of $\mathcal{O}(n log n)$, thus it is usually implemented on systems that would need an
 aproximate solution, them often being realtime systems.
 
 \subsection{Continuous space hill climbing}
@@ -217,22 +103,179 @@ In order to perform this, we will call the $f$ function on each  $x * step_i$, w
     step_i \in \{\\step_{best} * acceleration, \\step_{best} * -acceleration, \\step_{best} * 1 / acceleration, \\step_{best} * -1 / acceleration\\\}
 \end{multline}
 
+\subsection{Algorithm Demonstrations and Graphical Analysis}
+
+In this section the hillclimber algorithm will be applied on multiple functions:
+\begin{enumerate}
+    \item Rastringin's function
+    \item Griewangk's function
+    \item Reosenbrock's valley function
+    \item Michalewicz's function
+\end{enumerate}
+
+Given $dimension(x) = 2$:
+
+\includesvg[width = 250pt]{../images/hillclimber best score(dimension = 2).svg}
+
+With the following runtimes:
+
+\includesvg[width = 250pt]{../images/hillclimber runtimes(dimension = 2).svg}
+
+\section{Genetic algorithms}
+
+\subsection{Definition}
+A genetic algorithm represents a way to solve problems from the combinatorial, numerical, optimisation, timetabling and
+scheduling, robotics etc. spaces, in general being very weakly coupled to problems, thus can be used in multiple
+problem spaces with rather little modifications.
+
+\subsection{Notations}
+Individual:
+\begin{equation} Individual = (genes, value_{fitness}) \end{equation}
+\begin{equation} genes = \{x | x \in \{0, 1\}\} \end{equation}
+\begin{equation} value_{fitness} \in \mathbb{Q} \end{equation}
+\begin{equation} Individual_{decode} = (decode(genes), value_{fitness}) \end{equation}
+
+Population:
+\begin{equation} Population = \{individual_1, individual_2, \dots\} \end{equation}
+\begin{multline} Population_{decoded} = \{\\individual_{1_{decoded}},\\individual_{2_{decoded}},\\\dots\\\} \end{multline}
+
+Population:
+\begin{equation} Population = \{individual_1, individual_2, \dots\} \end{equation}
+
+Number of individuals in a population:
+\begin{equation} |Population| = n, n \in \mathbb{N}, n \geq 1 \end{equation}
+
+Number of generations:
+\begin{equation} generation \in \mathbb{N} \end{equation}
+
+Encode individual to binary function:
+\begin{equation} encode : x \rightarrow \{v | v \in \{0, 1\}\} \end{equation}
+
+Decode individual from binary function:
+\begin{equation} decode : \{v | v \in \{0, 1\}\} \rightarrow x \end{equation}
+
+Criteria function:
+\begin{multline} criteria : (\\Population_{decoded},\\ Population_{fitness}, \\generation\\) \rightarrow \{True, False\} \end{multline}
+
+Fitness function:
+\begin{equation} fitness : individual_{decoded} \rightarrow \mathbb{Q} \end{equation}
+
+Selection function:
+\begin{multline} select : (\\individual_{decoded}, \\individual_{decoded}\\) \rightarrow (\\individual_{decoded}, \\individual_{decoded}\\) \end{multline}
+
+Crossover points:
+\begin{equation} bits_{crossover} = \{bit_{crossover} | bit_{crossover} \in \mathbb{N}\} \end{equation}
+
+Mutation function:
+\begin{equation} mutate : individual \rightarrow individual \end{equation}
+
+Mutation chance:
+\begin{equation} mutation \in \mathbb{Q}, mutation \in [0, 1] \end{equation}
+
+\subsection{High-level implementation}
+As a high-level view, the algorithm performs the following steps:
+\begin{enumerate}
+    \item Generate a population of $n$ binary-encoded individuals randomly.
+    \item While the criteria function $criteria$ does not return $True$, be the criteria number of generations, ``fitness'' values of the population or something else:
+    \begin{enumerate}
+        \item Calculate the ``fitness'' of each individual in the population using the function $fitness$.
+        \item Sort the population by the ``fitness'' value.
+        \item Create a new and empty population set, $Population'$.
+        \item For $n / 2$ iterations:
+        \begin{enumerate}
+            \item Perform the selection of parents for the next individuals using the $selection$ function.
+            \item Crossover the 2 selected parents at the $crossover$ bit, generating 2 children, $child_1$, $child_2$.
+            \item Mutate $child_1$, given the $mutate$ function and the $mutation$ chance using an internal mutation function.
+            \item Mutate $child_2$, given the $mutate$ function and the $mutation$ chance.
+            \item Add $child_1$ and $child_2$ to $Population'$
+        \end{enumerate}
+        \item Perform $Population = Population'$
+    \end{enumerate}
+    \item Return the most ``fit'' individual in the population, represented by the individual on which the $fitness$ function returned the highest score.
+\end{enumerate}
+
+\subsection{Time complexity}
+The time complexity of genetic algorithms can be difficult to determine as it depends on many factors such as the size of the population,
+the number of generations and the specifics of the algorithm. In general, this would be considered $\mathcal{O}(n^2)$ or $\mathcal{O}(n^3)$.
+
+\subsection{Fitness function}
+The fitness function represents the function we want to optimise for. Due to the selection process of the genetic
+algorithm returning the 2 most ``fit'' individuals, and using them as seeds for the children of the next generation,
+this can be infered.
+
+\subsection{Selection function}
+The selection function aims to select 2 of the most ``fit'' individuals from the population. This function is provided
+by the user of the genetic algorithm in order to improve the flexibility of the algorithm.
+
+\subsection{Crossover function}
+The algorithm includes a crossover function. The crossover takes the 2 given individuals $parent_1$, $parent_2$ and performs the following:
+
+\begin{enumerate}
+    \item For each $bit_{crossover} \in bits_{crossover}$:
+    \begin{enumerate}
+        \item For child $child_1$, the $bit_i < bit_{crossover}$ bits from the parent $parent_1$'s genes and $bit_i \ge bit_{crossover}$ bits from the $parent_2$'s genes are borrowed.
+        \item For child $child_2$, the $bit_i < bit_{crossover}$ bits from the parent $parent_2$'s genes and $bit_i \ge bit_{crossover}$ bits from the $parent_1$'s genes are borrowed.
+        \item $parent_1, parent_2 = parent_2, parent_1$
+    \end{enumerate}
+\end{enumerate}
+
+For a parent $parent_1$ with $parent_1.genes = 01010101$, a parent $parent_2$ with $parent_2.genes = 10101010$, and crossover bits $bits_{crossover} = \{3\}$, the results would be:
+
+\begin{enumerate}
+    \item $child_1.genes = 01101010$
+    \item $child_2.genes = 10010101$
+\end{enumerate}
+
+\subsection{Mutation function}
+The mutation function aims to increase the possibility of a greater solution and the chance of escaping
+the local optima of the final solution. In this function, each bit $bit_i$ of the individual's genes
+is flipped when a probability $P(mutate) > mutation$ and the individual is returned.
+
+Having this performed, the new individual might have a lower or higher ``fitness'' than the rest of the population,
+``fitness'' which will be captured by the $fitness$ and later ``judged'' by the $select$ functions.
+
+In case the individual performs lower due to the change, the individual is dropped. The other way around is also possible:
+in case the individual performs higher (possibly even significantly so), the individual is promoted by the $select$ function.
+
+\subsection{Generations}
+The algorithm does not aim to provide the best solution first-try, thus it needs time for it to improve. Given enough time
+(expressed in generations), it can provide better solutions, as the ``fitness'' of the individual increases.
+
+\subsection{Algorithm Demonstrations and Graphical Analysis}
+
+Idem to the preceeding section, when $dimension(x) = 2$, the algorithm offers
+the following results in logarithmic scale:
+\includesvg[width = 250pt]{../images/binary genetic algorithm fitness(dimension = 2).svg}
+
+With the following runtimes:
+\includesvg[width = 250pt]{../images/binary genetic algorithm runtimes(dimension = 2).svg}
+
 \section{Hybridisation}
 
 \subsection{Motivation}
 While the 2 algorithms can be used independently of each other and can in turn produce good results, they can also be
 merged into 1 single algorithm that performs both functions at the same time in the hopes that the solutions are found faster.
 
+In general the Hybrid algorithm inherits from the binary genetic algorithm, while using the hillclimbing algorithm
+$n$ times.
+
+The algrorithm \textit{might} deceive the user into thinking it is simple in complexity, but having to rely on both the binary genetic
+algorithm \textit{and} the hillclimber algorithm in the same function calls brings higher complexity than the two algorithms
+taken without other dependencies.
+
 \subsection{High-level implementation}
 As a high-level view, the algorithm performs the following steps:
 \begin{enumerate}
     \item While $generations < generations_{limit}$:
     \begin{enumerate}
-        \item Run the binary genetic algorithm, returning $Population_{decoded}$
-        \item For each $individual_{decoded} \in Population_{decoded}$:
+        \item Run a step of the binary genetic algorithm, returning $Population_{decoded}$
+        \item If the hillclimber algorithm should be run:
         \begin{enumerate}
-            \item Run the hill climbing algorithm on the individual $individual_{decoded}$, returning $individual_{decoded}'$
-            \item Run $individual_{decoded} = individual_{decoded}'$
+            \item For each $individual_{decoded} \in Population_{decoded}$:
+            \begin{enumerate}
+                \item Run the hill climbing algorithm on the individual $individual_{decoded}$, returning $individual_{decoded}'$
+                \item Run $individual_{decoded} = individual_{decoded}'$
+            \end{enumerate}
         \end{enumerate}
     \end{enumerate}
 \end{enumerate}
@@ -241,6 +284,14 @@ As a high-level view, the algorithm performs the following steps:
 While the algorithm appears to have a low complexity at first, this would have the complexity $\mathcal{O}(n^2 + n)$, as both
 the genetic and the hill climbing algorithms are run in tandem.
 
+\subsection{Algorithm Demonstrations and Graphical Analysis}
+On the 4 test functions, the algorithm has given the following results when $dimension(x) = 2$:
+
+\includesvg[width = 250pt]{../images/hybrid algorithm fitness(dimension = 2).svg}
+
+In the following times:
+\includesvg[width = 250pt]{../images/hybrid algorithm runtimes(dimension = 2).svg}
+
 \subsection{Testing}
 During testing with a function $f : [0, 31] \rightarrow \mathbb{R}, f(x) = x^3 - 60*x^2 + 900*x + 100$ with an maxima of $10$ in the given domain, the algorithm:
 \begin{enumerate}
@@ -248,8 +299,14 @@ During testing with a function $f : [0, 31] \rightarrow \mathbb{R}, f(x) = x^3 -
     \item Did provide a better approximation of the solution (issue encountered with the hillclimber algorithm).
 \end{enumerate}
 
-Thus, the hybridisation provided a better solution for the given problem.
+From the observations, the hybrid algorithm provided promising solutions. Surprinsingly, there were instances
+where it outperformed the binary genetic algorithm in timing.
 
+\section{Conclusions}
+Each presented algorithm has its use-cases. While some \textit{can be} used in real-time systems due to their speed,
+they are prone to getting stuck in the local optima, and while others are really powerful, they are not fast enough
+to provide solutions in sensible time. A hybridisation of the two algorithms would partially mitigate the downsides, perhaps
+with added complexity.
 
 \begin{thebibliography}{00}
 \bibitem{b1} Luchian Henri; Eugen Croitoru. ``Genetic algorithms (2022)'', Faculty of Computer Science of University ``Alexandru Ioan Cuza'' of Iași.
