@@ -4,7 +4,7 @@ import typing as t
 
 
 def save_metrics(
-    name: str, metrics: t.List[t.Tuple[int, float]], metric_names: t.Tuple[str, str]
+    name: str, metrics: t.List[t.Tuple[int, any]], metric_names: t.Tuple[str, str]
 ):
     if not os.path.exists("./outputs"):
         os.mkdir("./outputs")
@@ -17,7 +17,7 @@ def save_metrics(
             writer.writerow(metric)
 
 
-def load_metrics(name: str) -> t.List[t.Tuple[int, float]]:
+def load_metrics(name: str) -> t.List[t.Tuple[int, any]]:
     metrics = []
 
     with open(f"./outputs/{name}.csv", newline="") as file:
@@ -28,7 +28,7 @@ def load_metrics(name: str) -> t.List[t.Tuple[int, float]]:
             if len(row) == len(header):
                 metric = (
                     int(row[0]),
-                    float(row[1]),
+                    row[1],
                 )
                 metrics.append(metric)
 
