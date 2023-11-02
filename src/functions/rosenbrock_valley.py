@@ -52,12 +52,12 @@ def run_hillclimber(dimensions: int):
     )
     save_metrics(
         f"{module}(dimensions = {dimensions}) - Continuous hillclimber results: Best step",
-        hillclimber_algorithm.metrics_best_x,
+        hillclimber_algorithm.metrics_best_step,
         ("generation", "step"),
     )
     save_metrics(
         f"{module}(dimensions = {dimensions}) - Continuous hillclimber results: Best score",
-        hillclimber_algorithm.metrics_best_x,
+        hillclimber_algorithm.metrics_best_score,
         ("generation", "score"),
     )
 

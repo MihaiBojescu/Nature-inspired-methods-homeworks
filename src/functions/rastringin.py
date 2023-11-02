@@ -12,10 +12,10 @@ from util.import_export import save_metrics
 module = "Rastrigin"
 
 
-def rastrigin(n: t.List[np.float32]):
-    return lambda x: 10 * n + np.sum(
-        [x[i] ** 2 - 10 * np.cos(2 * np.pi * x[i]) for i in range(len(x))]
-    )
+def rastrigin(x: t.List[np.float32]):
+    A = 10
+    n = len(x)
+    return A * n + np.sum([x[i] ** 2 - A * np.cos(2 * np.pi * x[i]) for i in range(len(x))])
 
 
 def run_rastrigin(dimensions: int):
@@ -26,7 +26,7 @@ def run_rastrigin(dimensions: int):
 
 def run_hillclimber(dimensions: int):
     hillclimber_algorithm = MeteredContinuousHillclimber(
-        fx=rastrigin(1),
+        fx=rastrigin,
         initial_x=np.array(
             [np.float32(np.random.uniform(-100, 100)) for _ in range(dimensions)]
         ),
@@ -52,12 +52,12 @@ def run_hillclimber(dimensions: int):
     )
     save_metrics(
         f"{module}(dimensions = {dimensions}) - Continuous hillclimber results: Best step",
-        hillclimber_algorithm.metrics_best_x,
+        hillclimber_algorithm.metrics_best_step,
         ("generation", "step"),
     )
     save_metrics(
         f"{module}(dimensions = {dimensions}) - Continuous hillclimber results: Best score",
-        hillclimber_algorithm.metrics_best_x,
+        hillclimber_algorithm.metrics_best_score,
         ("generation", "score"),
     )
 
@@ -81,7 +81,7 @@ def run_binary_genetic_algorithm(dimensions: int):
             [np.float32(np.random.uniform(-100, 100)) for _ in range(dimensions)]
             for _ in range(dimensions)
         ],
-        fitness_function=rastrigin(1),
+        fitness_function=rastrigin,
         criteria_function=lambda generation, population: generation > 100,
         selection_function=selection_function,
         crossover_points=[np.uint32(4), np.uint32(9)],
@@ -128,7 +128,7 @@ def run_hybric_algorithm(dimensions: int):
             [np.float32(np.random.uniform(-100, 100)) for _ in range(dimensions)]
             for _ in range(dimensions)
         ],
-        fitness_function=rastrigin(1),
+        fitness_function=rastrigin,
         criteria_function=lambda generation, population: generation > 100,
         selection_function=selection_function,
         crossover_points=[np.uint32(4), np.uint32(9)],
