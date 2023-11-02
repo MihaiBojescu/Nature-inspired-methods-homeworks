@@ -98,7 +98,7 @@ def draw_continuous_hillclimber_runtime(dimension: int):
     plt.xlabel("Time in seconds")
     plt.ylabel("Generation")
     plt.savefig(
-        f"../images/binary genetic algorithm runtimes(dimension = {dimension}).svg",
+        f"../images/hillclimber runtimes(dimension = {dimension}).svg",
         format="svg",
     )
     plt.show()
