@@ -251,7 +251,7 @@ def draw_hybrid_algorithm_fitness(dimension: int):
     plt.xlabel("Generation")
     plt.ylabel("Fitness")
     plt.savefig(
-        f"../images/hybrid genetic algorithm fitness(dimension = {dimension}).svg",
+        f"../images/hybrid algorithm fitness(dimension = {dimension}).svg",
         format="svg",
     )
     plt.show()
