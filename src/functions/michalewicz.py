@@ -32,7 +32,7 @@ def run_hillclimber(dimensions: int):
     hillclimber_algorithm = MeteredContinuousHillclimber(
         fx=michalewicz,
         initial_x=np.array(
-            [np.float32(np.random.uniform(-100, 100)) for _ in range(dimensions)]
+            [np.float32(np.random.uniform(-0, np.pi)) for _ in range(dimensions)]
         ),
         step=np.float32(0.1),
         acceleration=np.float32(0.1),
@@ -82,7 +82,7 @@ def run_binary_genetic_algorithm(dimensions: int):
             for batch in [x[i : i + 4] for i in range(0, len(x), 4)]
         ],
         generate_initial_population=lambda: [
-            [np.float32(np.random.uniform(-100, 100)) for _ in range(dimensions)]
+            [np.float32(np.random.uniform(-0, np.pi)) for _ in range(dimensions)]
             for _ in range(dimensions)
         ],
         fitness_function=michalewicz,
@@ -129,7 +129,7 @@ def run_hybric_algorithm(dimensions: int):
             for batch in [x[i : i + 4] for i in range(0, len(x), 4)]
         ],
         generate_initial_population=lambda: [
-            [np.float32(np.random.uniform(-100, 100)) for _ in range(dimensions)]
+            [np.float32(np.random.uniform(-0, np.pi)) for _ in range(dimensions)]
             for _ in range(dimensions)
         ],
         fitness_function=michalewicz,
