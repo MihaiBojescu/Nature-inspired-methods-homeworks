@@ -4,7 +4,9 @@ import numpy as np
 from metered_algorithms.metered_continuous_hillclimber import (
     MeteredContinuousHillclimber,
 )
-from metered_algorithms.metered_binary_genetic_algorithm import MeteredBinaryGenericAlgorithm
+from metered_algorithms.metered_binary_genetic_algorithm import (
+    MeteredBinaryGenericAlgorithm,
+)
 from metered_algorithms.metered_hybrid_algorithm import MeteredHybridAlgorithm
 from util.import_export import save_metrics
 
@@ -71,7 +73,8 @@ def run_binary_genetic_algorithm(population_size: int):
         fitness_function=h1p,
         fitness_compare_function=lambda a, b: a > b,
         selection_function=selection_function,
-        criteria_function=lambda generation, population: generation >= 100,
+        criteria_function=lambda best_fitness, best_value, generation: generation
+        >= 100,
         crossover_points=[np.uint32(4), np.uint32(9)],
         mutation_chance=np.float16(0.0001),
     )
@@ -107,7 +110,8 @@ def run_hybrid_algorithm(population_size: int):
         fitness_function=h1p,
         fitness_compare_function=lambda a, b: a > b,
         selection_function=selection_function,
-        criteria_function=lambda generation, population: generation >= 100,
+        criteria_function=lambda best_fitness, best_value, generation: generation
+        >= 100,
         crossover_points=[np.uint32(4), np.uint32(9)],
         mutation_chance=np.float16(0.0001),
         hillclimber_neighbor_selection_function=None,

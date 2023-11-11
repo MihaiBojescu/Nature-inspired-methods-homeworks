@@ -88,9 +88,9 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
         )
         self._generation += 1
 
-        best_individual_decoded = self._population[0].decode()
+        best_individual = self._population[0]
 
-        return best_individual_decoded[1], best_individual_decoded[0], self._generation
+        return best_individual.fitness, best_individual.value, self._generation
 
     def _print(self, generation: np.uint64) -> None:
         if self._debug:
@@ -101,7 +101,7 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
             return
 
         for i, individual in enumerate(self._population):
-            decoded_individual = individual.decode()[0]
+            decoded_individual = individual.value
             hill_climber = ContinuousHillclimber(
                 generate_initial_value=lambda: decoded_individual,
                 fitness_function=self._fitness_function,

@@ -3,7 +3,8 @@ import typing as t
 import numpy as np
 import numpy.typing as npt
 from algorithms.hybrid_algorithm import HybridAlgorithm
-from data.individual import DecodedIndividual, Individual
+from data.individual import DecodedIndividual
+from util.sort import quicksort
 
 
 class MeteredHybridAlgorithm(HybridAlgorithm):
@@ -53,9 +54,17 @@ class MeteredHybridAlgorithm(HybridAlgorithm):
 
     def run(self) -> t.Tuple[any, any, np.uint64]:
         then = time.time_ns()
-        self._population.sort(key=lambda individual: individual.fitness, reverse=True)
+        self._population = quicksort(
+            data=self._population,
+            comparator=lambda a, b: self._fitness_compare_function(
+                a.fitness, b.fitness
+            ),
+        )
+        best_individual = self._population[0]
 
-        while not self._criteria_function(self._generation, self.decoded_population):
+        while not self._criteria_function(
+            best_individual.fitness, best_individual.value, self._generation
+        ):
             self.step()
 
             now = time.time_ns()
@@ -65,9 +74,9 @@ class MeteredHybridAlgorithm(HybridAlgorithm):
                 self._metrics_values.append((self._generation, individual[0]))
                 self._metrics_fitness.append((self._generation, individual[1]))
 
-        best_individual_decoded = self._population[0].decode()
+        best_individual = self._population[0]
 
-        return best_individual_decoded[1], best_individual_decoded[0], self._generation
+        return best_individual.fitness, best_individual.value, self._generation
 
     @property
     def metrics_runtime(self) -> t.List[t.Tuple[np.uint64, np.uint64]]:

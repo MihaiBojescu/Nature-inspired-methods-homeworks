@@ -4,6 +4,7 @@ import numpy.typing as npt
 
 DecodedIndividual = t.Tuple[any, np.float32]
 
+
 class Individual:
     _genes: npt.NDArray[np.uint8]
     _fitness: np.float32
@@ -56,6 +57,10 @@ class Individual:
     def genes(self, genes: npt.NDArray[np.uint8]):
         self._genes = genes
         self._fitness = self._fitness_function(self._decode(self._genes))
+
+    @property
+    def value(self) -> any:
+        return self._decode(self._genes)
 
     @property
     def fitness(self) -> np.float32:

@@ -4,7 +4,9 @@ import numpy as np
 from metered_algorithms.metered_continuous_hillclimber import (
     MeteredContinuousHillclimber,
 )
-from metered_algorithms.metered_binary_genetic_algorithm import MeteredBinaryGenericAlgorithm
+from metered_algorithms.metered_binary_genetic_algorithm import (
+    MeteredBinaryGenericAlgorithm,
+)
 from metered_algorithms.metered_hybrid_algorithm import MeteredHybridAlgorithm
 from util.import_export import save_metrics
 
@@ -15,7 +17,9 @@ module = "Rastrigin"
 def rastrigin(x: t.List[np.float32]):
     A = 10
     n = len(x)
-    return A * n + np.sum([x[i] ** 2 - A * np.cos(2 * np.pi * x[i]) for i in range(len(x))])
+    return A * n + np.sum(
+        [x[i] ** 2 - A * np.cos(2 * np.pi * x[i]) for i in range(len(x))]
+    )
 
 
 def run_rastrigin(population_size: int, dimensions: int):
@@ -32,7 +36,8 @@ def run_hillclimber(dimensions: int):
         fitness_function=rastrigin,
         fitness_compare_function=lambda a, b: a < b,
         neighbor_selection_function=None,
-        criteria_function=lambda best_score, best_value, generations: generations >= 100,
+        criteria_function=lambda best_score, best_value, generations: generations
+        >= 100,
         step=np.float32(0.1),
         acceleration=np.float32(0.1),
     )
@@ -85,7 +90,8 @@ def run_binary_genetic_algorithm(population_size: int, dimensions: int):
         fitness_function=rastrigin,
         fitness_compare_function=lambda a, b: a < b,
         selection_function=selection_function,
-        criteria_function=lambda generation, population: generation >= 100,
+        criteria_function=lambda best_fitness, best_value, generation: generation
+        >= 100,
         crossover_points=[np.uint32(4), np.uint32(9)],
         mutation_chance=np.float16(0.0001),
     )
@@ -133,7 +139,8 @@ def run_hybrid_algorithm(population_size: int, dimensions: int):
         fitness_function=rastrigin,
         fitness_compare_function=lambda a, b: a < b,
         selection_function=selection_function,
-        criteria_function=lambda generation, population: generation >= 100,
+        criteria_function=lambda best_fitness, best_value, generation: generation
+        >= 100,
         crossover_points=[np.uint32(4), np.uint32(9)],
         mutation_chance=np.float16(0.0001),
         hillclimber_neighbor_selection_function=None,

@@ -16,7 +16,7 @@ class BinaryGeneticAlgorithm:
         [t.List[DecodedIndividual]],
         t.Tuple[DecodedIndividual, DecodedIndividual],
     ]
-    _criteria_function: t.Callable[[np.uint64, t.List[DecodedIndividual]], bool]
+    _criteria_function: t.Callable[[any, any, np.uint64], bool]
 
     _crossover_bits: t.List[np.uint8]
     _crossover_bytes: t.List[np.uint32]
@@ -36,7 +36,7 @@ class BinaryGeneticAlgorithm:
             [t.List[DecodedIndividual]],
             t.Tuple[DecodedIndividual, DecodedIndividual],
         ],
-        criteria_function: t.Callable[[np.uint64, t.List[DecodedIndividual]], bool],
+        criteria_function: t.Callable[[any, any, np.uint64], bool],
         crossover_points: t.List[np.uint32],
         mutation_chance: np.float16,
         debug: bool = False,
@@ -70,13 +70,16 @@ class BinaryGeneticAlgorithm:
                 a.fitness, b.fitness
             ),
         )
+        best_individual = self._population[0]
 
-        while not self._criteria_function(self._generation, self.decoded_population):
+        while not self._criteria_function(
+            best_individual.fitness, best_individual.value, self._generation
+        ):
             self.step()
 
-        best_individual_decoded = self._population[0].decode()
+        best_individual = self._population[0]
 
-        return best_individual_decoded[1], best_individual_decoded[0], self._generation
+        return best_individual.fitness, best_individual.value, self._generation
 
     def step(self) -> t.Tuple[any, any, np.uint64]:
         self._print(self._generation)
@@ -113,9 +116,9 @@ class BinaryGeneticAlgorithm:
         )
         self._generation += 1
 
-        best_individual_decoded = self._population[0].decode()
+        best_individual = self._population[0]
 
-        return best_individual_decoded[1], best_individual_decoded[0], self._generation
+        return best_individual.fitness, best_individual.value, self._generation
 
     @property
     def population(self) -> t.List[Individual]:
