@@ -27,14 +27,16 @@ def run_griewangk(dimensions: int):
 
 def run_hillclimber(dimensions: int):
     hillclimber_algorithm = MeteredContinuousHillclimber(
-        fx=griewangk,
-        initial_x=np.array(
+        generate_initial_value=lambda: np.array(
             [np.float32(np.random.uniform(-600, 600)) for _ in range(dimensions)]
         ),
+        fitness_function=griewangk,
+        fitness_compare_function=lambda a, b: a < b,
+        neighbor_selection_function=None,
+        criteria_function=lambda best_score, best_value, generations: generations
+        >= 100,
         step=np.float32(0.1),
         acceleration=np.float32(0.1),
-        precision=np.finfo(np.float32).eps,
-        generations=100,
     )
     hillclimber_result = hillclimber_algorithm.run()
 
@@ -48,7 +50,7 @@ def run_hillclimber(dimensions: int):
     )
     save_metrics(
         f"{module}(dimensions = {dimensions}) - Continuous hillclimber results: Best x",
-        hillclimber_algorithm.metrics_best_x,
+        hillclimber_algorithm.metrics_best_value,
         ("generation", "x"),
     )
     save_metrics(
@@ -83,8 +85,9 @@ def run_binary_genetic_algorithm(dimensions: int):
             for _ in range(dimensions)
         ],
         fitness_function=griewangk,
-        criteria_function=lambda generation, population: generation > 100,
+        fitness_compare_function=lambda a, b: a < b,
         selection_function=selection_function,
+        criteria_function=lambda generation, population: generation > 100,
         crossover_points=[np.uint32(4), np.uint32(9)],
         mutation_chance=np.float16(0.0001),
     )
@@ -130,10 +133,12 @@ def run_hybric_algorithm(dimensions: int):
             for _ in range(dimensions)
         ],
         fitness_function=griewangk,
-        criteria_function=lambda generation, population: generation > 100,
+        fitness_compare_function=lambda a, b: a < b,
         selection_function=selection_function,
+        criteria_function=lambda generation, population: generation > 100,
         crossover_points=[np.uint32(4), np.uint32(9)],
         mutation_chance=np.float16(0.0001),
+        hillclimber_neighbor_selection_function=None,
         hillclimber_run_interval=10,
     )
     hybrid_result = hybrid_algorithm.run()

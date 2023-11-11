@@ -8,9 +8,10 @@ class BinaryHillclimber:
     _decode: t.Callable[[npt.NDArray[np.uint8]], any]
     _fitness_function: t.Callable[[any], np.float32]
     _fitness_compare_function: t.Callable[[any, any], bool]
-    _criteria_function: t.Callable[[any, any, np.uint64], bool]
     _neighbor_selection_function: t.Callable[[any], bool]
+    _criteria_function: t.Callable[[any, any, np.uint64], bool]
 
+    _generation: np.uint64
     _best_value: np.float32
     _best_score: np.float32
     _before_best_score: np.float32
@@ -23,24 +24,24 @@ class BinaryHillclimber:
         encode: t.Callable[[any], npt.NDArray[np.uint8]],
         decode: t.Callable[[npt.NDArray[np.uint8]], any],
         generate_initial_value: t.Callable[[], any],
-        fitness_function: t.Callable[[np.float32], np.float32],
-        fitness_compare_function: t.Callable[[np.float32, np.float32], bool],
-        criteria_function: t.Callable[[np.float32, np.uint64], bool],
+        fitness_function: t.Callable[[any], np.float32],
+        fitness_compare_function: t.Callable[[any, any], bool],
         neighbor_selection_function: t.Union[None, t.Callable[[any], bool]],
+        criteria_function: t.Callable[[any, any, np.uint64], bool],
         debug: bool = False,
     ) -> None:
         self._encode = encode
         self._decode = decode
         self._fitness_function = fitness_function
         self._fitness_compare_function = fitness_compare_function
-        self._criteria_function = criteria_function
         self._neighbor_selection_function = (
             neighbor_selection_function
             if neighbor_selection_function is not None
             else lambda _: True
         )
+        self._criteria_function = criteria_function
 
-        self._generation = 0
+        self._generation = np.uint64(0)
         self._best_value = self._encode(generate_initial_value())
         self._best_score = self._fitness_function(self._decode(self._best_value))
         self._before_best_score = None

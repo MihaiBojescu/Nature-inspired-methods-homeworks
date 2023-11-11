@@ -3,6 +3,7 @@ import typing as t
 import numpy as np
 import numpy.typing as npt
 from data.individual import DecodedIndividual, Individual
+from util.sort import quicksort
 
 
 class BinaryGeneticAlgorithm:
@@ -10,15 +11,16 @@ class BinaryGeneticAlgorithm:
     _encode: t.Callable[[any], npt.NDArray[np.uint8]]
     _decode: t.Callable[[npt.NDArray[np.uint8]], any]
     _fitness_function: t.Callable[[any], np.float32]
-    _criteria_function: t.Callable[[np.uint64, t.List[DecodedIndividual]], bool]
+    _fitness_compare_function: t.Callable[[any, any], bool]
     _selection_function: t.Callable[
         [t.List[DecodedIndividual]],
         t.Tuple[DecodedIndividual, DecodedIndividual],
     ]
+    _criteria_function: t.Callable[[np.uint64, t.List[DecodedIndividual]], bool]
+
     _crossover_bits: t.List[np.uint8]
     _crossover_bytes: t.List[np.uint32]
     _mutation_chance: np.float16
-
     _generation: np.uint64
 
     _debug: bool
@@ -29,11 +31,12 @@ class BinaryGeneticAlgorithm:
         decode: t.Callable[[npt.NDArray[np.uint8]], any],
         generate_initial_population: t.Callable[[], t.List[any]],
         fitness_function: t.Callable[[any], np.float32],
-        criteria_function: t.Callable[[np.uint64, t.List[DecodedIndividual]], bool],
+        fitness_compare_function: t.Callable[[any, any], bool],
         selection_function: t.Callable[
             [t.List[DecodedIndividual]],
             t.Tuple[DecodedIndividual, DecodedIndividual],
         ],
+        criteria_function: t.Callable[[np.uint64, t.List[DecodedIndividual]], bool],
         crossover_points: t.List[np.uint32],
         mutation_chance: np.float16,
         debug: bool = False,
@@ -45,8 +48,10 @@ class BinaryGeneticAlgorithm:
         self._encode = encode
         self._decode = decode
         self._fitness_function = fitness_function
-        self._criteria_function = criteria_function
+        self._fitness_compare_function = fitness_compare_function
         self._selection_function = selection_function
+        self._criteria_function = criteria_function
+
         self._crossover_bits = [
             np.uint8(crossover_point % 8) for crossover_point in crossover_points
         ]
@@ -54,13 +59,14 @@ class BinaryGeneticAlgorithm:
             np.uint8(crossover_point // 8) for crossover_point in crossover_points
         ]
         self._mutation_chance = mutation_chance
-
         self._generation = np.uint64(0)
 
         self._debug = debug
 
     def run(self) -> t.Tuple[any, np.uint64, t.List[Individual]]:
-        self._population.sort(key=lambda individual: individual.fitness, reverse=True)
+        self._population = quicksort(
+            data=self._population, comparator=lambda a, b: self._fitness_compare_function(a.fitness, b.fitness)
+        )
 
         while not self._criteria_function(self._generation, self.decoded_population):
             self.step()
@@ -69,7 +75,9 @@ class BinaryGeneticAlgorithm:
 
     def step(self):
         self._print(self._generation)
-        self._population.sort(key=lambda individual: individual.fitness, reverse=True)
+        self._population = quicksort(
+            data=self._population, comparator=lambda a, b: self._fitness_compare_function(a.fitness, b.fitness)
+        )
         next_generation = []
 
         for _ in range(0, len(self._population) // 2):
@@ -89,7 +97,9 @@ class BinaryGeneticAlgorithm:
             next_generation.extend([child_1, child_2])
 
         self._population = next_generation
-        self._population.sort(key=lambda individual: individual.fitness, reverse=True)
+        self._population = quicksort(
+            data=self._population, comparator=lambda a, b: self._fitness_compare_function(a.fitness, b.fitness)
+        )
         self._generation += 1
 
         return self._population

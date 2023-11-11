@@ -17,17 +17,18 @@ class MeteredHybridAlgorithm(HybridAlgorithm):
         decode: t.Callable[[npt.NDArray[np.uint8]], any],
         generate_initial_population: t.Callable[[], t.List[any]],
         fitness_function: t.Callable[[any], np.float32],
-        criteria_function: t.Callable[[np.uint64, t.List[DecodedIndividual]], bool],
+        fitness_compare_function: t.Callable[[any, any], bool],
         selection_function: t.Callable[
             [t.List[DecodedIndividual]],
             t.Tuple[DecodedIndividual, DecodedIndividual],
         ],
+        criteria_function: t.Callable[[np.uint64, t.List[DecodedIndividual]], bool],
         crossover_points: t.List[np.uint32],
         mutation_chance: np.float16,
+        hillclimber_neighbor_selection_function: t.Union[None, t.Callable[[any], bool]],
         hillclimber_run_interval: np.uint32,
         hillclimber_step: np.float32 = np.float32(0.1),
         hillclimber_acceleration: np.float32 = np.float32(0.1),
-        hillclimber_precision: np.float32 = np.finfo(np.float32).eps,
         debug: bool = False,
     ) -> None:
         super().__init__(
@@ -35,14 +36,15 @@ class MeteredHybridAlgorithm(HybridAlgorithm):
             decode=decode,
             generate_initial_population=generate_initial_population,
             fitness_function=fitness_function,
-            criteria_function=criteria_function,
+            fitness_compare_function=fitness_compare_function,
             selection_function=selection_function,
+            criteria_function=criteria_function,
             crossover_points=crossover_points,
             mutation_chance=mutation_chance,
+            hillclimber_neighbor_selection_function=hillclimber_neighbor_selection_function,
             hillclimber_run_interval=hillclimber_run_interval,
             hillclimber_step=hillclimber_step,
             hillclimber_acceleration=hillclimber_acceleration,
-            hillclimber_precision=hillclimber_precision,
             debug=debug,
         )
         self._metrics_runtime = []

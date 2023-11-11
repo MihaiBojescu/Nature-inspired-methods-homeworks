@@ -1,6 +1,5 @@
 import math
 import random
-import typing as t
 import numpy as np
 from metered_algorithms.metered_continuous_hillclimber import (
     MeteredContinuousHillclimber,
@@ -24,12 +23,16 @@ def run_h1p():
 
 def run_hillclimber():
     hillclimber_algorithm = MeteredContinuousHillclimber(
-        fx=lambda x: x**3 - 60 * (x**2) + 900 * x + 100,
-        initial_x=(np.float32(0.0), np.float32(31.0)),
+        generate_initial_value=lambda: np.random.uniform(
+            low=np.float32(0.0), high=np.float32(31.0)
+        ),
+        fitness_function=h1p,
+        fitness_compare_function=lambda a, b: a > b,
+        neighbor_selection_function=lambda value: 0 < value < 31,
+        criteria_function=lambda best_score, best_value, generations: generations
+        >= 100,
         step=np.float32(0.1),
         acceleration=np.float32(0.1),
-        precision=np.finfo(np.float32).eps,
-        generations=100,
     )
     hillclimber_result = hillclimber_algorithm.run()
 
@@ -41,7 +44,7 @@ def run_hillclimber():
     )
     save_metrics(
         f"{module} - Continuous hillclimber results: Best x",
-        hillclimber_algorithm.metrics_best_x,
+        hillclimber_algorithm.metrics_best_value,
         ("generation", "x"),
     )
     save_metrics(
@@ -65,9 +68,10 @@ def run_binary_genetic_algorithm():
         generate_initial_population=lambda: [
             np.float32(random.random() * 31) for _ in range(0, 100)
         ],
-        fitness_function=lambda x: x**3 - 60 * (x**2) + 900 * x + 100,
-        criteria_function=lambda generation, population: generation > 100,
+        fitness_function=h1p,
+        fitness_compare_function=lambda a, b: a > b,
         selection_function=selection_function,
+        criteria_function=lambda generation, population: generation > 100,
         crossover_points=[np.uint32(4), np.uint32(9)],
         mutation_chance=np.float16(0.0001),
     )
@@ -100,11 +104,13 @@ def run_hybric_algorithm():
         generate_initial_population=lambda: [
             np.float32(random.random() * 31) for _ in range(0, 100)
         ],
-        fitness_function=lambda x: x**3 - 60 * (x**2) + 900 * x + 100,
-        criteria_function=lambda generation, population: generation > 100,
+        fitness_function=h1p,
+        fitness_compare_function=lambda a, b: a > b,
         selection_function=selection_function,
+        criteria_function=lambda generation, population: generation > 100,
         crossover_points=[np.uint32(4), np.uint32(9)],
         mutation_chance=np.float16(0.0001),
+        hillclimber_neighbor_selection_function=None,
         hillclimber_run_interval=10,
     )
     hybrid_result = hybrid_algorithm.run()
