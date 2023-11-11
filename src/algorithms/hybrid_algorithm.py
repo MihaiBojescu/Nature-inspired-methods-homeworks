@@ -52,7 +52,7 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
         self._hillclimber_step = hillclimber_step
         self._hillclimber_acceleration = hillclimber_acceleration
 
-    def step(self):
+    def step(self) -> t.Tuple[any, any, np.uint64]:
         self._print(self._generation)
         self._population = quicksort(
             data=self._population,
@@ -88,7 +88,9 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
         )
         self._generation += 1
 
-        return self._population
+        best_individual_decoded = self._population[0].decode()
+
+        return best_individual_decoded[1], best_individual_decoded[0], self._generation
 
     def _print(self, generation: np.uint64) -> None:
         if self._debug:

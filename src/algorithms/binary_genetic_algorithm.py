@@ -63,20 +63,28 @@ class BinaryGeneticAlgorithm:
 
         self._debug = debug
 
-    def run(self) -> t.Tuple[any, np.uint64, t.List[Individual]]:
+    def run(self) -> t.Tuple[any, any, np.uint64]:
         self._population = quicksort(
-            data=self._population, comparator=lambda a, b: self._fitness_compare_function(a.fitness, b.fitness)
+            data=self._population,
+            comparator=lambda a, b: self._fitness_compare_function(
+                a.fitness, b.fitness
+            ),
         )
 
         while not self._criteria_function(self._generation, self.decoded_population):
             self.step()
 
-        return self._population[0].decode()[0], self._generation, self._population
+        best_individual_decoded = self._population[0].decode()
 
-    def step(self):
+        return best_individual_decoded[1], best_individual_decoded[0], self._generation
+
+    def step(self) -> t.Tuple[any, any, np.uint64]:
         self._print(self._generation)
         self._population = quicksort(
-            data=self._population, comparator=lambda a, b: self._fitness_compare_function(a.fitness, b.fitness)
+            data=self._population,
+            comparator=lambda a, b: self._fitness_compare_function(
+                a.fitness, b.fitness
+            ),
         )
         next_generation = []
 
@@ -98,11 +106,16 @@ class BinaryGeneticAlgorithm:
 
         self._population = next_generation
         self._population = quicksort(
-            data=self._population, comparator=lambda a, b: self._fitness_compare_function(a.fitness, b.fitness)
+            data=self._population,
+            comparator=lambda a, b: self._fitness_compare_function(
+                a.fitness, b.fitness
+            ),
         )
         self._generation += 1
 
-        return self._population
+        best_individual_decoded = self._population[0].decode()
+
+        return best_individual_decoded[1], best_individual_decoded[0], self._generation
 
     @property
     def population(self) -> t.List[Individual]:

@@ -43,7 +43,7 @@ class MeteredBinaryGenericAlgorithm(BinaryGeneticAlgorithm):
         self._metrics_values = []
         self._metrics_fitness = []
 
-    def run(self) -> t.Tuple[any, np.uint64, t.List[Individual]]:
+    def run(self) -> t.Tuple[any, any, np.uint64]:
         then = time.time_ns()
         self._population.sort(key=lambda individual: individual.fitness, reverse=True)
 
@@ -57,7 +57,9 @@ class MeteredBinaryGenericAlgorithm(BinaryGeneticAlgorithm):
                 self._metrics_values.append((self._generation, individual[0]))
                 self._metrics_fitness.append((self._generation, individual[1]))
 
-        return self._population[0].decode()[0], self._generation, self._population
+        best_individual_decoded = self._population[0].decode()
+
+        return best_individual_decoded[1], best_individual_decoded[0], self._generation
 
     @property
     def metrics_runtime(self) -> t.List[t.Tuple[np.uint64, np.uint64]]:
