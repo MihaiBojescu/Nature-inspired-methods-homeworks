@@ -18,19 +18,19 @@ from util.graph import (
 
 def main():
     threads = [
-        Thread(target=lambda: run_rastrigin(2)),
-        # Thread(target=lambda: run_rastrigin(30)),
-        # Thread(target=lambda: run_rastrigin(100)),
-        Thread(target=lambda: run_griewangk(2)),
-        # Thread(target=lambda: run_griewangk(30)),
-        # Thread(target=lambda: run_griewangk(100)),
-        Thread(target=lambda: run_rosenbrock_valley(2)),
-        # Thread(target=lambda: run_rosenbrock_valley(30)),
-        # Thread(target=lambda: run_rosenbrock_valley(100)),
-        Thread(target=lambda: run_michalewicz(2)),
-        # Thread(target=lambda: run_michalewicz(30)),
-        # Thread(target=lambda: run_michalewicz(100)),
-        Thread(target=lambda: run_h1p()),
+        Thread(target=lambda: run_rastrigin(population_size=100, dimensions=2)),
+        Thread(target=lambda: run_rastrigin(population_size=100, dimensions=30)),
+        Thread(target=lambda: run_rastrigin(population_size=100, dimensions=100)),
+        Thread(target=lambda: run_griewangk(population_size=100, dimensions=2)),
+        Thread(target=lambda: run_griewangk(population_size=100, dimensions=30)),
+        Thread(target=lambda: run_griewangk(population_size=100, dimensions=100)),
+        Thread(target=lambda: run_rosenbrock_valley(population_size=100, dimensions=2)),
+        Thread(target=lambda: run_rosenbrock_valley(population_size=100, dimensions=30)),
+        Thread(target=lambda: run_rosenbrock_valley(population_size=100, dimensions=100)),
+        Thread(target=lambda: run_michalewicz(population_size=100, dimensions=2)),
+        Thread(target=lambda: run_michalewicz(population_size=100, dimensions=30)),
+        Thread(target=lambda: run_michalewicz(population_size=100, dimensions=100)),
+        Thread(target=lambda: run_h1p(population_size=100)),
     ]
 
     for thread in threads:

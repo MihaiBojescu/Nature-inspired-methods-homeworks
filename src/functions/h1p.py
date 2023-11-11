@@ -15,10 +15,10 @@ def h1p(x: np.uint32):
     return x**3 - 60 * (x**2) + 900 * x + 100
 
 
-def run_h1p():
+def run_h1p(population_size: int):
     run_hillclimber()
-    run_binary_genetic_algorithm()
-    run_hybrid_algorithm()
+    run_binary_genetic_algorithm(population_size)
+    run_hybrid_algorithm(population_size)
 
 
 def run_hillclimber():
@@ -59,14 +59,14 @@ def run_hillclimber():
     )
 
 
-def run_binary_genetic_algorithm():
+def run_binary_genetic_algorithm(population_size: int):
     genetic_algorithm = MeteredBinaryGenericAlgorithm(
         encode=lambda x: np.frombuffer(
             np.array([x], dtype=np.float32).tobytes(), dtype=np.uint8
         ),
         decode=lambda x: np.frombuffer(x.tobytes(), dtype=np.float32)[0],
         generate_initial_population=lambda: [
-            np.float32(random.random() * 31) for _ in range(0, 100)
+            np.float32(random.random() * 31) for _ in range(population_size)
         ],
         fitness_function=h1p,
         fitness_compare_function=lambda a, b: a > b,
@@ -95,14 +95,14 @@ def run_binary_genetic_algorithm():
     )
 
 
-def run_hybrid_algorithm():
+def run_hybrid_algorithm(population_size: int):
     hybrid_algorithm = MeteredHybridAlgorithm(
         encode=lambda x: np.frombuffer(
             np.array([x], dtype=np.float32).tobytes(), dtype=np.uint8
         ),
         decode=lambda x: np.frombuffer(x.tobytes(), dtype=np.float32)[0],
         generate_initial_population=lambda: [
-            np.float32(random.random() * 31) for _ in range(0, 100)
+            np.float32(random.random() * 31) for _ in range(population_size)
         ],
         fitness_function=h1p,
         fitness_compare_function=lambda a, b: a > b,

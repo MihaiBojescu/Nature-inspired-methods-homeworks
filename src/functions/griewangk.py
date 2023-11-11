@@ -4,7 +4,9 @@ import numpy as np
 from metered_algorithms.metered_continuous_hillclimber import (
     MeteredContinuousHillclimber,
 )
-from metered_algorithms.metered_binary_genetic_algorithm import MeteredBinaryGenericAlgorithm
+from metered_algorithms.metered_binary_genetic_algorithm import (
+    MeteredBinaryGenericAlgorithm,
+)
 from metered_algorithms.metered_hybrid_algorithm import MeteredHybridAlgorithm
 from util.import_export import save_metrics
 
@@ -19,10 +21,10 @@ def griewangk(x: t.List[np.float32]):
     )
 
 
-def run_griewangk(dimensions: int):
+def run_griewangk(population_size: int, dimensions: int):
     run_hillclimber(dimensions)
-    run_binary_genetic_algorithm(dimensions)
-    run_hybrid_algorithm(dimensions)
+    run_binary_genetic_algorithm(population_size, dimensions)
+    run_hybrid_algorithm(population_size, dimensions)
 
 
 def run_hillclimber(dimensions: int):
@@ -65,7 +67,7 @@ def run_hillclimber(dimensions: int):
     )
 
 
-def run_binary_genetic_algorithm(dimensions: int):
+def run_binary_genetic_algorithm(population_size: int, dimensions: int):
     genetic_algorithm = MeteredBinaryGenericAlgorithm(
         encode=lambda x: np.array(
             [
@@ -82,7 +84,7 @@ def run_binary_genetic_algorithm(dimensions: int):
         ],
         generate_initial_population=lambda: [
             [np.float32(np.random.uniform(-600, 600)) for _ in range(dimensions)]
-            for _ in range(dimensions)
+            for _ in range(population_size)
         ],
         fitness_function=griewangk,
         fitness_compare_function=lambda a, b: a < b,
@@ -113,7 +115,7 @@ def run_binary_genetic_algorithm(dimensions: int):
     )
 
 
-def run_hybrid_algorithm(dimensions: int):
+def run_hybrid_algorithm(population_size: int, dimensions: int):
     hybrid_algorithm = MeteredHybridAlgorithm(
         encode=lambda x: np.array(
             [
@@ -130,7 +132,7 @@ def run_hybrid_algorithm(dimensions: int):
         ],
         generate_initial_population=lambda: [
             [np.float32(np.random.uniform(-600, 600)) for _ in range(dimensions)]
-            for _ in range(dimensions)
+            for _ in range(population_size)
         ],
         fitness_function=griewangk,
         fitness_compare_function=lambda a, b: a < b,
