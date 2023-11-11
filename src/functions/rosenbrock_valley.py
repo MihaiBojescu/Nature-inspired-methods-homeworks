@@ -86,7 +86,7 @@ def run_binary_genetic_algorithm(dimensions: int):
         fitness_function=rosenbrock_valley,
         fitness_compare_function=lambda a, b: a < b,
         selection_function=selection_function,
-        criteria_function=lambda generation, population: generation > 100,
+        criteria_function=lambda generation, population: generation >= 100,
         crossover_points=[np.uint32(4), np.uint32(9)],
         mutation_chance=np.float16(0.0001),
     )
@@ -134,7 +134,7 @@ def run_hybrid_algorithm(dimensions: int):
         fitness_function=rosenbrock_valley,
         fitness_compare_function=lambda a, b: a < b,
         selection_function=selection_function,
-        criteria_function=lambda generation, population: generation > 100,
+        criteria_function=lambda generation, population: generation >= 100,
         crossover_points=[np.uint32(4), np.uint32(9)],
         mutation_chance=np.float16(0.0001),
         hillclimber_neighbor_selection_function=None,
