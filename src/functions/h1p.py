@@ -18,7 +18,7 @@ def h1p(x: np.uint32):
 def run_h1p():
     run_hillclimber()
     run_binary_genetic_algorithm()
-    run_hybric_algorithm()
+    run_hybrid_algorithm()
 
 
 def run_hillclimber():
@@ -95,7 +95,7 @@ def run_binary_genetic_algorithm():
     )
 
 
-def run_hybric_algorithm():
+def run_hybrid_algorithm():
     hybrid_algorithm = MeteredHybridAlgorithm(
         encode=lambda x: np.frombuffer(
             np.array([x], dtype=np.float32).tobytes(), dtype=np.uint8

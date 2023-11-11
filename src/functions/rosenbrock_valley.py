@@ -21,7 +21,7 @@ def rosenbrock_valley(x: t.List[np.float32]):
 def run_rosenbrock_valley(dimensions: int):
     run_hillclimber(dimensions)
     run_binary_genetic_algorithm(dimensions)
-    run_hybric_algorithm(dimensions)
+    run_hybrid_algorithm(dimensions)
 
 
 def run_hillclimber(dimensions: int):
@@ -112,7 +112,7 @@ def run_binary_genetic_algorithm(dimensions: int):
     )
 
 
-def run_hybric_algorithm(dimensions: int):
+def run_hybrid_algorithm(dimensions: int):
     hybrid_algorithm = MeteredHybridAlgorithm(
         encode=lambda x: np.array(
             [
