@@ -2,7 +2,7 @@ import time
 import typing as t
 import numpy as np
 import numpy.typing as npt
-from algorithms.genetic_algorithm import BinaryGeneticAlgorithm
+from algorithms.binary_genetic_algorithm import BinaryGeneticAlgorithm
 from data.individual import DecodedIndividual, Individual
 
 

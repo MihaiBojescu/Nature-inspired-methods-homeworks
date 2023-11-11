@@ -4,7 +4,7 @@ import numpy as np
 from metered_algorithms.metered_continuous_hillclimber import (
     MeteredContinuousHillclimber,
 )
-from metered_algorithms.metered_genetic_algorithm import MeteredBinaryGenericAlgorithm
+from metered_algorithms.metered_binary_genetic_algorithm import MeteredBinaryGenericAlgorithm
 from metered_algorithms.metered_hybrid_algorithm import MeteredHybridAlgorithm
 from util.import_export import save_metrics
 
