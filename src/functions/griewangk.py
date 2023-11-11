@@ -51,7 +51,7 @@ def run_hillclimber(dimensions: int):
         ("generation", "runtime"),
     )
     save_metrics(
-        f"{module}(dimensions = {dimensions}) - Continuous hillclimber results: Best x",
+        f"{module}(dimensions = {dimensions}) - Continuous hillclimber results: Best value",
         hillclimber_algorithm.metrics_best_value,
         ("generation", "x"),
     )
