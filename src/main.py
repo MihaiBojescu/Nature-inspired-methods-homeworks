@@ -39,12 +39,13 @@ def main():
     for thread in processes:
         thread.join()
 
-    # draw_continuous_hillclimber_best_score(2)
-    # draw_continuous_hillclimber_runtime(2)
-    # draw_binary_genetic_algorithm_fitness(2)
-    # draw_binary_genetic_algorithm_runtime(2)
-    # draw_hybrid_algorithm_fitness(2)
-    # draw_hybrid_algorithm_runtime(2)
+    for dimensions in [2, 30, 100]:
+        draw_continuous_hillclimber_best_score(dimensions)
+        draw_continuous_hillclimber_runtime(dimensions)
+        draw_binary_genetic_algorithm_fitness(dimensions)
+        draw_binary_genetic_algorithm_runtime(dimensions)
+        draw_hybrid_algorithm_fitness(dimensions)
+        draw_hybrid_algorithm_runtime(dimensions)
 
 
 if __name__ == "__main__":
