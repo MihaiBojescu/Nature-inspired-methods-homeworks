@@ -11,7 +11,7 @@ def save_metrics(
 
     run = 0
     existing_metrics = os.listdir('./outputs')
-    while f"./outputs/{name} - run {run}.csv" in existing_metrics:
+    while f"{name} - run {run}.csv" in existing_metrics:
         run += 1
 
     with open(f"./outputs/{name} - run {run}.csv", "w") as file:
@@ -25,7 +25,7 @@ def save_metrics(
 def load_metrics(name: str) -> t.List[t.Tuple[int, any]]:
     metrics = []
 
-    with open(f"./outputs/{name}.csv", newline="") as file:
+    with open(f"./outputs/{name} - run 0.csv", newline="") as file:
         reader = csv.reader(file)
         header = next(reader)
 

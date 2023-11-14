@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from util.import_export import load_metrics
 
 
-def draw_continuous_hillclimber_best_score(dimension: int):
+def draw_continuous_hillclimber_best_score(dimension: int, show: bool = False):
     rastringin_best_score = load_metrics(
         f"Rastrigin(dimensions = {dimension}) - Continuous hillclimber results: Best score"
     )
@@ -50,10 +50,12 @@ def draw_continuous_hillclimber_best_score(dimension: int):
         f"../images/hillclimber best score(dimension = {dimension}).svg",
         format="svg",
     )
-    plt.show()
+
+    if show:
+        plt.show()
 
 
-def draw_continuous_hillclimber_runtime(dimension: int):
+def draw_continuous_hillclimber_runtime(dimension: int, show: bool = False):
     rastringin_runtime = load_metrics(
         f"Rastrigin(dimensions = {dimension}) - Continuous hillclimber results: Runtime"
     )
@@ -101,10 +103,12 @@ def draw_continuous_hillclimber_runtime(dimension: int):
         f"../images/hillclimber runtimes(dimension = {dimension}).svg",
         format="svg",
     )
-    plt.show()
+
+    if show:
+        plt.show()
 
 
-def draw_binary_genetic_algorithm_fitness(dimension: int):
+def draw_binary_genetic_algorithm_fitness(dimension: int, show: bool = False):
     rastringin_fitness = load_metrics(
         f"Rastrigin(dimensions = {dimension}) - Binary genetic algorithm results: Fitness"
     )
@@ -152,10 +156,12 @@ def draw_binary_genetic_algorithm_fitness(dimension: int):
         f"../images/binary genetic algorithm fitness(dimension = {dimension}).svg",
         format="svg",
     )
-    plt.show()
+
+    if show:
+        plt.show()
 
 
-def draw_binary_genetic_algorithm_runtime(dimension: int):
+def draw_binary_genetic_algorithm_runtime(dimension: int, show: bool = False):
     rastringin_best_score = load_metrics(
         f"Rastrigin(dimensions = {dimension}) - Binary genetic algorithm results: Runtime"
     )
@@ -203,10 +209,12 @@ def draw_binary_genetic_algorithm_runtime(dimension: int):
         f"../images/binary genetic algorithm runtimes(dimension = {dimension}).svg",
         format="svg",
     )
-    plt.show()
+
+    if show:
+        plt.show()
 
 
-def draw_hybrid_algorithm_fitness(dimension: int):
+def draw_hybrid_algorithm_fitness(dimension: int, show: bool = False):
     rastringin_fitness = load_metrics(
         f"Rastrigin(dimensions = {dimension}) - Hybrid algorithm results: Fitness"
     )
@@ -254,10 +262,12 @@ def draw_hybrid_algorithm_fitness(dimension: int):
         f"../images/hybrid algorithm fitness(dimension = {dimension}).svg",
         format="svg",
     )
-    plt.show()
+
+    if show:
+        plt.show()
 
 
-def draw_hybrid_algorithm_runtime(dimension: int):
+def draw_hybrid_algorithm_runtime(dimension: int, show: bool = False):
     rastringin_best_score = load_metrics(
         f"Rastrigin(dimensions = {dimension}) - Hybrid algorithm results: Runtime"
     )
@@ -305,4 +315,6 @@ def draw_hybrid_algorithm_runtime(dimension: int):
         f"../images/hybrid algorithm runtimes(dimension = {dimension}).svg",
         format="svg",
     )
-    plt.show()
+
+    if show:
+        plt.show()
