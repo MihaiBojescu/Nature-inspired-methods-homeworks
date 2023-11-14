@@ -1,4 +1,3 @@
-import math
 import typing as t
 import numpy as np
 from metered_algorithms.metered_continuous_hillclimber import (
@@ -8,6 +7,7 @@ from metered_algorithms.metered_binary_genetic_algorithm import (
     MeteredBinaryGenericAlgorithm,
 )
 from metered_algorithms.metered_hybrid_algorithm import MeteredHybridAlgorithm
+from algorithms.selection_functions import tournament_selection
 from util.import_export import save_metrics
 
 
@@ -91,7 +91,7 @@ def run_binary_genetic_algorithm(population_size: int, dimensions: int):
         ],
         fitness_function=michalewicz,
         fitness_compare_function=lambda a, b: a < b,
-        selection_function=selection_function,
+        selection_function=tournament_selection(20),
         criteria_function=lambda best_fitness, best_value, generation: generation
         >= 100,
         crossover_points=[np.uint32(4), np.uint32(9)],
