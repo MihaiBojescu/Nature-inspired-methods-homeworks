@@ -9,7 +9,12 @@ def save_metrics(
     if not os.path.exists("./outputs"):
         os.mkdir("./outputs")
 
-    with open(f"./outputs/{name}.csv", "w") as file:
+    run = 0
+    existing_metrics = os.listdir('./outputs')
+    while f"./outputs/{name} - run {run}.csv" in existing_metrics:
+        run += 1
+
+    with open(f"./outputs/{name} - run {run}.csv", "w") as file:
         writer = csv.writer(file)
         writer.writerow(metric_names)
 
