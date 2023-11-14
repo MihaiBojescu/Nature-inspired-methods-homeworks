@@ -1,4 +1,3 @@
-import math
 import random
 import numpy as np
 from metered_algorithms.metered_continuous_hillclimber import (
@@ -10,6 +9,7 @@ from metered_algorithms.metered_binary_genetic_algorithm import (
 from metered_algorithms.metered_hybrid_algorithm import MeteredHybridAlgorithm
 from algorithms.selection_functions import tournament_selection
 from util.import_export import save_metrics
+
 
 module = "H1'"
 
@@ -110,7 +110,7 @@ def run_hybrid_algorithm(population_size: int):
         ],
         fitness_function=h1p,
         fitness_compare_function=lambda a, b: a > b,
-        selection_function=selection_function,
+        selection_function=tournament_selection(20),
         criteria_function=lambda best_fitness, best_value, generation: generation
         >= 100,
         crossover_points=[np.uint32(4), np.uint32(9)],
@@ -136,29 +136,3 @@ def run_hybrid_algorithm(population_size: int):
         hybrid_algorithm.metrics_fitness,
         ("generation", "fitness"),
     )
-
-
-def selection_function(population):
-    parent_1 = population[0]
-    parent_2 = population[0]
-
-    for individual in population:
-        if (
-            0 < individual[0] < 31
-            and not math.isnan(individual[1])
-            and not math.isinf(individual[1])
-        ):
-            parent_1 = individual
-            break
-
-    for individual in population:
-        if (
-            0 < individual[0] < 31
-            and not math.isnan(individual[1])
-            and not math.isinf(individual[1])
-            and individual != parent_1
-        ):
-            parent_2 = individual
-            break
-
-    return parent_1, parent_2

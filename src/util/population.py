@@ -9,6 +9,9 @@ def correct_population(population: t.List[DecodedIndividual]):
         filter(lambda individual: is_not_undefined_value(individual[1]), population)
     )
 
+    if len(filtered_population) == 0:
+        return []
+
     for _ in range(len(filtered_population), len(population)):
         selected_individual_index = np.random.randint(
             low=0, high=len(filtered_population)

@@ -21,7 +21,7 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
         fitness_compare_function: t.Callable[[any, any], bool],
         selection_function: t.Callable[
             [t.List[DecodedIndividual]],
-            t.Tuple[DecodedIndividual, DecodedIndividual],
+            t.List[DecodedIndividual],
         ],
         criteria_function: t.Callable[[np.uint64, t.List[DecodedIndividual]], bool],
         crossover_points: t.List[np.uint32],
@@ -62,13 +62,20 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
         )
         next_generation = []
 
-        for _ in range(0, len(self._population) // 2):
-            parent_1, parent_2 = self._selection_function(self.decoded_population)
+        selected_population = self._selection_function(self.decoded_population)
+
+        for index in range(0, len(selected_population) - 1, 2):
             parent_1 = Individual.from_decoded_individual(
-                parent_1, self._encode, self._decode, self._fitness_function
+                decoded_individual=selected_population[index],
+                encode=self._encode,
+                decode=self._decode,
+                fitness_function=self._fitness_function,
             )
             parent_2 = Individual.from_decoded_individual(
-                parent_2, self._encode, self._decode, self._fitness_function
+                decoded_individual=selected_population[index + 1],
+                encode=self._encode,
+                decode=self._decode,
+                fitness_function=self._fitness_function,
             )
 
             child_1, child_2 = self._crossover(parent_1, parent_2)

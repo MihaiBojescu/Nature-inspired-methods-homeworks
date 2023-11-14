@@ -140,7 +140,7 @@ def run_hybrid_algorithm(population_size: int, dimensions: int):
         ],
         fitness_function=michalewicz,
         fitness_compare_function=lambda a, b: a < b,
-        selection_function=selection_function,
+        selection_function=tournament_selection(20),
         criteria_function=lambda best_fitness, best_value, generation: generation
         >= 100,
         crossover_points=[np.uint32(4), np.uint32(9)],
@@ -168,24 +168,3 @@ def run_hybrid_algorithm(population_size: int, dimensions: int):
         hybrid_algorithm.metrics_fitness,
         ("generation", "fitness"),
     )
-
-
-def selection_function(population):
-    parent_1 = population[0]
-    parent_2 = population[0]
-
-    for individual in population:
-        if not math.isnan(individual[1]) and not math.isinf(individual[1]):
-            parent_1 = individual
-            break
-
-    for individual in population:
-        if (
-            not math.isnan(individual[1])
-            and not math.isinf(individual[1])
-            and individual != parent_1
-        ):
-            parent_2 = individual
-            break
-
-    return parent_1, parent_2
