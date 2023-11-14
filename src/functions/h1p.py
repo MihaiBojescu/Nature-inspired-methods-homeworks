@@ -73,7 +73,9 @@ def run_binary_genetic_algorithm(population_size: int):
         ],
         fitness_function=h1p,
         fitness_compare_function=lambda a, b: a > b,
-        selection_function=tournament_selection(20),
+        selection_function=tournament_selection(
+            fitness_compare_function=lambda a, b: a > b, tournament_size=20
+        ),
         criteria_function=lambda best_fitness, best_value, generation: generation
         >= 100,
         crossover_points=[np.uint32(4), np.uint32(9)],
@@ -110,7 +112,9 @@ def run_hybrid_algorithm(population_size: int):
         ],
         fitness_function=h1p,
         fitness_compare_function=lambda a, b: a > b,
-        selection_function=tournament_selection(20),
+        selection_function=tournament_selection(
+            fitness_compare_function=lambda a, b: a > b, tournament_size=20
+        ),
         criteria_function=lambda best_fitness, best_value, generation: generation
         >= 100,
         crossover_points=[np.uint32(4), np.uint32(9)],
