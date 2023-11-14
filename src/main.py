@@ -29,8 +29,8 @@ def main():
         Process(target=lambda: run_rosenbrock_valley(population_size=100, dimensions=100)),
         Process(target=lambda: run_michalewicz(population_size=100, dimensions=2)),
         Process(target=lambda: run_michalewicz(population_size=100, dimensions=30)),
-        Thread(target=lambda: run_michalewicz(population_size=100, dimensions=100)),
-        Thread(target=lambda: run_h1p(population_size=100)),
+        Process(target=lambda: run_michalewicz(population_size=100, dimensions=100)),
+        Process(target=lambda: run_h1p(population_size=100)),
     ]
 
     for thread in processes:
