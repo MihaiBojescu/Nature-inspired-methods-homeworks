@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from threading import Thread
+from multiprocessing import Process
 from functions.griewangk import run_griewangk
 from functions.h1p import run_h1p
 from functions.michalewicz import run_michalewicz
@@ -17,26 +17,26 @@ from util.graph import (
 
 
 def main():
-    threads = [
-        Thread(target=lambda: run_rastrigin(population_size=100, dimensions=2)),
-        Thread(target=lambda: run_rastrigin(population_size=100, dimensions=30)),
-        Thread(target=lambda: run_rastrigin(population_size=100, dimensions=100)),
-        Thread(target=lambda: run_griewangk(population_size=100, dimensions=2)),
-        Thread(target=lambda: run_griewangk(population_size=100, dimensions=30)),
-        Thread(target=lambda: run_griewangk(population_size=100, dimensions=100)),
-        Thread(target=lambda: run_rosenbrock_valley(population_size=100, dimensions=2)),
-        Thread(target=lambda: run_rosenbrock_valley(population_size=100, dimensions=30)),
-        Thread(target=lambda: run_rosenbrock_valley(population_size=100, dimensions=100)),
-        Thread(target=lambda: run_michalewicz(population_size=100, dimensions=2)),
-        Thread(target=lambda: run_michalewicz(population_size=100, dimensions=30)),
+    processes = [
+        Process(target=lambda: run_rastrigin(population_size=100, dimensions=2)),
+        Process(target=lambda: run_rastrigin(population_size=100, dimensions=30)),
+        Process(target=lambda: run_rastrigin(population_size=100, dimensions=100)),
+        Process(target=lambda: run_griewangk(population_size=100, dimensions=2)),
+        Process(target=lambda: run_griewangk(population_size=100, dimensions=30)),
+        Process(target=lambda: run_griewangk(population_size=100, dimensions=100)),
+        Process(target=lambda: run_rosenbrock_valley(population_size=100, dimensions=2)),
+        Process(target=lambda: run_rosenbrock_valley(population_size=100, dimensions=30)),
+        Process(target=lambda: run_rosenbrock_valley(population_size=100, dimensions=100)),
+        Process(target=lambda: run_michalewicz(population_size=100, dimensions=2)),
+        Process(target=lambda: run_michalewicz(population_size=100, dimensions=30)),
         Thread(target=lambda: run_michalewicz(population_size=100, dimensions=100)),
         Thread(target=lambda: run_h1p(population_size=100)),
     ]
 
-    for thread in threads:
+    for thread in processes:
         thread.start()
 
-    for thread in threads:
+    for thread in processes:
         thread.join()
 
     # draw_continuous_hillclimber_best_score(2)
