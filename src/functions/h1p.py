@@ -3,6 +3,7 @@ import numpy as np
 from metered_algorithms.metered_continuous_hillclimber import (
     MeteredContinuousHillclimber,
 )
+from metered_algorithms.metered_binary_hillclimber import MeteredBinaryHillclimber
 from metered_algorithms.metered_binary_genetic_algorithm import (
     MeteredBinaryGenericAlgorithm,
 )
@@ -19,12 +20,59 @@ def h1p(x: np.uint32):
 
 
 def run_h1p(population_size: int):
-    run_hillclimber()
+    run_binary_hillclimber()
+    run_floating_point_hillclimber()
     run_binary_genetic_algorithm(population_size)
     run_hybrid_algorithm(population_size)
 
 
-def run_hillclimber():
+def run_binary_hillclimber():
+    hillclimber_algorithm = MeteredBinaryHillclimber(
+        encode=lambda x: np.array(
+            [
+                value
+                for xi in x
+                for value in np.frombuffer(
+                    np.array([xi], dtype=np.float32).tobytes(), dtype=np.uint8
+                )
+            ]
+        ),
+        decode=lambda x: [
+            np.frombuffer(np.array(batch).tobytes(), dtype=np.float32)[0]
+            for batch in [x[i : i + 4] for i in range(0, len(x), 4)]
+        ],
+        generate_initial_value=lambda: np.random.uniform(
+            low=np.float32(0.0), high=np.float32(31.0)
+        ),
+        fitness_function=h1p,
+        fitness_compare_function=lambda a, b: a < b,
+        neighbor_selection_function=None,
+        criteria_function=lambda best_score, best_value, generations: generations
+        >= 100,
+    )
+    hillclimber_result = hillclimber_algorithm.run()
+
+    print(
+        f"{module} - Binary hillclimber results: {hillclimber_result}"
+    )
+    save_metrics(
+        f"{module} - Binary hillclimber results: Runtime",
+        hillclimber_algorithm.metrics_runtime,
+        ("generation", "runtime"),
+    )
+    save_metrics(
+        f"{module} - Binary hillclimber results: Best value",
+        hillclimber_algorithm.metrics_best_value,
+        ("generation", "x"),
+    )
+    save_metrics(
+        f"{module} - Binary hillclimber results: Best score",
+        hillclimber_algorithm.metrics_best_score,
+        ("generation", "score"),
+    )
+
+
+def run_floating_point_hillclimber():
     hillclimber_algorithm = MeteredContinuousHillclimber(
         generate_initial_value=lambda: np.random.uniform(
             low=np.float32(0.0), high=np.float32(31.0)
@@ -39,24 +87,24 @@ def run_hillclimber():
     )
     hillclimber_result = hillclimber_algorithm.run()
 
-    print(f"{module} - Binary hillclimber results: {hillclimber_result}")
+    print(f"{module} - Continuous hillclimber results: {hillclimber_result}")
     save_metrics(
-        f"{module} - Binary hillclimber results: Runtime",
+        f"{module} - Continuous hillclimber results: Runtime",
         hillclimber_algorithm.metrics_runtime,
         ("generation", "runtime"),
     )
     save_metrics(
-        f"{module} - Binary hillclimber results: Best value",
+        f"{module} - Continuous hillclimber results: Best value",
         hillclimber_algorithm.metrics_best_value,
         ("generation", "x"),
     )
     save_metrics(
-        f"{module} - Binary hillclimber results: Best step",
+        f"{module} - Continuous hillclimber results: Best step",
         hillclimber_algorithm.metrics_best_step,
         ("generation", "step"),
     )
     save_metrics(
-        f"{module} - Binary hillclimber results: Best score",
+        f"{module} - Continuous hillclimber results: Best score",
         hillclimber_algorithm.metrics_best_score,
         ("generation", "score"),
     )

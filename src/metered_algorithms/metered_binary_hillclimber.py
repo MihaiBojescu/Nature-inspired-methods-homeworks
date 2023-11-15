@@ -33,7 +33,6 @@ class MeteredBinaryHillclimber(BinaryHillclimber):
         )
         self._metrics_runtime = []
         self._metrics_best_value = []
-        self._metrics_best_step = []
         self._metrics_best_score = []
 
     def run(self) -> t.Tuple[any, any, np.uint64]:
@@ -47,7 +46,6 @@ class MeteredBinaryHillclimber(BinaryHillclimber):
             now = time.time_ns()
             self._metrics_runtime.append((self._generation, now - then))
             self._metrics_best_value.append((self._generation, self._best_value))
-            self._metrics_best_step.append((self._generation, self._best_step))
             self._metrics_best_score.append((self._generation, self._best_score))
 
         return self._best_score, self._decode(self._best_value), self._generation
