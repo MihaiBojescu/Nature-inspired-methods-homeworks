@@ -39,24 +39,24 @@ def run_hillclimber():
     )
     hillclimber_result = hillclimber_algorithm.run()
 
-    print(f"{module} - Continuous hillclimber results: {hillclimber_result}")
+    print(f"{module} - Binary hillclimber results: {hillclimber_result}")
     save_metrics(
-        f"{module} - Continuous hillclimber results: Runtime",
+        f"{module} - Binary hillclimber results: Runtime",
         hillclimber_algorithm.metrics_runtime,
         ("generation", "runtime"),
     )
     save_metrics(
-        f"{module} - Continuous hillclimber results: Best value",
+        f"{module} - Binary hillclimber results: Best value",
         hillclimber_algorithm.metrics_best_value,
         ("generation", "x"),
     )
     save_metrics(
-        f"{module} - Continuous hillclimber results: Best step",
+        f"{module} - Binary hillclimber results: Best step",
         hillclimber_algorithm.metrics_best_step,
         ("generation", "step"),
     )
     save_metrics(
-        f"{module} - Continuous hillclimber results: Best score",
+        f"{module} - Binary hillclimber results: Best score",
         hillclimber_algorithm.metrics_best_score,
         ("generation", "score"),
     )

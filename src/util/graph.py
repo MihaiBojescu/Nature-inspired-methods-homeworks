@@ -7,16 +7,16 @@ from util.import_export import load_metrics
 
 def draw_continuous_hillclimber_best_score(dimension: int, show: bool = False):
     rastringin_best_score = load_metrics(
-        f"Rastrigin(dimensions = {dimension}) - Continuous hillclimber results: Best score"
+        f"Rastrigin(dimensions = {dimension}) - Binary hillclimber results: Best score"
     )
     griewangk_best_score = load_metrics(
-        f"Griewangk(dimensions = {dimension}) - Continuous hillclimber results: Best score"
+        f"Griewangk(dimensions = {dimension}) - Binary hillclimber results: Best score"
     )
     rosenbrock_best_score = load_metrics(
-        f"Rosenbrock valley(dimensions = {dimension}) - Continuous hillclimber results: Best score"
+        f"Rosenbrock valley(dimensions = {dimension}) - Binary hillclimber results: Best score"
     )
     michalewicz_best_score = load_metrics(
-        f"Michalewicz(dimensions = {dimension}) - Continuous hillclimber results: Best score"
+        f"Michalewicz(dimensions = {dimension}) - Binary hillclimber results: Best score"
     )
 
     data = [
@@ -57,16 +57,16 @@ def draw_continuous_hillclimber_best_score(dimension: int, show: bool = False):
 
 def draw_continuous_hillclimber_runtime(dimension: int, show: bool = False):
     rastringin_runtime = load_metrics(
-        f"Rastrigin(dimensions = {dimension}) - Continuous hillclimber results: Runtime"
+        f"Rastrigin(dimensions = {dimension}) - Binary hillclimber results: Runtime"
     )
     griewangk_runtime = load_metrics(
-        f"Griewangk(dimensions = {dimension}) - Continuous hillclimber results: Runtime"
+        f"Griewangk(dimensions = {dimension}) - Binary hillclimber results: Runtime"
     )
     rosenbrock_runtime = load_metrics(
-        f"Rosenbrock valley(dimensions = {dimension}) - Continuous hillclimber results: Runtime"
+        f"Rosenbrock valley(dimensions = {dimension}) - Binary hillclimber results: Runtime"
     )
     michalewicz_runtime = load_metrics(
-        f"Michalewicz(dimensions = {dimension}) - Continuous hillclimber results: Runtime"
+        f"Michalewicz(dimensions = {dimension}) - Binary hillclimber results: Runtime"
     )
 
     data = [
