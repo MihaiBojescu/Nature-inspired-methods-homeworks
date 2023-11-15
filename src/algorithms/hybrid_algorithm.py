@@ -1,7 +1,7 @@
 import typing as t
 import numpy as np
 import numpy.typing as npt
-from algorithms.continuous_hillclimber import ContinuousHillclimber
+from algorithms.binary_hillclimber import BinaryHillclimber
 from algorithms.binary_genetic_algorithm import BinaryGeneticAlgorithm
 from data.individual import DecodedIndividual, Individual
 from util.sort import quicksort
@@ -109,17 +109,17 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
 
         for i, individual in enumerate(self._population):
             decoded_individual = individual.value
-            hill_climber = ContinuousHillclimber(
+            binary_hill_climber = BinaryHillclimber(
+                encode=self._encode,
+                decode=self._decode,
                 generate_initial_value=lambda: decoded_individual,
                 fitness_function=self._fitness_function,
                 fitness_compare_function=self._fitness_compare_function,
                 neighbor_selection_function=self._hillclimber_neighbor_selection_function,
                 criteria_function=lambda _1, _2, _3: True,
-                step=self._hillclimber_step,
-                acceleration=self._hillclimber_acceleration,
                 debug=self._debug,
             )
-            _best_score, optimised_individual, _generation = hill_climber.step()
+            _best_score, optimised_individual, _generation = binary_hill_climber.step()
             encoded_individual = self._encode(optimised_individual)
 
             self._population[i].genes = encoded_individual
