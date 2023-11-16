@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1700101297 "/home/mihai/Documents/Personal/Facultate/Master Anul 1/Metode inspirate de natură/Homework 1/docs/h1.tex" "h1.pdf" "h1" 1700101298 0
+["pdflatex"] 1700101485 "/home/mihai/Documents/Personal/Facultate/Master Anul 1/Metode inspirate de natură/Homework 1/docs/h1.tex" "h1.pdf" "h1" 1700101486 0
   "../images/fcnindex-msh_f12_0_3-31-gif-converted-to.png" 1700101090 10736 3735654feaf3c9ef29ccd1ee754bda98 ""
   "../images/fcnindex-msh_f12_0_3-31.gif" 1700101075 14351 b38c33ff0098e6df77452c0b600d1953 ""
   "../images/fcnindex-msh_f2_2-11-gif-converted-to.png" 1700100758 10378 78d6c5d0449c88ec7d56a4899fd3c5c7 ""
@@ -9,7 +9,7 @@
   "../images/fcnindex-msh_f8_500-19-gif-converted-to.png" 1700101250 12676 0258b7e5846a51e2baca74fddaf344ed ""
   "../images/fcnindex-msh_f8_500-19.gif" 1700101234 16115 b413258ac491356a17ee65375f304157 ""
   "/dev/null" 1698923267 0 d41d8cd98f00b204e9800998ecf8427e ""
-  "/home/mihai/Documents/Personal/Facultate/Master Anul 1/Metode inspirate de natură/Homework 1/docs/h1.tex" 1700101296 22919 5a324434553a87789653432a8680cae8 ""
+  "/home/mihai/Documents/Personal/Facultate/Master Anul 1/Metode inspirate de natură/Homework 1/docs/h1.tex" 1700101485 22919 5a324434553a87789653432a8680cae8 ""
   "/usr/share/texmf-dist/fonts/enc/dvips/base/8r.enc" 1689853683 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1689853683 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texmf-dist/fonts/tfm/adobe/times/ptmb7t.tfm" 1689853683 2172 fd0c924230362ff848a33632ed45dc23 ""
@@ -127,8 +127,8 @@
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1689853683 40684 9b9ec0b4288972636ff6a3b9c4238efc ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1697659142 4483110 adb1e1d04498b9576f1f17c4219c5e03 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1697659134 6768056 bad9fee68bf59630055bf458e2ea3432 ""
-  "h1.aux" 1700101298 5104 bf0ab79a0abf8a5a9b383ee072426c14 "pdflatex"
-  "h1.tex" 1700101296 22919 5a324434553a87789653432a8680cae8 ""
+  "h1.aux" 1700101486 5104 bf0ab79a0abf8a5a9b383ee072426c14 "pdflatex"
+  "h1.tex" 1700101485 22919 5a324434553a87789653432a8680cae8 ""
   (generated)
   "h1.aux"
   "h1.log"
