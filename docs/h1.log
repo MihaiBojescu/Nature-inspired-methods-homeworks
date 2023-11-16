@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Arch Linux) (preloaded format=pdflatex 2023.10.18)  16 NOV 2023 03:50
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Arch Linux) (preloaded format=pdflatex 2023.10.18)  16 NOV 2023 04:21
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -290,7 +290,25 @@ Package: multirow 2021/03/15 v2.8 Span multiple rows of a table
 ) (/usr/share/texmf-dist/tex/latex/url/url.sty
 \Urlmuskip=\muskip17
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
-) (/usr/share/texmf-dist/tex/latex/svg/svg.sty
+) (/usr/share/texmf-dist/tex/latex/epstopdf-pkg/epstopdf.sty
+Package: epstopdf 2020-01-24 v2.11 Conversion with epstopdf on the fly (HO)
+ (/usr/share/texmf-dist/tex/latex/grfext/grfext.sty
+Package: grfext 2019/12/03 v1.3 Manage graphics extensions (HO)
+ (/usr/share/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
+Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
+)) (/usr/share/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
+ (/usr/share/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
+Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
+)) (/usr/share/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 504.
+ (/usr/share/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
+))) (/usr/share/texmf-dist/tex/latex/svg/svg.sty
 Package: svg 2020/11/26 v2.02k (include SVG pictures)
  (/usr/share/texmf-dist/tex/latex/koma-script/scrbase.sty
 Package: scrbase 2022/10/12 v3.38 KOMA-Script package (KOMA-Script-independent basics and keyval usage)
@@ -383,7 +401,10 @@ File: pgfsyssoftpath.code.tex 2023-01-15 v3.1.10 (3.1.10)
 ) (/usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.code.tex
 File: pgfsysprotocol.code.tex 2023-01-15 v3.1.10 (3.1.10)
 ))
-Package translations Info: No language package found. I am going to use `english' as default language. on input line 17.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps,.gif]
+(grfext)             \AppendGraphicsExtensions on input line 17.
+Package translations Info: No language package found. I am going to use `english' as default language. on input line 21.
  (/usr/share/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2023-01-16 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count306
@@ -416,20 +437,20 @@ LaTeX Warning: Label `b1' multiply defined.
 )
 \openout1 = `h1.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 17.
-LaTeX Font Info:    ... okay on input line 17.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 17.
-LaTeX Font Info:    ... okay on input line 17.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 17.
-LaTeX Font Info:    ... okay on input line 17.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 17.
-LaTeX Font Info:    ... okay on input line 17.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 17.
-LaTeX Font Info:    ... okay on input line 17.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 17.
-LaTeX Font Info:    ... okay on input line 17.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 17.
-LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
 
 -- Lines per column: 56 (exact).
 (/usr/share/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
@@ -445,66 +466,121 @@ LaTeX Font Info:    ... okay on input line 17.
 \MPnumerator=\count311
 \makeMPintoPDFobject=\count312
 \everyMPtoPDFconversion=\toks32
-) (/usr/share/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
-Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
-Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
- (/usr/share/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
-File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
-)) (/usr/share/texmf-dist/tex/latex/translations/translations-basic-dictionary-english.trsl
+) (/usr/share/texmf-dist/tex/latex/translations/translations-basic-dictionary-english.trsl
 File: translations-basic-dictionary-english.trsl (english translation file `translations-basic-dictionary')
 )
-Package translations Info: loading dictionary `translations-basic-dictionary' for `english'. on input line 17.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 28.
+Package translations Info: loading dictionary `translations-basic-dictionary' for `english'. on input line 21.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 32.
  (/usr/share/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 28.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 32.
  (/usr/share/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Underfull \hbox (badness 1838) in paragraph at lines 39--41
+Underfull \hbox (badness 1838) in paragraph at lines 43--45
 []\OT1/ptm/b/it/9 Index Terms\OT1/ptm/b/n/9 ---hillclimber, ge-netic al-go-rithm, hy-brid, hy-
  []
 
+Package epstopdf Info: Source file: <../images/fcnindex-msh_f6_5-14.gif>
+(epstopdf)                    date: 2023-11-16 04:07:38
+(epstopdf)                    size: 19868 bytes
+(epstopdf)             Output file: <../images/fcnindex-msh_f6_5-14-gif-converted-to.png>
+(epstopdf)                    date: 2023-11-16 04:09:14
+(epstopdf)                    size: 15732 bytes
+(epstopdf)             Command: <convert gif:../images/fcnindex-msh_f6_5-14.gif png:../images/fcnindex-msh_f6_5-14-gif-converted-to.png>
+(epstopdf)             \includegraphics on input line 77.
+Package epstopdf Info: Output file is already uptodate.
+<../images/fcnindex-msh_f6_5-14-gif-converted-to.png, id=4, 301.125pt x 240.9pt>
+File: ../images/fcnindex-msh_f6_5-14-gif-converted-to.png Graphic file (type png)
+<use ../images/fcnindex-msh_f6_5-14-gif-converted-to.png>
+Package pdftex.def Info: ../images/fcnindex-msh_f6_5-14-gif-converted-to.png  used on input line 77.
+(pdftex.def)             Requested size: 225.84319pt x 180.67455pt.
+Package epstopdf Info: Source file: <../images/fcnindex-msh_f2_2-11.gif>
+(epstopdf)                    date: 2023-11-16 04:12:25
+(epstopdf)                    size: 13288 bytes
+(epstopdf)             Output file: <../images/fcnindex-msh_f2_2-11-gif-converted-to.png>
+(epstopdf)                    date: 2023-11-16 04:12:38
+(epstopdf)                    size: 10378 bytes
+(epstopdf)             Command: <convert gif:../images/fcnindex-msh_f2_2-11.gif png:../images/fcnindex-msh_f2_2-11-gif-converted-to.png>
+(epstopdf)             \includegraphics on input line 95.
+Package epstopdf Info: Output file is already uptodate.
+<../images/fcnindex-msh_f2_2-11-gif-converted-to.png, id=5, 301.125pt x 240.9pt>
+File: ../images/fcnindex-msh_f2_2-11-gif-converted-to.png Graphic file (type png)
+<use ../images/fcnindex-msh_f2_2-11-gif-converted-to.png>
+Package pdftex.def Info: ../images/fcnindex-msh_f2_2-11-gif-converted-to.png  used on input line 95.
+(pdftex.def)             Requested size: 225.84319pt x 180.67455pt.
 
-Overfull \hbox (7.12627pt too wide) in paragraph at lines 97--118
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf-dist/fonts/enc/dvips/base/8r.enc}
+
+
+ <../images/fcnindex-msh_f6_5-14-gif-converted-to.png>]
+Package epstopdf Info: Source file: <../images/fcnindex-msh_f12_0_3-31.gif>
+(epstopdf)                    date: 2023-11-16 04:17:55
+(epstopdf)                    size: 14351 bytes
+(epstopdf)             Output file: <../images/fcnindex-msh_f12_0_3-31-gif-converted-to.png>
+(epstopdf)                    date: 2023-11-16 04:18:10
+(epstopdf)                    size: 10736 bytes
+(epstopdf)             Command: <convert gif:../images/fcnindex-msh_f12_0_3-31.gif png:../images/fcnindex-msh_f12_0_3-31-gif-converted-to.png>
+(epstopdf)             \includegraphics on input line 113.
+Package epstopdf Info: Output file is already uptodate.
+<../images/fcnindex-msh_f12_0_3-31-gif-converted-to.png, id=23, 301.125pt x 240.9pt>
+File: ../images/fcnindex-msh_f12_0_3-31-gif-converted-to.png Graphic file (type png)
+<use ../images/fcnindex-msh_f12_0_3-31-gif-converted-to.png>
+Package pdftex.def Info: ../images/fcnindex-msh_f12_0_3-31-gif-converted-to.png  used on input line 113.
+(pdftex.def)             Requested size: 225.84319pt x 180.67455pt.
+Package epstopdf Info: Source file: <../images/fcnindex-msh_f8_500-19.gif>
+(epstopdf)                    date: 2023-11-16 04:20:34
+(epstopdf)                    size: 16115 bytes
+(epstopdf)             Output file: <../images/fcnindex-msh_f8_500-19-gif-converted-to.png>
+(epstopdf)                    date: 2023-11-16 04:20:50
+(epstopdf)                    size: 12676 bytes
+(epstopdf)             Command: <convert gif:../images/fcnindex-msh_f8_500-19.gif png:../images/fcnindex-msh_f8_500-19-gif-converted-to.png>
+(epstopdf)             \includegraphics on input line 131.
+Package epstopdf Info: Output file is already uptodate.
+<../images/fcnindex-msh_f8_500-19-gif-converted-to.png, id=24, 301.125pt x 240.9pt>
+File: ../images/fcnindex-msh_f8_500-19-gif-converted-to.png Graphic file (type png)
+<use ../images/fcnindex-msh_f8_500-19-gif-converted-to.png>
+Package pdftex.def Info: ../images/fcnindex-msh_f8_500-19-gif-converted-to.png  used on input line 131.
+(pdftex.def)             Requested size: 225.84319pt x 180.67455pt.
+ [2 <../images/fcnindex-msh_f2_2-11-gif-converted-to.png> <../images/fcnindex-msh_f12_0_3-31-gif-converted-to.png> <../images/fcnindex-msh_f8_500-19-gif-converted-to.png>]
+Overfull \hbox (7.12627pt too wide) in paragraph at lines 177--198
  [][] 
  []
 
 
-Overfull \hbox (7.12627pt too wide) in paragraph at lines 123--144
- [][] 
- []
-
-[1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf-dist/fonts/enc/dvips/base/8r.enc}
-
-
-]
-Overfull \hbox (7.12627pt too wide) in paragraph at lines 196--217
- [][] 
- []
-
-[2]
-Overfull \hbox (15.85449pt too wide) in paragraph at lines 271--292
+Overfull \hbox (7.12627pt too wide) in paragraph at lines 203--224
  [][] 
  []
 
 
-Overfull \hbox (7.12627pt too wide) in paragraph at lines 297--318
- [][] 
- []
-
-
-Overfull \hbox (17.91075pt too wide) in paragraph at lines 358--379
- [][] 
- []
-
-
-Overfull \hbox (7.12627pt too wide) in paragraph at lines 384--405
+Overfull \hbox (7.12627pt too wide) in paragraph at lines 276--297
  [][] 
  []
 
 [3]
+Overfull \hbox (15.85449pt too wide) in paragraph at lines 349--370
+ [][] 
+ []
+
+
+Overfull \hbox (7.12627pt too wide) in paragraph at lines 375--396
+ [][] 
+ []
+
+
+Overfull \hbox (17.91075pt too wide) in paragraph at lines 436--457
+ [][] 
+ []
+
+
+Overfull \hbox (7.12627pt too wide) in paragraph at lines 462--483
+ [][] 
+ []
+
+[4]
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -516,7 +592,7 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[4
+[5
 
 ] (./h1.aux)
 
@@ -524,18 +600,18 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 10832 strings out of 477985
- 241129 string characters out of 5840057
- 1892388 words of memory out of 5000000
- 30854 multiletter control sequences out of 15000+600000
+ 11168 strings out of 477985
+ 249083 string characters out of 5840057
+ 1893388 words of memory out of 5000000
+ 31166 multiletter control sequences out of 15000+600000
  550898 words of font info for 105 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  94i,14n,92p,402b,526s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on h1.pdf (4 pages, 107826 bytes).
+</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on h1.pdf (5 pages, 189114 bytes).
 PDF statistics:
- 61 PDF objects out of 1000 (max. 8388607)
- 38 compressed objects within 1 object stream
+ 87 PDF objects out of 1000 (max. 8388607)
+ 49 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 13 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 33 words of extra memory for PDF output out of 10000 (max. 10000000)
 

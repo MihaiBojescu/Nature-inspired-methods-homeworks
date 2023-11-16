@@ -10,13 +10,17 @@
 \usepackage{xcolor}
 \usepackage{multirow}
 \usepackage{url}
+\usepackage{epstopdf}
 \usepackage[inkscapeformat=png]{svg}
+
+\epstopdfDeclareGraphicsRule{.gif}{png}{.png}{convert gif:#1 png:\OutputFile}
+\AppendGraphicsExtensions{.gif}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Optization of functions using hillclimbers, genetic algorithms and hybrids}
+\title{Function optimization using hillclimbers, genetic algorithms and hybrids}
 
 \author{\IEEEauthorblockN{Mihai Bojescu}
 \IEEEauthorblockA{\textit{Master in Artificial Intelligence and optimization} \\
@@ -52,6 +56,81 @@ each being run with the scope of being minimised.
 The hybrid algorithm is built using a genetic algorithm as base and a binary hillclimber as a helper, with the aim to combine the
 benefits of both the specified algorithms.
 
+\section{Optimized functions}
+
+\subsection{Rastrigin's function}
+Rastrigin's function is a widely used optimization benchmark, particularly in the field of evolutionary algorithms.
+It is defined as the sum of squared values of a function that oscillates between positive and negative values. The global minimum,
+where all variables are zero, is surrounded by a large number of local minima, making it a challenging problem for optimization algorithms.
+Rastrigin's function helps assess an algorithm's ability to navigate complex and rugged search spaces.
+
+The function has the following definition:
+
+\begin{equation}
+    f(x) = 10 * n + \sum_{i=1}^{n}(x_i^2 - 10 * cos(2 * \pi * x_i))
+\end{equation}
+
+With $-5.12 \le x_i \leq 5.12$
+
+Graphically, the function has the following form:
+
+\includegraphics[scale=0.75]{../images/fcnindex-msh_f6_5-14.gif}
+
+\subsection{Rosenbrock's function}
+Rosenbrock's function, often referred to as the "banana function" or "valley function," is a non-convex mathematical problem
+commonly used to test optimization algorithms. It features a long, narrow, parabolic shaped valley, and the global minimum
+is inside this curved, narrow valley. The function poses difficulties for optimization algorithms due to the flatness of the valley,
+requiring methods capable of efficiently navigating along the elongated, curved path to find the optimal solution.
+
+The function has the following definition:
+
+\begin{equation}
+    f(x) = \sum_{i=1}^{n-1} * 100 * (x_{i+1} - x_i^2)^2 + (1 - x_i)^2
+\end{equation}
+
+With $-2.048 \leq x_i \leq 2.048$
+
+Graphically, the function has the following form:
+
+\includegraphics[scale=0.75]{../images/fcnindex-msh_f2_2-11.gif}
+
+\subsection{Michalewicz's function}
+Michalewicz's function is a multimodal optimization problem proposed to evaluate the performance of optimization algorithms
+in handling functions with multiple peaks. It is characterized by its sharp, narrow peaks, and the location of the global optimum
+depends on the problem's dimensionality. The function's multimodal nature challenges algorithms to explore and exploit different regions
+of the search space efficiently, making it a valuable test case for optimization studies.
+
+The function has the following definition:
+
+\begin{equation}
+    f(x) = \sum_{i=1}^{n} * sin(x_i) * (sin(\frac{i * x_i^2}{\pi}))^2*m
+\end{equation}
+
+With $i = 1:n, m = 10, 0 \leq x_i \leq \pi$
+
+Graphically, the function has the following form:
+
+\includegraphics[scale=0.75]{../images/fcnindex-msh_f12_0_3-31.gif}
+
+\subsection{Griewangk's function}
+Griewangk's function is another classical benchmark in optimization, known for its multiple global minima separated by flat regions.
+The function contains oscillations, and the challenge lies in finding the global minimum in the presence of these oscillations
+and flat regions. Griewangk's function is frequently employed to assess an algorithm's ability to balance exploration
+and exploitation in complex search spaces, making it a relevant test case for optimization algorithms.
+
+The function has the following definition:
+
+\begin{equation}
+    f(x) = \sum_{i=1}^{n} \frac{x_i^2}{4000} - \prod_{i=1}^{n} * cos(\frac{x_i}{\sqrt{i}}) + 1
+\end{equation}
+
+With $-600 \leq x_i \leq 600$
+
+Graphically, the function has the following form:
+
+\includegraphics[scale=0.75]{../images/fcnindex-msh_f8_500-19.gif}
+
+
 \section{Hillclimbers}
 
 \subsection{Description}
@@ -67,16 +146,17 @@ The algorithm has a low time complexity of $\mathcal{O}(n log n)$, thus it is us
 aproximate solution, them often being realtime systems.
 
 \subsection{Implementations}
-Hillclimbers can be implemented in multiple ways: binary, floating-point, integer, tree representation etc..
-This paper details a binary and a floating-point variant. The following subsections detail how the two compare by comparing
+Hillclimbers can be implemented in multiple representations: binary, floating-point, integer, tree representation etc..
+This paper details a floating-point and a binary variant. The following subsections detail how the two compare by comparing
 the results of the experiments on the 4 described functions.
 
 
 \section{Floating-point hillclimber}
 
 \subsection{Description}
-Floating-point hillclimbers try to emulate how humans would solve an optimization issue, by using decimal numbers. This
-representation is easy for users to read and thus can be debugged easier.
+Floating-point hillclimbers to emulate how humans would solve an optimization issue, by using decimal numbers. This
+representation is easy for users to read and thus can be debugged faster. Due to the way the algorithm is implemented, its
+performance is higher than the binary variant.
 
 \subsection{Parameters}
 The floating-point hillclimber was run using the following parameters:
@@ -215,8 +295,6 @@ The results of the experiments were the following:
         \hline
     \end{tabular}
 \end{table}
-
-\pagebreak
 
 
 \section{Genetic algorithms}
