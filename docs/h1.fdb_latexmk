@@ -1,7 +1,7 @@
 # Fdb version 4
-["pdflatex"] 1700098767 "/home/mihai/Documents/Personal/Facultate/Master Anul 1/Metode inspirate de natură/Homework 1/docs/h1.tex" "h1.pdf" "h1" 1700098768 0
+["pdflatex"] 1700099404 "/home/mihai/Documents/Personal/Facultate/Master Anul 1/Metode inspirate de natură/Homework 1/docs/h1.tex" "h1.pdf" "h1" 1700099405 0
   "/dev/null" 1698923267 0 d41d8cd98f00b204e9800998ecf8427e ""
-  "/home/mihai/Documents/Personal/Facultate/Master Anul 1/Metode inspirate de natură/Homework 1/docs/h1.tex" 1700098767 18599 412d84b092c7a9d536e17174cb82389d ""
+  "/home/mihai/Documents/Personal/Facultate/Master Anul 1/Metode inspirate de natură/Homework 1/docs/h1.tex" 1700099404 19345 9d5c14f034c1a9c90eeff96655c17603 ""
   "/usr/share/texmf-dist/fonts/enc/dvips/base/8r.enc" 1689853683 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1689853683 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texmf-dist/fonts/tfm/adobe/times/ptmb7t.tfm" 1689853683 2172 fd0c924230362ff848a33632ed45dc23 ""
@@ -106,12 +106,13 @@
   "/usr/share/texmf-dist/tex/latex/transparent/transparent-nometadata.sty" 1689853683 4212 8da4873548cbd3f1cdb053c708e8aa7e ""
   "/usr/share/texmf-dist/tex/latex/transparent/transparent.sty" 1689853683 1918 c8d1ecb3722721d6f624992cbc042b70 ""
   "/usr/share/texmf-dist/tex/latex/trimspaces/trimspaces.sty" 1689853683 1380 971a51b00a14503ddf754cab24c3f209 ""
+  "/usr/share/texmf-dist/tex/latex/url/url.sty" 1689853683 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "/usr/share/texmf-dist/tex/latex/xcolor/xcolor.sty" 1689853683 56148 51a9a8571c07b9921892ae11063ae853 ""
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1689853683 40684 9b9ec0b4288972636ff6a3b9c4238efc ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1697659142 4483110 adb1e1d04498b9576f1f17c4219c5e03 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1697659134 6768056 bad9fee68bf59630055bf458e2ea3432 ""
-  "h1.aux" 1700098768 4394 5e3911242f0f9b076eaa7fe52075f95d "pdflatex"
-  "h1.tex" 1700098767 18599 412d84b092c7a9d536e17174cb82389d ""
+  "h1.aux" 1700099405 4490 d7a3312085ed8fbb61cdec38d8b9001a "pdflatex"
+  "h1.tex" 1700099404 19345 9d5c14f034c1a9c90eeff96655c17603 ""
   (generated)
   "h1.aux"
   "h1.log"
