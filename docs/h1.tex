@@ -8,15 +8,17 @@
 \usepackage{siunitx}
 \usepackage{textcomp}
 \usepackage{xcolor}
+\usepackage{multirow}
 \usepackage[inkscapeformat=png]{svg}
+
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Homework 1: Implementation of a genetic algorithm using the Hill Climbing heuristic}
+\title{Optization of functions using hillclimbers, genetic algorithms and hybrids}
 
-\author{\IEEEauthorblockN{1\textsuperscript{st} Mihai Bojescu}
-\IEEEauthorblockA{\textit{Master in Artificial Intelligence and Optimisation} \\
+\author{\IEEEauthorblockN{Mihai Bojescu}
+\IEEEauthorblockA{\textit{Master in Artificial Intelligence and optimization} \\
 \textit{Faculty of Computer Science of University ``Alexandru Ioan Cuza'' of Iași}\\
 Iași, Romania \\
 bojescu.mihai@gmail.com}
@@ -26,231 +28,295 @@ bojescu.mihai@gmail.com}
 
 
 \begin{abstract}
-This document aims to detail the implementation of binary genetic algorithms, hill climbing algorithms
-and how the former could be hybridised using the latter.
+This document contains the results of the experiments of running two hillclimbers, a genetic algorithm and a hybrid algorithm
+on 4 functions with the scope of finding the minimum of each of the functions. This document additionally details what parameters
+were used in order to achieve the specified results. The functions that the algorithms were applied on were the
+Rastrigin's function, Reosenbrock's function, Michalewicz's function and Griewangk's function. Each algorithm was run 5
+times in order to collect better metrics.
 \end{abstract}
 
 \begin{IEEEkeywords}
-genetic algorithm, hill climber algorithm, nature inspired methods, hybridisation
+hillclimber, genetic algorithm, hybrid, hybridization, Rastrigin, Rosenbrock, Michalewicz, Griewangk, optimization
 \end{IEEEkeywords}
 
+
 \section{Introduction}
-This document aims to detail how binary genetic algorithms and hill climbing algorithms are implemented, and a method
-on how they could be hybridised in order to potentially achieve better results. The former represents a ``weak'' method
-that can be used to solve a pleothera of problems. The latter represents an effective algorithm of the local-search class.
-In this document, the hybrid algorithm is an extension of the binary genetic algorithm in which hillclimbing is used after
-$n$ steps.
+This document details the results of experiments on optimizing 4 well-known functions using 4 different algorithms: two hillclimber,
+a genetic algorithm and a hybrid algorithm. The aim of the experiments was to observe the inner-workings of each algorithm,
+how they behave given different functions to optimise, their downsides and their upsides.
 
-\section{Hill Climbing algorithm}
+The functions that are detailed in this document are the Rastrigin's, Rosenbrock's, Michalewicz's and Griewangk's functions,
+each being run with the scope of being minimised.
 
-\subsection{Definition}
-Hill climbing is a mathematical optimisation technique belonging to the family of local search. The algorithm is iterative
+The hybrid algorithm is built using a genetic algorithm as base and a binary hillclimber as a helper, with the aim to combine the
+benefits of both the specified algorithms.
+
+\section{Hillclimbers}
+
+\subsection{Description}
+Hillclimbing is a mathematical optimization technique belonging to the family of local search. The algorithm is iterative
 and starts with an arbitrary solution to a given problem, which attempts to perfect by performing incremental changes.
 
 The algorithm may regrettably become ensnared within local optima, precluding its ability to escape from such configurations.
-Nevertheless, it continues to find utility across diverse problem domains, owing to its computational efficiency and swift derivation of an acceptably effective solution.
-
-\subsection{Notations}
-Step:
-\begin{equation} Step \in \mathbb{Q}, Step \ne 0 \end{equation}
-
-Acceleration:
-\begin{equation} Acceleration \in \mathbb{Q}, Acceleration \ne 0 \end{equation}
-
-Precision:
-\begin{equation} Precision \in \mathbb{Q}, Precision \ne 0 \end{equation}
-
-Iterations:
-\begin{equation} Iterations \in \mathbb{N}, Iterations \in [-1, +\inf) \end{equation}
-
-Function to optimise:
-\begin{equation} f : \mathbb{R} \rightarrow \mathbb{R},  \end{equation}
-
-
-\subsection{High-level implementation}
-As a high-level view, the algorithm performs the following steps:
-\begin{enumerate}
-    \item Picks an $x_{best}$ at random.
-    \item Set $iteration = 0$.
-    \item Set $score_{before} = NULL$.
-    \item Set $step_{best} = step$.
-    \item Set $score_{best} = f(x_{best})$.
-    \item While $iteration < iterations \lor score_{before} = NULL \lor |score_{best} - score_{before}| > precision$:
-    \begin{enumerate}
-        \item For each step $step_i \in \{\\step_{best} * acceleration, \\step_{best} * -acceleration, \\step_{best} * 1 / acceleration, \\step_{best} * -1 / acceleration\\\}$:
-        \begin{enumerate}
-            \item If $f(x_{best} + step_i) > score_{best}$, perform $step_{best} = step_i$, $score_{best} = f(x_{best} + step_i)$, $x_{best} = x_{best} + step_i$.
-        \end{enumerate} 
-        \item Peform $iteration = iteration + 1$.
-    \end{enumerate}
-    \item Return $x_{best}$.
-\end{enumerate}
+Nevertheless, it continues to find utility across diverse problem domains, owing to its computational efficiency and swift
+derivation of an acceptably effective solution.
 
 \subsection{Time complexity}
 The algorithm has a low time complexity of $\mathcal{O}(n log n)$, thus it is usually implemented on systems that would need an
 aproximate solution, them often being realtime systems.
 
-\subsection{Continuous space hill climbing}
-Since the optima of a problem might not be found using a value $x$ that are modified using discreet value, we will have to resume
-to modifying the value $x$ in a continuous manner.
+\subsection{Implementations}
+Hillclimbers can be implemented in multiple ways: binary, floating-point, integer, tree representation etc..
+This paper details a binary and a floating-point variant. The following subsections detail how the two compare by comparing
+the results of the experiments on the 4 described functions.
 
-In order to perform the above, we will continuously use a parameter named $acceleration$, parameter which will improve $x$
-in smaller increments for each iteration. This way, the algorithm can find the optima of a given problem with a higher precision
-than a discreet space hill climber.
 
-In order to perform this, we will call the $f$ function on each  $x * step_i$, where:
-\begin{multline}
-    step_i \in \{\\step_{best} * acceleration, \\step_{best} * -acceleration, \\step_{best} * 1 / acceleration, \\step_{best} * -1 / acceleration\\\}
-\end{multline}
+\section{Floating-point hillclimber}
 
-\subsection{Algorithm Demonstrations and Graphical Analysis}
+\subsection{Description}
+Floating-point hillclimbers try to emulate how humans would solve an optimization issue, by using decimal numbers. This
+representation is easy for users to read and thus can be debugged easier.
 
-In this section the hillclimber algorithm will be applied on multiple functions:
+\subsection{Parameters}
+The floating-point hillclimber was run using the following parameters:
+
 \begin{enumerate}
-    \item Rastringin's function
-    \item Griewangk's function
-    \item Reosenbrock's valley function
-    \item Michalewicz's function
+    \item An initial random floating point solution
+    \item A step size of $0.1$
+    \item An acceleration parameter of $0.1$
+    \item A total of $100$ steps
 \end{enumerate}
 
-Given $dimension(x) = 2$:
+\subsection{Results of the experiments}
+The results of the experiments were the following:
 
-\includesvg[width = 250pt]{../images/hillclimber best score(dimension = 2).svg}
+\begin{table}[!htbp]
+    \caption{Results}
+    \centering
+    \begin{tabular}{|c c|c c c c|}
+        \hline
+        Alg. & Dims. & Minimum & Mean & Median & Maximum \\
+        \hline
+        \multirow{3}{*}{Rastrigin} & 2 & 6.85 & 15.9 & 16.0 & 24.8 \\
+        & 30 & 4.04e+02 & 4.9e+02 & 5.13e+02 & 5.28e+02 \\
+        & 100 & 1.6e+03 & 1.68e+03 & 1.67e+03 & 1.77e+03 \\
+        \hline
+        \multirow{3}{*}{Rosenbrock} & 2 & 5.21 & 54.1 & 43.2 & 1.25e+02 \\
+        & 30 & 5.51e+03 & 7.19e+03 & 6.78e+03 & 9.69e+03 \\
+        & 100 & 2.05e+04 & 2.45e+04 & 2.53e+04 & 2.69e+04 \\
+        \hline
+        \multirow{3}{*}{Michalewicz} & 2 & -0.801 & -0.801 & -0.801 & -0.801 \\
+        & 30 & -5.39 & -4.59 & -4.59 & -3.8 \\
+        & 100 & -16.0 & -14.2 & -13.7 & -13.5 \\
+        \hline
+        \multirow{3}{*}{Griewangk} & 2 & DnF & DnF & DnF & DnF \\
+        & 30 & DnF & DnF & DnF & DnF \\
+        & 100 & DnF & DnF & DnF & DnF \\
+        \hline
+    \end{tabular}
+\end{table}
 
-With the following runtimes:
+\begin{table}[!htbp]
+    \caption{Timing in seconds}
+    \centering
+    \begin{tabular}{|c c|c c c c|}
+        \hline
+        Alg. & Dims. & Minimum & Mean & Median & Maximum \\
+        \hline
+        \multirow{3}{*}{Rastrigin} & 2 & 7.19 & 8.3 & 7.58 & 10.8 \\
+        & 30 & 73.9 & 1.11e+02 & 1.11e+02 & 1.47e+02 \\
+        & 100 & 1.88e+02 & 2.73e+02 & 2.26e+02 & 4.53e+02 \\
+        \hline
+        \multirow{3}{*}{Rosenbrock} & 2 & 18.2 & 18.5 & 18.6 & 18.7 \\
+        & 30 & 1.3e+02 & 1.34e+02 & 1.35e+02 & 1.38e+02 \\
+        & 100 & 1.97e+02 & 3.61e+02 & 4.15e+02 & 4.17e+02 \\
+        \hline
+        \multirow{3}{*}{Michalewicz} & 2 & 12.4 & 16.9 & 18.2 & 18.8 \\
+        & 30 & 96.7 & 1.26e+02 & 1.35e+02 & 1.4e+02 \\
+        & 100 & 1.81e+02 & 2.68e+02 & 2.3e+02 & 4.3e+02 \\
+        \hline
+        \multirow{3}{*}{Griewangk} & 2 & 13.1 & 20.3 & 20.2 & 27.7 \\
+        & 30 & 66.2 & 1.08e+02 & 1.1e+02 & 1.47e+02 \\
+        & 100 & 4.21e+02 & 4.28e+02 & 4.29e+02 & 4.32e+02 \\
+        \hline
+    \end{tabular}
+\end{table}
 
-\includesvg[width = 250pt]{../images/hillclimber runtimes(dimension = 2).svg}
+
+\section{Binary hillclimber}
+
+\subsection{Description}
+While floating-point hillclimbers work using decimal representation, binary hillclimbers work with a representation familiar
+to computers: the binary representation. Binary hillclimber can provide better performance than floating-point hillclimbers,
+but they require higher degrees of fine-tuning.
+
+\subsection{Parameters}
+The binary hillclimber was run using the following parameters:
+
+\begin{enumerate}
+    \item An encode function which encoded the given representation to an array of bytes
+    \item A decode function which performed the reverse operation of the encode function
+    \item An initial random floating point solution that is later encoded to binary
+    \item A total of $100$ steps
+\end{enumerate}
+
+\subsection{Results of the experiments}
+The results of the experiments were the following:
+
+\begin{table}[!htbp]
+    \caption{Results}
+    \centering
+    \begin{tabular}{|c c|c c c c|}
+        \hline
+        Alg. & Dims. & Minimum & Mean & Median & Maximum \\
+        \hline
+        \multirow{3}{*}{Rastrigin} & 2 & 0.0 & 0.0 & 0.0 & 0.0 \\
+        & 30 & 0.0 & 0.0 & 0.0 & 0.0 \\
+        & 100 & 0.0 & 0.0 & 0.0 & 0.0 \\
+        \hline
+        \multirow{3}{*}{Rosenbrock} & 2 & 0.99 & 1.5 & 1.5 & 2.0 \\
+        & 30 & 26.0 & 27.2 & 27.4 & 27.9 \\
+        & 100 & 82.8 & 86.1 & 85.8 & 89.9 \\
+        \hline
+        \multirow{3}{*}{Michalewicz} & 2 & -0.871 & -0.702 & -0.783 & -0.37 \\
+        & 30 & -23.1 & -22.2 & -22.0 & -21.5 \\
+        & 100 & -78.3 & -75.0 & -75.5 & -70.8 \\
+        \hline
+        \multirow{3}{*}{Griewangk} & 2 & 0.127 & 0.127 & 0.127 & 0.127 \\
+        & 30 & DnF & DnF & DnF & DnF \\
+        & 100 & DnF & DnF & DnF & DnF \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+    \caption{Timing in seconds}
+    \centering
+    \begin{tabular}{|c c|c c c c|}
+        \hline
+        Alg. & Dims. & Minimum & Mean & Median & Maximum \\
+        \hline
+        \multirow{3}{*}{Rastrigin} & 2 & 1.58e+02 & 1.87e+02 & 1.68e+02 & 2.55e+02 \\
+        & 30 & 1.58e+04 & 2.21e+04 & 2.13e+04 & 2.99e+04 \\
+        & 100 & 1.64e+05 & 1.72e+05 & 1.69e+05 & 1.83e+05 \\
+        \hline
+        \multirow{3}{*}{Rosenbrock} & 2 & 1.58e+02 & 3.14e+02 & 3.44e+02 & 4.12e+02 \\
+        & 30 & 1.57e+04 & 1.89e+04 & 1.59e+04 & 2.82e+04 \\
+        & 100 & 1.7e+05 & 1.79e+05 & 1.8e+05 & 1.86e+05 \\
+        \hline
+        \multirow{3}{*}{Michalewicz} & 2 & 1.62e+02 & 3.14e+02 & 3.35e+02 & 4.23e+02 \\
+        & 30 & 1.52e+04 & 2.51e+04 & 2.64e+04 & 3.25e+04 \\
+        & 100 & 1.59e+05 & 1.63e+05 & 1.64e+05 & 1.67e+05 \\
+        \hline
+        \multirow{3}{*}{Griewangk} & 2 & 1.95e+02 & 3.88e+02 & 4.1e+02 & 5.38e+02 \\
+        & 30 & 1.77e+04 & 2.22e+04 & 2.01e+04 & 3.08e+04 \\
+        & 100 & 1.69e+05 & 1.72e+05 & 1.71e+05 & 1.77e+05 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\pagebreak
+
 
 \section{Genetic algorithms}
 
-\subsection{Definition}
-A genetic algorithm represents a way to solve problems from the combinatorial, numerical, optimisation, timetabling and
-scheduling, robotics etc. spaces, in general being very weakly coupled to problems, thus can be used in multiple
-problem spaces with rather little modifications.
+\subsection{Description}
+A genetic algorithm represents a way to solve problems from the combinatorial, numerical, optimization, timetabling and
+scheduling, robotics etc. spaces, in general being very weakly coupled to problems, thus can be used in multiple problem
+spaces with rather little modifications.
 
-\subsection{Notations}
-Individual:
-\begin{equation} Individual = (genes, value_{fitness}) \end{equation}
-\begin{equation} genes = \{x | x \in \{0, 1\}\} \end{equation}
-\begin{equation} value_{fitness} \in \mathbb{Q} \end{equation}
-\begin{equation} Individual_{decode} = (decode(genes), value_{fitness}) \end{equation}
+\subsection{Selection function}
+Selection is the first primary function of a genetic algorithm. The selection function picks the next peers which will have
+their genes passed to the next generation. There are multiple ways to implement the selection and the code provides two of them:
+tournament selection and roulette-wheel selection. In this paper, only the tournament selection method was used.
 
-Population:
-\begin{equation} Population = \{individual_1, individual_2, \dots\} \end{equation}
-\begin{multline} Population_{decoded} = \{\\individual_{1_{decoded}},\\individual_{2_{decoded}},\\\dots\\\} \end{multline}
+\subsection{Crossover function}
+Crossover is the second primary function of genetic algorithms. It receives two parents' genes and returns two children that
+inherit parts of the genes of the two parents. In this paper, the crossover function supports multi-point crossovers.
 
-Population:
-\begin{equation} Population = \{individual_1, individual_2, \dots\} \end{equation}
+\subsection{Mutation function}
+Mutation is the third primary function of genetic algorithms. Given a child, it changes its genes based on a given mutation chance
+parameter. The mutation is performed on each bit of the child's genes. The purpose of the function is to decrease the chance
+the algorithm gets stuck in a local optima. In case the individual performs lower due to the changes made, the individual might
+get dropped the next time the selection function is run.
 
-Number of individuals in a population:
-\begin{equation} |Population| = n, n \in \mathbb{N}, n \geq 1 \end{equation}
-
-Number of generations:
-\begin{equation} generation \in \mathbb{N} \end{equation}
-
-Encode individual to binary function:
-\begin{equation} encode : x \rightarrow \{v | v \in \{0, 1\}\} \end{equation}
-
-Decode individual from binary function:
-\begin{equation} decode : \{v | v \in \{0, 1\}\} \rightarrow x \end{equation}
-
-Criteria function:
-\begin{multline} criteria : (\\Population_{decoded},\\ Population_{fitness}, \\generation\\) \rightarrow \{True, False\} \end{multline}
-
-Fitness function:
-\begin{equation} fitness : individual_{decoded} \rightarrow \mathbb{Q} \end{equation}
-
-Selection function:
-\begin{multline} select : (\\individual_{decoded}, \\individual_{decoded}\\) \rightarrow (\\individual_{decoded}, \\individual_{decoded}\\) \end{multline}
-
-Crossover points:
-\begin{equation} bits_{crossover} = \{bit_{crossover} | bit_{crossover} \in \mathbb{N}\} \end{equation}
-
-Mutation function:
-\begin{equation} mutate : individual \rightarrow individual \end{equation}
-
-Mutation chance:
-\begin{equation} mutation \in \mathbb{Q}, mutation \in [0, 1] \end{equation}
-
-\subsection{High-level implementation}
-As a high-level view, the algorithm performs the following steps:
-\begin{enumerate}
-    \item Generate a population of $n$ binary-encoded individuals randomly.
-    \item While the criteria function $criteria$ does not return $True$, be the criteria number of generations, ``fitness'' values of the population or something else:
-    \begin{enumerate}
-        \item Calculate the ``fitness'' of each individual in the population using the function $fitness$.
-        \item Sort the population by the ``fitness'' value.
-        \item Create a new and empty population set, $Population'$.
-        \item For $n / 2$ iterations:
-        \begin{enumerate}
-            \item Perform the selection of parents for the next individuals using the $selection$ function.
-            \item Crossover the 2 selected parents at the $crossover$ bit, generating 2 children, $child_1$, $child_2$.
-            \item Mutate $child_1$, given the $mutate$ function and the $mutation$ chance using an internal mutation function.
-            \item Mutate $child_2$, given the $mutate$ function and the $mutation$ chance.
-            \item Add $child_1$ and $child_2$ to $Population'$
-        \end{enumerate}
-        \item Perform $Population = Population'$
-    \end{enumerate}
-    \item Return the most ``fit'' individual in the population, represented by the individual on which the $fitness$ function returned the highest score.
-\end{enumerate}
+\subsection{Fitness function}
+The fitness function represents a function external to the genetic algorithm which it will have to optimise. In this paper, the fitness
+function is represented by the 4 functions to optimise: Rastrigin's, Rosenbrock's, Michalewicz's and Griewangk's.
 
 \subsection{Time complexity}
 The time complexity of genetic algorithms can be difficult to determine as it depends on many factors such as the size of the population,
 the number of generations and the specifics of the algorithm. In general, this would be considered $\mathcal{O}(n^2)$ or $\mathcal{O}(n^3)$.
 
-\subsection{Fitness function}
-The fitness function represents the function we want to optimise for. Due to the selection process of the genetic
-algorithm returning the 2 most ``fit'' individuals, and using them as seeds for the children of the next generation,
-this can be infered.
-
-\subsection{Selection function}
-The selection function aims to select 2 of the most ``fit'' individuals from the population. This function is provided
-by the user of the genetic algorithm in order to improve the flexibility of the algorithm.
-
-\subsection{Crossover function}
-The algorithm includes a crossover function. The crossover takes the 2 given individuals $parent_1$, $parent_2$ and performs the following:
+\subsection{Parameters}
+The genetic algorithm was run using the following parameters:
 
 \begin{enumerate}
-    \item For each $bit_{crossover} \in bits_{crossover}$:
-    \begin{enumerate}
-        \item For child $child_1$, the $bit_i < bit_{crossover}$ bits from the parent $parent_1$'s genes and $bit_i \ge bit_{crossover}$ bits from the $parent_2$'s genes are borrowed.
-        \item For child $child_2$, the $bit_i < bit_{crossover}$ bits from the parent $parent_2$'s genes and $bit_i \ge bit_{crossover}$ bits from the $parent_1$'s genes are borrowed.
-        \item $parent_1, parent_2 = parent_2, parent_1$
-    \end{enumerate}
+    \item An encode function which encoded the given representation to an array of bytes
+    \item A decode function which performed the reverse operation of the encode function
+    \item An initial population of $100$ individuals
+    \item A total of $100$ generations
+    \item Tournament selection using samples of $20$ individuals
+    \item Multi-point crossover in $2$ points: bit $4$ and bit $9$
+    \item A mutation chance of $0.0001$
 \end{enumerate}
 
-For a parent $parent_1$ with $parent_1.genes = 01010101$, a parent $parent_2$ with $parent_2.genes = 10101010$, and crossover bits $bits_{crossover} = \{3\}$, the results would be:
+\subsection{Results of the experiments}
+The results of the experiments were the following:
 
-\begin{enumerate}
-    \item $child_1.genes = 01101010$
-    \item $child_2.genes = 10010101$
-\end{enumerate}
+\begin{table}[!htbp]
+    \caption{Results}
+    \centering
+    \begin{tabular}{|c c|c c c c|}
+        \hline
+        Alg. & Dims. & Minimum & Mean & Median & Maximum \\
+        \hline
+        \multirow{3}{*}{Rastrigin} & 2 & 0.0 & 0.00406 & 0.0 & 0.0162 \\
+        & 30 & 62.4 & 7.25e+19 & 1.76e+10 & 2.9e+20 \\
+        & 100 & 7.95e+19 & 6.31e+73 & 3.46e+39 & 2.53e+74 \\
+        \hline
+        \multirow{3}{*}{Rosenbrock} & 2 & 5.7e-05 & 0.602 & 0.204 & 2.0 \\
+        & 30 & 30.9 & 1.99e+02 & 32.4 & 6.99e+02 \\
+        & 100 & 1.38e+03 & 4.18e+150 & 1.49e+117 & 1.67e+151 \\
+        \hline
+        \multirow{3}{*}{Michalewicz} & 2 & -0.801 & -0.6 & -0.799 & 1.78e-19 \\
+        & 30 & -14.5 & -13.4 & -13.4 & -12.3 \\
+        & 100 & -40.8 & -39.6 & -39.3 & -38.6 \\
+        \hline
+        \multirow{3}{*}{Griewangk} & 2 & 0.0 & 0.0382 & 0.0239 & 0.105 \\
+        & 30 & DnF & DnF & DnF & DnF \\
+        & 100 & DnF & DnF & DnF & DnF \\
+        \hline
+    \end{tabular}
+\end{table}
 
-\subsection{Mutation function}
-The mutation function aims to increase the possibility of a greater solution and the chance of escaping
-the local optima of the final solution. In this function, each bit $bit_i$ of the individual's genes
-is flipped when a probability $P(mutate) > mutation$ and the individual is returned.
+\begin{table}[!htbp]
+    \caption{Runtime in seconds}
+    \centering
+    \begin{tabular}{|c c|c c c c|}
+        \hline
+        Alg. & Dims. & Minimum & Mean & Median & Maximum \\
+        \hline
+        \multirow{3}{*}{Rastrigin} & 2 & 2.48e+03 & 2.55e+03 & 2.57e+03 & 2.59e+03 \\
+        & 30 & 2.11e+04 & 2.57e+04 & 2.6e+04 & 2.96e+04 \\
+        & 100 & 7.19e+04 & 8.9e+04 & 7.77e+04 & 1.29e+05 \\
+        \hline
+        \multirow{3}{*}{Rosenbrock} & 2 & 4.93e+03 & 5.24e+03 & 5.33e+03 & 5.35e+03 \\
+        & 30 & 2.14e+04 & 3.39e+04 & 3.14e+04 & 5.12e+04 \\
+        & 100 & 7.35e+04 & 8.06e+04 & 7.78e+04 & 9.35e+04 \\
+        \hline
+        \multirow{3}{*}{Michalewicz} & 2 & 3.62e+03 & 4.92e+03 & 5.34e+03 & 5.38e+03 \\
+        & 30 & 2.1e+04 & 3.63e+04 & 3.62e+04 & 5.16e+04 \\
+        & 100 & 6.59e+04 & 7.59e+04 & 7.37e+04 & 9.03e+04 \\
+        \hline
+        \multirow{3}{*}{Griewangk} & 2 & 3.85e+03 & 4.54e+03 & 4.3e+03 & 5.71e+03 \\
+        & 30 & DnF & DnF & DnF & DnF \\
+        & 100 & DnF & DnF & DnF & DnF \\
+        \hline
+    \end{tabular}
+\end{table}
 
-Having this performed, the new individual might have a lower or higher ``fitness'' than the rest of the population,
-``fitness'' which will be captured by the $fitness$ and later ``judged'' by the $select$ functions.
-
-In case the individual performs lower due to the change, the individual is dropped. The other way around is also possible:
-in case the individual performs higher (possibly even significantly so), the individual is promoted by the $select$ function.
-
-\subsection{Generations}
-The algorithm does not aim to provide the best solution first-try, thus it needs time for it to improve. Given enough time
-(expressed in generations), it can provide better solutions, as the ``fitness'' of the individual increases.
-
-\subsection{Algorithm Demonstrations and Graphical Analysis}
-
-Idem to the preceeding section, when $dimension(x) = 2$, the algorithm offers
-the following results in logarithmic scale:
-\includesvg[width = 250pt]{../images/binary genetic algorithm fitness(dimension = 2).svg}
-
-With the following runtimes:
-\includesvg[width = 250pt]{../images/binary genetic algorithm runtimes(dimension = 2).svg}
-
-\section{Hybridisation}
+\section{Hybridization}
 
 \subsection{Motivation}
 While the 2 algorithms can be used independently of each other and can in turn produce good results, they can also be
@@ -263,49 +329,86 @@ The algrorithm \textit{might} deceive the user into thinking it is simple in com
 algorithm \textit{and} the hillclimber algorithm in the same function calls brings higher complexity than the two algorithms
 taken without other dependencies.
 
-\subsection{High-level implementation}
-As a high-level view, the algorithm performs the following steps:
-\begin{enumerate}
-    \item While $generations < generations_{limit}$:
-    \begin{enumerate}
-        \item Run a step of the binary genetic algorithm, returning $Population_{decoded}$
-        \item If the hillclimber algorithm should be run:
-        \begin{enumerate}
-            \item For each $individual_{decoded} \in Population_{decoded}$:
-            \begin{enumerate}
-                \item Run the hill climbing algorithm on the individual $individual_{decoded}$, returning $individual_{decoded}'$
-                \item Run $individual_{decoded} = individual_{decoded}'$
-            \end{enumerate}
-        \end{enumerate}
-    \end{enumerate}
-\end{enumerate}
-
 \subsection{Time complexity}
-While the algorithm appears to have a low complexity at first, this would have the complexity $\mathcal{O}(n^2 + n)$, as both
-the genetic and the hill climbing algorithms are run in tandem.
+While during a high-level view of the algorithm it appears to have a low complexity, this would have the complexity
+$\mathcal{O}(n^2 + n)$, as both the genetic and the hill climbing algorithms are run in tandem.
 
-\subsection{Algorithm Demonstrations and Graphical Analysis}
-On the 4 test functions, the algorithm has given the following results when $dimension(x) = 2$:
+\subsection{Parameters}
+The hybrid algorithm was run using the following parameters:
 
-\includesvg[width = 250pt]{../images/hybrid algorithm fitness(dimension = 2).svg}
-
-In the following times:
-\includesvg[width = 250pt]{../images/hybrid algorithm runtimes(dimension = 2).svg}
-
-\subsection{Testing}
-During testing with a function $f : [0, 31] \rightarrow \mathbb{R}, f(x) = x^3 - 60*x^2 + 900*x + 100$ with an maxima of $10$ in the given domain, the algorithm:
 \begin{enumerate}
-    \item Did not escape the given boundaries (issue encountered with the genetic algorithm).
-    \item Did provide a better approximation of the solution (issue encountered with the hillclimber algorithm).
+    \item An encode function which encoded the given representation to an array of bytes
+    \item A decode function which performed the reverse operation of the encode function
+    \item An initial population of $100$ individuals
+    \item A total of $100$ generations
+    \item Tournament selection using samples of $20$ individuals
+    \item Multi-point crossover in $2$ points: bit $4$ and bit $9$
+    \item A mutation chance of $0.0001$
+    \item The hillclimber is run once $10$ generations
+    \item The hillclimber is the floating-point hillclimber due to its performance
 \end{enumerate}
 
-From the observations, the hybrid algorithm provided promising solutions. Surprinsingly, there were instances
-where it outperformed the binary genetic algorithm in timing.
+\subsection{Results of the experiments}
+The results of the experiments were the following:
+
+\begin{table}[!htbp]
+    \caption{Results}
+    \centering
+    \begin{tabular}{|c c|c c c c|}
+        \hline
+        Alg. & Dims. & Minimum & Mean & Median & Maximum \\
+        \hline
+        \multirow{3}{*}{Rastrigin} & 2 & 0.0 & 0.0 & 0.0 & 0.0 \\
+        & 30 & 0.0 & 0.0 & 0.0 & 0.0 \\
+        & 100 & 0.0 & 1.62e+36 & 6.47 & 6.49e+36 \\
+        \hline
+        \multirow{3}{*}{Rosenbrock} & 2 & 3.59e-13 & 0.249 & 0.00313 & 0.99 \\
+        & 30 & 12.2 & 3.35e+155 & 20.9 & 1.34e+156 \\
+        & 100 & 1.16e+138 & 1.01e+156 & 1.34e+156 & 1.34e+156 \\
+        \hline
+        \multirow{3}{*}{Michalewicz} & 2 & -0.985 & -0.725 & -0.958 & 5.5e-15 \\
+        & 30 & -24.3 & -23.0 & -22.8 & -22.2 \\
+        & 100 & -82.5 & -79.9 & -79.9 & -77.3 \\
+        \hline
+        \multirow{3}{*}{Griewangk} & 2 & 0.0 & 0.0 & 0.0 & 0.0 \\
+        & 30 & DnF & DnF & DnF & DnF \\
+        & 100 & DnF & DnF & DnF & DnF \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+    \caption{Runtime in seconds}
+    \centering
+    \begin{tabular}{|c c|c c c c|}
+        \hline
+        Alg. & Dims. & Minimum & Mean & Median & Maximum \\
+        \hline
+        \multirow{3}{*}{Rastrigin} & 2 & 4e+03 & 5.77e+03 & 4.75e+03 & 9.59e+03 \\
+        & 30 & 1.95e+05 & 2.18e+05 & 1.97e+05 & 2.85e+05 \\
+        & 100 & 1.69e+06 & 1.73e+06 & 1.73e+06 & 1.75e+06 \\
+        \hline
+        \multirow{3}{*}{Rosenbrock} & 2 & 4e+03 & 5.78e+03 & 5.12e+03 & 8.87e+03 \\
+        & 30 & 1.74e+05 & 2.09e+05 & 1.91e+05 & 2.79e+05 \\
+        & 100 & 1.66e+06 & 1.7e+06 & 1.7e+06 & 1.71e+06 \\
+        \hline
+        \multirow{3}{*}{Michalewicz} & 2 & 4e+03 & 7.98e+03 & 9.02e+03 & 9.9e+03 \\
+        & 30 & 1.99e+05 & 2.36e+05 & 2.35e+05 & 2.73e+05 \\
+        & 100 & 1.62e+06 & 1.64e+06 & 1.64e+06 & 1.64e+06 \\
+        \hline
+        \multirow{3}{*}{Griewangk} & 2 & 7.98e+03 & 9.16e+03 & 8.94e+03 & 1.08e+04 \\
+        & 30 & DnF & DnF & DnF & DnF \\
+        & 100 & DnF & DnF & DnF & DnF \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\pagebreak
 
 \section{Conclusions}
 Each presented algorithm has its use-cases. While some \textit{can be} used in real-time systems due to their speed,
 they are prone to getting stuck in the local optima, and while others are really powerful, they are not fast enough
-to provide solutions in sensible time. A hybridisation of the two algorithms would partially mitigate the downsides, perhaps
+to provide solutions in sensible time. A hybridization of the two algorithms would partially mitigate the downsides, perhaps
 with added complexity.
 
 \begin{thebibliography}{00}
