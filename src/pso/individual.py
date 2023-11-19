@@ -13,10 +13,8 @@ class Individual:
     __personal_best_position_bias: np.float32
     __team_best_position_bias: np.float32
     __random_jitter_bias: np.float32
-    __fitness_function: t.Callable[
-        [npt.NDArray[np.float32], npt.NDArray[np.float32]], npt.NDArray[np.float32]
-    ]
-    __fitness_compare_function: t.Callable[[np.float32, np.float32], bool],
+    __fitness_function: t.Callable[[npt.NDArray[np.float32]], np.float32]
+    __fitness_compare_function: t.Callable[[np.float32, np.float32], bool]
 
     def __init__(
         self,
@@ -25,7 +23,7 @@ class Individual:
         personal_best_position_bias: np.float32,
         team_best_position_bias: np.float32,
         random_jitter_bias: np.float32,
-        fitness_function: t.Callable[[np.float32], np.float32],
+        fitness_function: t.Callable[[npt.NDArray[np.float32]], np.float32],
         fitness_compare_function: t.Callable[[np.float32, np.float32], bool],
     ) -> None:
         self.__position = initial_position
@@ -40,6 +38,9 @@ class Individual:
         self.__fitness_function = fitness_function
         self.__fitness_compare_function = fitness_compare_function
 
+        self.__fitness = self.__fitness_function(self.__position)
+        self.__personal_best_fitness = self.__fitness
+
     @property
     def position(self) -> npt.NDArray[np.float32]:
         return self.__position
@@ -47,7 +48,7 @@ class Individual:
     @property
     def personal_best_position(self) -> npt.NDArray[np.float32]:
         return self.__personal_best_position
-    
+
     @property
     def fitness(self) -> np.float32:
         return self.__fitness
