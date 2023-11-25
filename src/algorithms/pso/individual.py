@@ -26,11 +26,11 @@ class Individual:
         fitness_function: t.Callable[[npt.NDArray[np.float32]], np.float32],
         fitness_compare_function: t.Callable[[np.float32, np.float32], bool],
     ) -> None:
-        self.__position = initial_position
+        self.__position = np.array(initial_position)
         self.__velocity = np.array(
-            [np.random.uniform(low=-1, high=1) for _ in range(self.__position)]
+            [np.random.uniform(low=-1, high=1) for _ in range(len(self.__position))]
         )
-        self.__personal_best_position = initial_position
+        self.__personal_best_position = np.array(initial_position)
         self.__inertia_bias = inertia_bias
         self.__personal_best_position_bias = personal_best_position_bias
         self.__team_best_position_bias = team_best_position_bias
@@ -60,9 +60,9 @@ class Individual:
     def update(self, team_best_position: npt.NDArray[np.float32]) -> None:
         self.__velocity = self.__velocity * self.__inertia_bias
         self.__velocity += (
-            self.__personal_best_position * self.__personal_best_position_bias
+            (self.__personal_best_position - self.__position) * self.__personal_best_position_bias
         )
-        self.__velocity += team_best_position * self.__team_best_position_bias
+        self.__velocity += (team_best_position - self.__position) * self.__team_best_position_bias
         self.__velocity += np.array(
             [
                 self.__random_jitter_bias * np.random.uniform(low=-1, high=1)

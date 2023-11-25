@@ -1,11 +1,11 @@
 import typing as t
 import numpy as np
 import numpy.typing as npt
-from pso.individual import Individual
+from algorithms.pso.individual import Individual
 from util.sort import quicksort
 
 
-class Algorithm:
+class ParticleSwarmOptimisation:
     __population: t.List[Individual]
     __generation: np.uint64
     __fitness_compare_function: t.Callable[[np.float32, np.float32], bool]
@@ -50,7 +50,7 @@ class Algorithm:
     def run(self) -> t.Tuple[np.float32, np.float32, np.uint64]:
         best_individual = self.__population[0]
 
-        while self.__criteria_function(
+        while not self.__criteria_function(
             best_individual.position, best_individual.fitness, self.__generation
         ):
             self.step()
@@ -74,5 +74,6 @@ class Algorithm:
         best_individual = self.__population[0]
 
         self.__generation += 1
+        print(self.__generation, best_individual.fitness)
 
         return best_individual.position, best_individual.fitness, self.__generation
