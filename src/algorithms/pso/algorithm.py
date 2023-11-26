@@ -6,10 +6,10 @@ from util.sort import quicksort
 
 
 class ParticleSwarmOptimisation:
-    __population: t.List[Individual]
-    __generation: np.uint64
-    __fitness_compare_function: t.Callable[[np.float32, np.float32], bool]
-    __criteria_function: t.Callable[[t.List[np.float32], np.float32, np.uint64], bool]
+    _population: t.List[Individual]
+    _generation: np.uint64
+    _fitness_compare_function: t.Callable[[np.float32, np.float32], bool]
+    _criteria_function: t.Callable[[t.List[np.float32], np.float32, np.uint64], bool]
 
     __debug: bool
 
@@ -27,7 +27,7 @@ class ParticleSwarmOptimisation:
         random_jitter_bias: np.float32,
         debug: bool = False,
     ) -> None:
-        self.__population = [
+        self._population = [
             Individual(
                 initial_position=position,
                 inertia_bias=inertia_bias,
@@ -39,55 +39,55 @@ class ParticleSwarmOptimisation:
             )
             for position in generate_initial_population()
         ]
-        self.__generation = np.uint64(0)
-        self.__fitness_compare_function = fitness_compare_function
-        self.__criteria_function = criteria_function
+        self._generation = np.uint64(0)
+        self._fitness_compare_function = fitness_compare_function
+        self._criteria_function = criteria_function
 
         self.__debug = debug
 
-        self.__population = quicksort(
-            data=self.__population,
-            comparator=lambda a, b: self.__fitness_compare_function(
+        self._population = quicksort(
+            data=self._population,
+            comparator=lambda a, b: self._fitness_compare_function(
                 a.fitness, b.fitness
             ),
         )
 
     def run(self) -> t.Tuple[np.float32, np.float32, np.uint64]:
-        best_individual = self.__population[0]
+        best_individual = self._population[0]
 
-        while not self.__criteria_function(
-            best_individual.position, best_individual.fitness, self.__generation
+        while not self._criteria_function(
+            best_individual.position, best_individual.fitness, self._generation
         ):
             self.step()
 
-        best_individual = self.__population[0]
+        best_individual = self._population[0]
 
-        return best_individual.position, best_individual.fitness, self.__generation
+        return best_individual.position, best_individual.fitness, self._generation
 
     def step(self) -> t.Tuple[np.float32, np.float32, np.uint64]:
-        self._print(self.__generation)
-        best_individual = self.__population[0]
+        self._print(self._generation)
+        best_individual = self._population[0]
 
-        for individual in self.__population:
+        for individual in self._population:
             individual.update(team_best_position=best_individual.personal_best_position)
 
-        self.__population = quicksort(
-            data=self.__population,
-            comparator=lambda a, b: self.__fitness_compare_function(
+        self._population = quicksort(
+            data=self._population,
+            comparator=lambda a, b: self._fitness_compare_function(
                 a.fitness, b.fitness
             ),
         )
-        best_individual = self.__population[0]
+        best_individual = self._population[0]
 
-        self.__generation += 1
+        self._generation += 1
 
-        return best_individual.position, best_individual.fitness, self.__generation
+        return best_individual.position, best_individual.fitness, self._generation
 
     def _print(self, generation: int) -> None:
         if not self.__debug:
             return
 
-        best_individual = self.__population[0]
+        best_individual = self._population[0]
         print(
             f"Particle swarm optimisation algorithm generation {generation}: {best_individual.fitness}"
         )
