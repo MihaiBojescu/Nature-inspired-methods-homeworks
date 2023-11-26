@@ -11,6 +11,8 @@ class ParticleSwarmOptimisation:
     __fitness_compare_function: t.Callable[[np.float32, np.float32], bool]
     __criteria_function: t.Callable[[t.List[np.float32], np.float32, np.uint64], bool]
 
+    __debug: bool
+
     def __init__(
         self,
         generate_initial_population: t.Callable[[], npt.NDArray[np.float32]],
@@ -23,6 +25,7 @@ class ParticleSwarmOptimisation:
         personal_best_position_bias: np.float32,
         team_best_position_bias: np.float32,
         random_jitter_bias: np.float32,
+        debug: bool = False,
     ) -> None:
         self.__population = [
             Individual(
@@ -39,6 +42,8 @@ class ParticleSwarmOptimisation:
         self.__generation = np.uint64(0)
         self.__fitness_compare_function = fitness_compare_function
         self.__criteria_function = criteria_function
+
+        self.__debug = debug
 
         self.__population = quicksort(
             data=self.__population,
@@ -60,6 +65,7 @@ class ParticleSwarmOptimisation:
         return best_individual.position, best_individual.fitness, self.__generation
 
     def step(self) -> t.Tuple[np.float32, np.float32, np.uint64]:
+        self._print(self.__generation)
         best_individual = self.__population[0]
 
         for individual in self.__population:
@@ -74,6 +80,14 @@ class ParticleSwarmOptimisation:
         best_individual = self.__population[0]
 
         self.__generation += 1
-        print(self.__generation, best_individual.fitness)
 
         return best_individual.position, best_individual.fitness, self.__generation
+
+    def _print(self, generation: int) -> None:
+        if not self.__debug:
+            return
+
+        best_individual = self.__population[0]
+        print(
+            f"Particle swarm optimisation algorithm generation {generation}: {best_individual.fitness}"
+        )
