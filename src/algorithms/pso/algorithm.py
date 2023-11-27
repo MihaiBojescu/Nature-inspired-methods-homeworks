@@ -57,16 +57,25 @@ class ParticleSwarmOptimisation:
     def from_function_definition(
         function_definition: FunctionDefinition,
         population_size: int = 100,
-        criteria_function: t.Callable[
-            [t.List[np.float32], np.float32, np.uint64], bool
-        ] = lambda _values, _fitness, generation: generation
-        > 100,
+        criteria_function: t.Union[
+            t.Literal["auto"],
+            t.Callable[[t.List[np.float32], np.float32, np.uint64], bool],
+        ] = "auto",
         inertia_bias: float = 0.4,
         personal_best_position_bias: float = 0.7,
         team_best_position_bias: float = 0.6,
         random_jitter_bias: float = 0.02,
         debug: bool = False,
     ) -> t.Self:
+        cached_min_best_result = function_definition.best_result - 0.05
+        cached_max_best_result = function_definition.best_result + 0.05
+        criteria_function = (
+            criteria_function
+            if criteria_function != "auto"
+            else lambda _values, fitness, generation: generation > 100
+            or cached_min_best_result < fitness < cached_max_best_result
+        )
+
         return ParticleSwarmOptimisation(
             generate_initial_population=lambda: [
                 [
