@@ -56,6 +56,7 @@ class ParticleSwarmOptimisation:
     @staticmethod
     def from_function_definition(
         function_definition: FunctionDefinition,
+        dimensions: int = 1,
         population_size: int = 100,
         criteria_function: t.Union[
             t.Literal["auto"],
@@ -83,6 +84,7 @@ class ParticleSwarmOptimisation:
                         low=function_definition.value_boundaries.min,
                         high=function_definition.value_boundaries.max,
                     )
+                    for _ in range(dimensions)
                 ]
                 for _ in range(population_size)
             ],

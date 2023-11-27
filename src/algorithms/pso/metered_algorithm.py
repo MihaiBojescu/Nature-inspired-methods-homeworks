@@ -45,7 +45,9 @@ class MeteredParticleSwarmOptimisation(ParticleSwarmOptimisation):
     @staticmethod
     def from_function_definition(
         function_definition: FunctionDefinition,
+        dimensions: int = 1,
         population_size: int = 100,
+        generations: int = 100,
         criteria_function: t.Union[
             t.Literal["auto"],
             t.Callable[[t.List[np.float32], np.float32, np.uint64], bool],
@@ -61,7 +63,7 @@ class MeteredParticleSwarmOptimisation(ParticleSwarmOptimisation):
         criteria_function = (
             criteria_function
             if criteria_function != "auto"
-            else lambda _values, fitness, generation: generation > 100
+            else lambda _values, fitness, generation: generation > generations
             or cached_min_best_result < fitness < cached_max_best_result
         )
 
@@ -72,6 +74,7 @@ class MeteredParticleSwarmOptimisation(ParticleSwarmOptimisation):
                         low=function_definition.value_boundaries.min,
                         high=function_definition.value_boundaries.max,
                     )
+                    for _ in range(dimensions)
                 ]
                 for _ in range(population_size)
             ],
