@@ -3,10 +3,11 @@ import numpy as np
 import numpy.typing as npt
 from algorithms.pso.individual import Individual
 from functions.definition import FunctionDefinition
+from algorithms.base.algorithm import BaseAlgorithm
 from util.sort import maximise, minimise, quicksort
 
 
-class ParticleSwarmOptimisation:
+class ParticleSwarmOptimisation(BaseAlgorithm):
     _population: t.List[Individual]
     _generation: np.uint64
     _fitness_compare_function: t.Callable[[np.float32, np.float32], bool]
