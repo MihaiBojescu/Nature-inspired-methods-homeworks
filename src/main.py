@@ -61,11 +61,11 @@ def process(
     dimensions: int,
     algorithm: BaseAlgorithm,
 ):
-    name = f"{function_definition.name}(dimensions = {dimensions}) - {algorithm.name}"
+    name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions})"
 
-    print(f"Running {algorithm.name} for {name}")
+    print(f"Running {name}")
     result = algorithm.run()
-    print(f"Finished {algorithm.name} for {name}: {result}")
+    print(f"Finished {name}: {result}")
 
     save_metrics(
         name=f"{name}: Runtime",
