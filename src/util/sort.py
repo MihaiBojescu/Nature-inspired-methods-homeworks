@@ -1,6 +1,7 @@
 import typing as t
 
-Data = t.TypeVar('Data')
+Data = t.TypeVar("Data")
+
 
 def quicksort(data: t.List[Data], comparator: t.Callable[[Data, Data], bool]):
     stack = [(0, len(data) - 1)]
@@ -30,3 +31,11 @@ def partition(
     data[i + 1], data[high] = data[high], data[i + 1]
 
     return i + 1
+
+
+def minimise(a: Data, b: Data) -> bool:
+    return a < b
+
+
+def maximise(a: Data, b: Data) -> bool:
+    return a > b
