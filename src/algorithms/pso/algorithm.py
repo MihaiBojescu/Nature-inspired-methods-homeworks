@@ -68,7 +68,7 @@ class ParticleSwarmOptimisation(BaseAlgorithm):
         team_best_position_bias: float = 0.6,
         random_jitter_bias: float = 0.02,
         debug: bool = False,
-    ) -> t.Self:
+    ):
         cached_min_best_result = function_definition.best_result - 0.05
         cached_max_best_result = function_definition.best_result + 0.05
         criteria_function = (
@@ -100,7 +100,7 @@ class ParticleSwarmOptimisation(BaseAlgorithm):
             random_jitter_bias=random_jitter_bias,
             debug=debug,
         )
-    
+
     @property
     def name(self) -> str:
         return "PSO algorithm"
