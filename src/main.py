@@ -28,16 +28,21 @@ def build_instances():
             function_definition,
             dimension,
             inertia,
+            personal_bias,
+            team_bias,
             MeteredParticleSwarmOptimisation.from_function_definition(
                 function_definition=function_definition,
                 dimensions=dimension,
                 generations=100,
                 inertia_bias=inertia,
+                personal_best_position_bias=personal_bias,
+                team_best_position_bias=team_bias,
             ),
         )
         for inertia in [0.0, 0.25, 0.5, 0.75, 1.0]
+        for personal_bias in [0.0, 0.25, 0.5, 0.75, 1.0]
+        for team_bias in [0.0, 0.25, 0.5, 0.75, 1.0]
         for dimension in [2, 30, 100]
-        for inertia in [0.2, 0.5, 1.0]
         for function_definition in [
             rosenbrock_definition,
             michalewicz_definition,
@@ -61,6 +66,8 @@ def wrap_instances_in_processes(
                 function_definition,
                 dimensions,
                 inertia,
+                personal_bias,
+                team_bias,
                 algorithm,
                 semaphore
             ),
@@ -69,7 +76,8 @@ def wrap_instances_in_processes(
             function_definition,
             dimensions,
             inertia,
-        for (function_definition, dimensions, inertia, algorithm) in instances
+            personal_bias,
+            team_bias,
             algorithm,
         ) in instances
     ]
@@ -79,10 +87,13 @@ def process(
     function_definition: FunctionDefinition,
     dimensions: int,
     inertia: float,
+    personal_bias: float,
+    team_bias: float,
     algorithm: BaseAlgorithm,
     semaphore: Semaphore
 ):
     semaphore.acquire()
+    name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, inertia = {inertia}, team_bias = {team_bias}, personal_bias = {personal_bias})"
 
     print(f"Running {name}")
     result = algorithm.run()
