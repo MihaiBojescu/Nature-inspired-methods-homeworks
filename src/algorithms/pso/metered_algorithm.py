@@ -3,6 +3,8 @@ import typing as t
 import numpy as np
 import numpy.typing as npt
 from algorithms.pso.algorithm import ParticleSwarmOptimisation
+from functions.definition import FunctionDefinition
+from util.sort import maximise, minimise
 
 
 class MeteredParticleSwarmOptimisation(ParticleSwarmOptimisation):
@@ -33,12 +35,48 @@ class MeteredParticleSwarmOptimisation(ParticleSwarmOptimisation):
             personal_best_position_bias=personal_best_position_bias,
             team_best_position_bias=team_best_position_bias,
             random_jitter_bias=random_jitter_bias,
-            debug=debug
+            debug=debug,
         )
 
         self.__metrics_runtime = []
         self.__metrics_values = []
         self.__metrics_fitness = []
+
+    @staticmethod
+    def from_function_definition(
+        function_definition: FunctionDefinition,
+        population_size: int = 100,
+        criteria_function: t.Callable[
+            [t.List[np.float32], np.float32, np.uint64], bool
+        ] = lambda _values, _fitness, generation: generation
+        > 100,
+        inertia_bias: float = 0.4,
+        personal_best_position_bias: float = 0.7,
+        team_best_position_bias: float = 0.6,
+        random_jitter_bias: float = 0.02,
+        debug: bool = False,
+    ) -> t.Self:
+        return MeteredParticleSwarmOptimisation(
+            generate_initial_population=lambda: [
+                [
+                    np.random.uniform(
+                        low=function_definition.value_boundaries.min,
+                        high=function_definition.value_boundaries.max,
+                    )
+                ]
+                for _ in range(population_size)
+            ],
+            fitness_function=function_definition.function,
+            fitness_compare_function=maximise
+            if function_definition.target == "maximise"
+            else minimise,
+            criteria_function=criteria_function,
+            inertia_bias=inertia_bias,
+            personal_best_position_bias=personal_best_position_bias,
+            team_best_position_bias=team_best_position_bias,
+            random_jitter_bias=random_jitter_bias,
+            debug=debug,
+        )
 
     def run(self) -> t.Tuple[np.float32, np.float32, np.uint64]:
         then = time.time_ns()
