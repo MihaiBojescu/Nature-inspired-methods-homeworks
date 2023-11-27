@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import typing as t
-from multiprocessing import Process
+from multiprocessing import Process, Semaphore
 from algorithms.pso.metered_algorithm import MeteredParticleSwarmOptimisation
 from algorithms.base.algorithm import BaseAlgorithm
 from functions.rastrigin import rastrigin_definition
@@ -13,7 +13,7 @@ from util.import_export import save_metrics
 
 def main():
     instances = build_instances()
-    instances = wrap_instances_in_processes(instances)
+    instances = wrap_instances_in_processes(instances, 8)
 
     for algorithm in instances:
         algorithm.start()
@@ -31,10 +31,11 @@ def build_instances():
             MeteredParticleSwarmOptimisation.from_function_definition(
                 function_definition=function_definition,
                 dimensions=dimension,
-                generations=500,
+                generations=100,
                 inertia_bias=inertia,
             ),
         )
+        for inertia in [0.0, 0.25, 0.5, 0.75, 1.0]
         for dimension in [2, 30, 100]
         for inertia in [0.2, 0.5, 1.0]
         for function_definition in [
@@ -47,13 +48,30 @@ def build_instances():
 
 
 def wrap_instances_in_processes(
-    instances: t.List[t.Tuple[FunctionDefinition, int, float, BaseAlgorithm]]
+    instances: t.List[
+        t.Tuple[FunctionDefinition, int, float, float, float, BaseAlgorithm]
+    ],
+    concurrency: int
 ):
+    semaphore = Semaphore(concurrency)
     return [
         Process(
-            target=process, args=(function_definition, dimensions, inertia, algorithm)
+            target=process,
+            args=(
+                function_definition,
+                dimensions,
+                inertia,
+                algorithm,
+                semaphore
+            ),
         )
+        for (
+            function_definition,
+            dimensions,
+            inertia,
         for (function_definition, dimensions, inertia, algorithm) in instances
+            algorithm,
+        ) in instances
     ]
 
 
@@ -62,8 +80,9 @@ def process(
     dimensions: int,
     inertia: float,
     algorithm: BaseAlgorithm,
+    semaphore: Semaphore
 ):
-    name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, inertia = {inertia})"
+    semaphore.acquire()
 
     print(f"Running {name}")
     result = algorithm.run()
@@ -84,6 +103,7 @@ def process(
         metrics=algorithm.metrics_values,
         metric_names=("generation", "values"),
     )
+    semaphore.release()
 
 
 if __name__ == "__main__":
