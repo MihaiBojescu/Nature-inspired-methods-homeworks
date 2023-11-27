@@ -100,6 +100,10 @@ class ParticleSwarmOptimisation(BaseAlgorithm):
             random_jitter_bias=random_jitter_bias,
             debug=debug,
         )
+    
+    @property
+    def name(self) -> str:
+        return "PSO algorithm"
 
     def run(self) -> t.Tuple[np.float32, np.float32, np.uint64]:
         best_individual = self._population[0]
