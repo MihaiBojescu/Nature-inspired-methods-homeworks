@@ -25,7 +25,7 @@ def save_metrics(
 def load_metrics(name: str) -> t.List[t.Tuple[int, any]]:
     metrics = []
 
-    with open(f"./outputs/{name} - run 0.csv", newline="") as file:
+    with open(f"./outputs/{name}.csv", newline="") as file:
         reader = csv.reader(file)
         header = next(reader)
 
