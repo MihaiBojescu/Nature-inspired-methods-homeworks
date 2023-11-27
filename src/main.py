@@ -3,7 +3,7 @@ import typing as t
 from multiprocessing import Process
 from algorithms.pso.metered_algorithm import MeteredParticleSwarmOptimisation
 from algorithms.base.algorithm import BaseAlgorithm
-from functions.rastringin import rastringin_definition
+from functions.rastrigin import rastrigin_definition
 from functions.michalewicz import michalewicz_definition
 from functions.griewangk import griewangk_definition
 from functions.rosenbrock import rosenbrock_definition
@@ -22,46 +22,48 @@ def main():
         algorithm.join()
 
 
-def build_instances() -> (
-    t.List[t.Tuple[FunctionDefinition, int, MeteredParticleSwarmOptimisation]]
-):
+def build_instances():
     return [
         (
             function_definition,
             dimension,
+            inertia,
             MeteredParticleSwarmOptimisation.from_function_definition(
                 function_definition=function_definition,
                 dimensions=dimension,
                 generations=500,
+                inertia_bias=inertia,
             ),
         )
         for dimension in [2, 30, 100]
+        for inertia in [0.2, 0.5, 1.0]
         for function_definition in [
             rosenbrock_definition,
             michalewicz_definition,
             griewangk_definition,
-            rastringin_definition,
+            rastrigin_definition,
         ]
     ]
 
 
 def wrap_instances_in_processes(
-    instances: t.List[
-        t.Tuple[FunctionDefinition, int, BaseAlgorithm]
-    ]
+    instances: t.List[t.Tuple[FunctionDefinition, int, float, BaseAlgorithm]]
 ):
     return [
-        Process(target=process, args=(function_definition, dimensions, algorithm))
-        for (function_definition, dimensions, algorithm) in instances
+        Process(
+            target=process, args=(function_definition, dimensions, inertia, algorithm)
+        )
+        for (function_definition, dimensions, inertia, algorithm) in instances
     ]
 
 
 def process(
     function_definition: FunctionDefinition,
     dimensions: int,
+    inertia: float,
     algorithm: BaseAlgorithm,
 ):
-    name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions})"
+    name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, inertia = {inertia})"
 
     print(f"Running {name}")
     result = algorithm.run()

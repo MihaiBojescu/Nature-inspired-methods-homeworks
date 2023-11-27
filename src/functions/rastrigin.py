@@ -11,8 +11,8 @@ def rastrigin(x: t.List[np.float32]):
     )
 
 
-rastringin_definition = FunctionDefinition(
-    name="Rastringin",
+rastrigin_definition = FunctionDefinition(
+    name="Rastrigin",
     function=rastrigin,
     target="minimise",
     value_boundaries=FunctionBoundaries(min=-5.12, max=5.12),
