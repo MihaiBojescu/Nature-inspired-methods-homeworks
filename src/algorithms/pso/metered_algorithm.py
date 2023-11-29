@@ -20,10 +20,10 @@ class MeteredParticleSwarmOptimisation(ParticleSwarmOptimisation):
         criteria_function: t.Callable[
             [t.List[np.float32], np.float32, np.uint64], bool
         ],
-        inertia_bias: np.float32,
-        personal_best_position_bias: np.float32,
-        team_best_position_bias: np.float32,
-        random_jitter_bias: np.float32,
+        inertia_weight: np.float32,
+        cognitive_parameter: np.float32,
+        social_parameter: np.float32,
+        random_jitter_parameter: np.float32,
         debug: bool = False,
     ) -> None:
         super().__init__(
@@ -31,10 +31,10 @@ class MeteredParticleSwarmOptimisation(ParticleSwarmOptimisation):
             fitness_function=fitness_function,
             fitness_compare_function=fitness_compare_function,
             criteria_function=criteria_function,
-            inertia_bias=inertia_bias,
-            personal_best_position_bias=personal_best_position_bias,
-            team_best_position_bias=team_best_position_bias,
-            random_jitter_bias=random_jitter_bias,
+            inertia_weight=inertia_weight,
+            cognitive_parameter=cognitive_parameter,
+            social_parameter=social_parameter,
+            random_jitter_parameter=random_jitter_parameter,
             debug=debug,
         )
 
@@ -52,10 +52,10 @@ class MeteredParticleSwarmOptimisation(ParticleSwarmOptimisation):
             t.Literal["auto"],
             t.Callable[[t.List[np.float32], np.float32, np.uint64], bool],
         ] = "auto",
-        inertia_bias: float = 0.4,
-        personal_best_position_bias: float = 0.7,
-        team_best_position_bias: float = 0.6,
-        random_jitter_bias: float = 0.02,
+        inertia_weight: float = 0.4,
+        cognitive_parameter: float = 0.7,
+        social_parameter: float = 0.6,
+        random_jitter_parameter: float = 0.02,
         debug: bool = False,
     ):
         cached_min_best_result = function_definition.best_result - 0.05
@@ -83,10 +83,10 @@ class MeteredParticleSwarmOptimisation(ParticleSwarmOptimisation):
             if function_definition.target == "maximise"
             else minimise,
             criteria_function=criteria_function,
-            inertia_bias=inertia_bias,
-            personal_best_position_bias=personal_best_position_bias,
-            team_best_position_bias=team_best_position_bias,
-            random_jitter_bias=random_jitter_bias,
+            inertia_weight=inertia_weight,
+            cognitive_parameter=cognitive_parameter,
+            social_parameter=social_parameter,
+            random_jitter_parameter=random_jitter_parameter,
             debug=debug,
         )
 

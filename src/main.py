@@ -27,21 +27,23 @@ def build_instances():
         (
             function_definition,
             dimension,
-            inertia,
-            personal_bias,
-            team_bias,
+            inertia_weight,
+            cognitive_parameter,
+            social_parameter,
+            random_jitter_parameter,
             MeteredParticleSwarmOptimisation.from_function_definition(
                 function_definition=function_definition,
                 dimensions=dimension,
                 generations=100,
-                inertia_bias=inertia,
-                personal_best_position_bias=personal_bias,
-                team_best_position_bias=team_bias,
+                inertia_weight=inertia_weight,
+                cognitive_parameter=cognitive_parameter,
+                social_parameter=social_parameter,
             ),
         )
-        for inertia in [0.0, 0.25, 0.5, 0.75, 1.0]
-        for personal_bias in [0.0, 0.25, 0.5, 0.75, 1.0]
-        for team_bias in [0.0, 0.25, 0.5, 0.75, 1.0]
+        for inertia_weight in [0.0, 0.25, 0.5, 0.75, 1.0]
+        for cognitive_parameter in [0.0, 0.25, 0.5, 0.75, 1.0]
+        for social_parameter in [0.0, 0.25, 0.5, 0.75, 1.0]
+        for random_jitter_parameter in [0.0, 0.25, 0.5, 1, 2]
         for dimension in [2, 30, 100]
         for function_definition in [
             rosenbrock_definition,
@@ -56,7 +58,7 @@ def wrap_instances_in_processes(
     instances: t.List[
         t.Tuple[FunctionDefinition, int, float, float, float, BaseAlgorithm]
     ],
-    concurrency: int
+    concurrency: int,
 ):
     semaphore = Semaphore(concurrency)
     return [
@@ -66,18 +68,20 @@ def wrap_instances_in_processes(
                 function_definition,
                 dimensions,
                 inertia,
-                personal_bias,
+                cognitive_parameter,
                 team_bias,
+                random_jitter_parameter,
                 algorithm,
-                semaphore
+                semaphore,
             ),
         )
         for (
             function_definition,
             dimensions,
             inertia,
-            personal_bias,
+            cognitive_parameter,
             team_bias,
+            random_jitter_parameter,
             algorithm,
         ) in instances
     ]
@@ -86,18 +90,19 @@ def wrap_instances_in_processes(
 def process(
     function_definition: FunctionDefinition,
     dimensions: int,
-    inertia: float,
-    personal_bias: float,
-    team_bias: float,
+    inertia_weight: float,
+    cognitive_parameter: float,
+    social_parameter: float,
+    random_jitter_parameter: float,
     algorithm: BaseAlgorithm,
-    semaphore: Semaphore
+    semaphore: Semaphore,
 ):
     semaphore.acquire()
-    name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, inertia = {inertia}, team_bias = {team_bias}, personal_bias = {personal_bias})"
+    name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, inertia = {inertia_weight}, team_bias = {social_parameter}, cognitive_parameter = {cognitive_parameter}, random_jitter_parameter = {random_jitter_parameter})"
 
     print(f"Running {name}")
     result = algorithm.run()
-    print(f"Finished {name}: {result}")
+    print(f"Finished {name}: {result[1]} for {result[2]} generations")
 
     save_metrics(
         name=f"{name}: Runtime",
