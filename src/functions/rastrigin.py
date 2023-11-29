@@ -1,14 +1,12 @@
-import typing as t
 import numpy as np
+import numpy.typing as npt
 from functions.definition import FunctionDefinition, FunctionBoundaries
 
 
-def rastrigin(x: t.List[np.float32]):
+def rastrigin(x: npt.NDArray[np.float32]):
     A = 10
     n = len(x)
-    return A * n + np.sum(
-        [x[i] ** 2 - A * np.cos(2 * np.pi * x[i]) for i in range(len(x))]
-    )
+    return A * n + np.sum(x**2 - A * np.cos(2 * np.pi * x))
 
 
 rastrigin_definition = FunctionDefinition(
