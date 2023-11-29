@@ -15,11 +15,7 @@ def main():
     instances = build_instances()
     instances = wrap_instances_in_processes(instances, 8)
 
-    for algorithm in instances:
-        algorithm.start()
-
-    for algorithm in instances:
-        algorithm.join()
+    instances()
 
 
 def build_instances():
@@ -60,21 +56,10 @@ def wrap_instances_in_processes(
     ],
     concurrency: int,
 ):
-    semaphore = Semaphore(concurrency)
-    return [
-        Process(
-            target=process,
-            args=(
-                function_definition,
-                dimensions,
-                inertia,
-                cognitive_parameter,
-                team_bias,
-                random_jitter_parameter,
-                algorithm,
-                semaphore,
-            ),
-        )
+    def run():
+        semaphore = Semaphore(concurrency)
+        workers = []
+
         for (
             function_definition,
             dimensions,
@@ -83,8 +68,28 @@ def wrap_instances_in_processes(
             team_bias,
             random_jitter_parameter,
             algorithm,
-        ) in instances
-    ]
+        ) in instances:
+            worker = Process(
+                target=process,
+                args=(
+                    function_definition,
+                    dimensions,
+                    inertia,
+                    cognitive_parameter,
+                    team_bias,
+                    random_jitter_parameter,
+                    algorithm,
+                    semaphore,
+                ),
+            )
+            worker.start()
+            workers.append(worker)
+            semaphore.acquire()
+
+        for worker in workers:
+            worker.join()
+
+    return run
 
 
 def process(
@@ -97,7 +102,6 @@ def process(
     algorithm: BaseAlgorithm,
     semaphore: Semaphore,
 ):
-    semaphore.acquire()
     name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, inertia = {inertia_weight}, team_bias = {social_parameter}, cognitive_parameter = {cognitive_parameter}, random_jitter_parameter = {random_jitter_parameter})"
 
     print(f"Running {name}")
