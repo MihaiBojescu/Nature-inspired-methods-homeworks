@@ -19,7 +19,7 @@ def main():
 
 
 def build_instances():
-    return [
+    return iter(
         (
             function_definition,
             dimension,
@@ -47,7 +47,7 @@ def build_instances():
             griewangk_definition,
             rastrigin_definition,
         ]
-    ]
+    )
 
 
 def wrap_instances_in_processes(
