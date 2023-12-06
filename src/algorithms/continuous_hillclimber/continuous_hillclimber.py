@@ -1,9 +1,12 @@
 import typing as t
 import numpy as np
 import numpy.typing as npt
+from algorithms.base.algorithm import BaseAlgorithm
+from functions.definition import FunctionDefinition
+from util.sort import maximise, minimise
 
 
-class ContinuousHillclimber:
+class ContinuousHillclimber(BaseAlgorithm):
     _fitness_function: t.Callable[[np.float32], np.float32]
     _fitness_compare_function: t.Callable[[np.float32, np.float32], bool]
     _neighbor_selection_function: t.Callable[[np.float32], bool]
@@ -56,6 +59,48 @@ class ContinuousHillclimber:
         self._best_score = self._fitness_function(self._best_value)
 
         self._debug = debug
+
+    @staticmethod
+    def from_function_definition(
+        function_definition: FunctionDefinition,
+        dimensions: int = 1,
+        generations: int = 100,
+        neighbor_selection_function: t.Union[
+            None, t.Callable[[np.float32], bool]
+        ] = lambda _: True,
+        step: np.float32 = 0.01,
+        acceleration: np.float32 = 0.01,
+        debug: bool = False,
+    ):
+        cached_min_best_result = function_definition.best_result - 0.05
+        cached_max_best_result = function_definition.best_result + 0.05
+        criteria_function = (
+            criteria_function
+            if criteria_function != "auto"
+            else lambda _values, fitness, generation: generation > generations
+            or cached_min_best_result < fitness < cached_max_best_result
+        )
+
+        return ContinuousHillclimber(
+            generate_initial_value=lambda: np.array(
+                [
+                    np.random.uniform(
+                        low=function_definition.value_boundaries.min,
+                        high=function_definition.value_boundaries.max,
+                    )
+                    for _ in range(dimensions)
+                ]
+            ),
+            fitness_function=function_definition.function,
+            fitness_compare_function=maximise
+            if function_definition.target == "maximise"
+            else minimise,
+            neighbor_selection_function=neighbor_selection_function,
+            criteria_function=criteria_function,
+            step=step,
+            acceleration=acceleration,
+            debug=debug,
+        )
 
     def run(self) -> t.Tuple[np.float32, np.float32, np.uint64]:
         while not self._criteria_function(
