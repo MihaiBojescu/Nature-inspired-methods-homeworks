@@ -73,10 +73,13 @@ class MeteredBinaryGenericAlgorithm(BinaryGeneticAlgorithm):
         dimensions: int = 1,
         population_size: int = 100,
         generations: int = 100,
-        selection_function: t.Callable[
-            [t.List[DecodedIndividual]],
-            t.Tuple[DecodedIndividual, DecodedIndividual],
-        ] = roulette_wheel_selection,
+        selection_function: t.Union[
+            t.Literal["auto"],
+            t.Callable[
+                [t.List[DecodedIndividual]],
+                t.Tuple[DecodedIndividual, DecodedIndividual],
+            ],
+        ] = "auto",
         criteria_function: t.Union[
             t.Literal["auto"],
             t.Callable[[t.List[np.float32], np.float32, np.uint64], bool],
@@ -87,6 +90,11 @@ class MeteredBinaryGenericAlgorithm(BinaryGeneticAlgorithm):
     ):
         cached_min_best_result = function_definition.best_result - 0.05
         cached_max_best_result = function_definition.best_result + 0.05
+        selection_function = (
+            selection_function
+            if selection_function != "auto"
+            else roulette_wheel_selection(target=function_definition.target)
+        )
         criteria_function = (
             criteria_function
             if criteria_function != "auto"
@@ -131,7 +139,7 @@ class MeteredBinaryGenericAlgorithm(BinaryGeneticAlgorithm):
         best_individual = self._population[0]
 
         while not self._criteria_function(
-            best_individual.fitness, best_individual.value, self._generation
+            best_individual.value, best_individual.fitness, self._generation
         ):
             self.step()
 

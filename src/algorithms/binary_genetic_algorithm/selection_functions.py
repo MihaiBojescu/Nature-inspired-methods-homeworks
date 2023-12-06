@@ -29,29 +29,38 @@ def tournament_selection(
 
 
 def roulette_wheel_selection(
-    population: t.List[DecodedIndividual],
-) -> t.List[DecodedIndividual]:
-    population = correct_population(population)
+    target: t.Union[t.Literal["maximise"], t.Literal["minimise"]]
+):
+    def run(
+        population: t.List[DecodedIndividual],
+    ) -> t.List[DecodedIndividual]:
+        population = correct_population(population)
 
-    fitness_sum = np.sum(individual[1] for individual in population)
-    selection_probabilities = [individual[1] / fitness_sum for individual in population]
-    selected_individuals = []
-    selected_individual = None
+        fitness_sum = np.sum(individual[1] for individual in population)
+        selection_probabilities = (
+            [individual[1] / fitness_sum for individual in population]
+            if target == "maximise"
+            else [1 / individual[1] / fitness_sum for individual in population]
+        )
+        selected_individuals = []
+        selected_individual = None
 
-    for _ in range(0, len(population)):
-        selected_probability = np.random.uniform(low=0, high=1)
+        for _ in range(0, len(population)):
+            selected_probability = np.random.uniform(low=0, high=1)
 
-        for index in range(0, len(selection_probabilities) - 1):
-            current_probability = selection_probabilities[index]
-            next_probability = selection_probabilities[index + 1]
+            for index in range(0, len(selection_probabilities) - 1):
+                current_probability = selection_probabilities[index]
+                next_probability = selection_probabilities[index + 1]
 
-            if current_probability <= selected_probability <= next_probability:
-                selected_individual = population[index]
-                break
+                if current_probability <= selected_probability <= next_probability:
+                    selected_individual = population[index]
+                    break
 
-        if selected_individual is None:
-            selected_individual = population[-1]
+            if selected_individual is None:
+                selected_individual = population[-1]
 
-        selected_individuals.append(selected_individual)
+            selected_individuals.append(selected_individual)
 
-    return selected_individuals
+        return selected_individuals
+
+    return run
