@@ -4,8 +4,8 @@ import numpy as np
 from algorithms.continuous_hillclimber.continuous_hillclimber import (
     ContinuousHillclimber,
 )
-from src.functions.definition import FunctionDefinition
-from src.util.sort import maximise, minimise
+from functions.definition import FunctionDefinition
+from util.sort import maximise, minimise
 
 
 class MeteredContinuousHillclimber(ContinuousHillclimber):
