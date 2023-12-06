@@ -47,6 +47,10 @@ class MeteredContinuousHillclimber(ContinuousHillclimber):
         neighbor_selection_function: t.Union[
             None, t.Callable[[np.float32], bool]
         ] = lambda _: True,
+        criteria_function: t.Union[
+            t.Literal["auto"],
+            t.Callable[[t.List[np.float32], np.float32, np.uint64], bool],
+        ] = "auto",
         step: np.float32 = 0.01,
         acceleration: np.float32 = 0.01,
         debug: bool = False,
