@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import typing as t
+import numpy as np
+from itertools import chain
 from multiprocessing import Process, Semaphore
 from algorithms.pso.metered_algorithm import MeteredParticleSwarmOptimisation
 from algorithms.base.algorithm import BaseAlgorithm
@@ -19,6 +21,13 @@ def main():
 
 
 def build_instances():
+    return chain(
+        build_discrete_instances(),
+        build_stochastic_instances(),
+    )
+
+
+def build_discrete_instances():
     return iter(
         (
             function_definition,
@@ -27,6 +36,7 @@ def build_instances():
             cognitive_parameter,
             social_parameter,
             random_jitter_parameter,
+            "outputs/discrete",
             MeteredParticleSwarmOptimisation.from_function_definition(
                 function_definition=function_definition,
                 dimensions=dimension,
@@ -50,9 +60,52 @@ def build_instances():
     )
 
 
+def build_stochastic_instances():
+    return iter(
+        (
+            function_definition,
+            dimension,
+            inertia_weight,
+            cognitive_parameter,
+            social_parameter,
+            random_jitter_parameter,
+            "outputs/stochastic",
+            MeteredParticleSwarmOptimisation.from_function_definition(
+                function_definition=function_definition,
+                dimensions=dimension,
+                generations=100,
+                inertia_weight=inertia_weight,
+                cognitive_parameter=cognitive_parameter,
+                social_parameter=social_parameter,
+            ),
+        )
+        for (
+            inertia_weight,
+            cognitive_parameter,
+            social_parameter,
+            random_jitter_parameter,
+        ) in [
+            (
+                np.random.uniform(low=0.0, high=1.0),
+                np.random.uniform(low=0.0, high=1.0),
+                np.random.uniform(low=0.0, high=1.0),
+                np.random.uniform(low=0.0, high=5.0),
+            )
+            for _ in range(100)
+        ]
+        for dimension in [2, 30, 100]
+        for function_definition in [
+            rosenbrock_definition,
+            michalewicz_definition,
+            griewangk_definition,
+            rastrigin_definition,
+        ]
+    )
+
+
 def wrap_instances_in_processes(
     instances: t.List[
-        t.Tuple[FunctionDefinition, int, float, float, float, BaseAlgorithm]
+        t.Tuple[FunctionDefinition, int, float, float, float, str, BaseAlgorithm]
     ],
     concurrency: int,
 ):
@@ -67,6 +120,7 @@ def wrap_instances_in_processes(
             cognitive_parameter,
             team_bias,
             random_jitter_parameter,
+            output_folder,
             algorithm,
         ) in instances:
             worker = Process(
@@ -78,6 +132,7 @@ def wrap_instances_in_processes(
                     cognitive_parameter,
                     team_bias,
                     random_jitter_parameter,
+                    output_folder,
                     algorithm,
                     semaphore,
                 ),
@@ -99,31 +154,37 @@ def process(
     cognitive_parameter: float,
     social_parameter: float,
     random_jitter_parameter: float,
+    output_folder: str,
     algorithm: BaseAlgorithm,
     semaphore: Semaphore,
 ):
-    name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, inertia = {inertia_weight}, team_bias = {social_parameter}, cognitive_parameter = {cognitive_parameter}, random_jitter_parameter = {random_jitter_parameter})"
+    try:
+        name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, inertia = {inertia_weight}, team_bias = {social_parameter}, cognitive_parameter = {cognitive_parameter}, random_jitter_parameter = {random_jitter_parameter})"
 
-    print(f"Running {name}")
-    result = algorithm.run()
-    print(f"Finished {name}: {result[1]} for {result[2]} generations")
+        print(f"Running {name}")
+        result = algorithm.run()
+        print(f"Finished {name}: {result[1]} for {result[2]} generations")
 
-    save_metrics(
-        name=f"{name}: Runtime",
-        metrics=algorithm.metrics_runtime,
-        metric_names=("generation", "runtime"),
-    )
-    save_metrics(
-        name=f"{name}: Fitness",
-        metrics=algorithm.metrics_fitness,
-        metric_names=("generation", "fitness"),
-    )
-    save_metrics(
-        name=f"{name}: Values",
-        metrics=algorithm.metrics_values,
-        metric_names=("generation", "values"),
-    )
-    semaphore.release()
+        save_metrics(
+            name=f"{name}: Runtime",
+            metrics=algorithm.metrics_runtime,
+            metric_names=("generation", "runtime"),
+            output_folder=output_folder,
+        )
+        save_metrics(
+            name=f"{name}: Fitness",
+            metrics=algorithm.metrics_fitness,
+            metric_names=("generation", "fitness"),
+            output_folder=output_folder,
+        )
+        save_metrics(
+            name=f"{name}: Values",
+            metrics=algorithm.metrics_values,
+            metric_names=("generation", "values"),
+            output_folder=output_folder,
+        )
+    finally:
+        semaphore.release()
 
 
 if __name__ == "__main__":
