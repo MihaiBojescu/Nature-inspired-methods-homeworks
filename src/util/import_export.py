@@ -6,15 +6,17 @@ import typing as t
 def save_metrics(
     name: str, metrics: t.List[t.Tuple[int, any]], metric_names: t.Tuple[str, str]
 ):
-    if not os.path.exists("./outputs"):
-        os.mkdir("./outputs")
+    exports_path = os.path.join(os.path.dirname(__file__), "../../outputs")
+
+    if not os.path.exists(exports_path):
+        os.mkdir(exports_path)
 
     run = 0
-    existing_metrics = os.listdir('./outputs')
+    existing_metrics = os.listdir(exports_path)
     while f"{name} - run {run}.csv" in existing_metrics:
         run += 1
 
-    with open(f"./outputs/{name} - run {run}.csv", "w") as file:
+    with open(f"{exports_path}/{name} - run {run}.csv", "w") as file:
         writer = csv.writer(file)
         writer.writerow(metric_names)
 
@@ -23,9 +25,10 @@ def save_metrics(
 
 
 def load_metrics(name: str) -> t.List[t.Tuple[int, any]]:
+    exports_path = os.path.join(os.path.dirname(__file__), "../../outputs")
     metrics = []
 
-    with open(f"./outputs/{name} - run 0.csv", newline="") as file:
+    with open(f"{exports_path}/{name}.csv", newline="") as file:
         reader = csv.reader(file)
         header = next(reader)
 
