@@ -4,9 +4,12 @@ import typing as t
 
 
 def save_metrics(
-    name: str, metrics: t.List[t.Tuple[int, any]], metric_names: t.Tuple[str, str]
+    name: str,
+    metrics: t.List[t.Tuple[int, any]],
+    metric_names: t.Tuple[str, str],
+    output_folder: str = "outputs",
 ):
-    exports_path = os.path.join(os.path.dirname(__file__), "../../outputs")
+    exports_path = os.path.join(os.path.dirname(__file__), f"../../{output_folder}")
 
     if not os.path.exists(exports_path):
         os.mkdir(exports_path)
@@ -24,8 +27,10 @@ def save_metrics(
             writer.writerow(metric)
 
 
-def load_metrics(name: str) -> t.List[t.Tuple[int, any]]:
-    exports_path = os.path.join(os.path.dirname(__file__), "../../outputs")
+def load_metrics(
+    name: str, output_folder: str = "outputs"
+) -> t.List[t.Tuple[int, any]]:
+    exports_path = os.path.join(os.path.dirname(__file__), f"../../{output_folder}")
     metrics = []
 
     with open(f"{exports_path}/{name}.csv", newline="") as file:
