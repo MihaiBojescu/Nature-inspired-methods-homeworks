@@ -134,6 +134,10 @@ class BinaryGeneticAlgorithm(BaseAlgorithm):
             debug=debug,
         )
 
+    @property
+    def name(self) -> str:
+        return "Binary genetic algorithm"
+
     def run(self) -> t.Tuple[T, np.float32, np.uint64]:
         self._population = quicksort(
             data=self._population,

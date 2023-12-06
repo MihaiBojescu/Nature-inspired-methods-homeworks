@@ -102,6 +102,10 @@ class ContinuousHillclimber(BaseAlgorithm):
             debug=debug,
         )
 
+    @property
+    def name(self) -> str:
+        return "Continuous hillclimber algorithm"
+
     def run(self) -> t.Tuple[np.float32, np.float32, np.uint64]:
         while not self._criteria_function(
             self._best_score, self._best_value, self._generation

@@ -111,6 +111,10 @@ class BinaryHillclimber(BaseAlgorithm):
             debug=debug,
         )
 
+    @property
+    def name(self) -> str:
+        return "Binary hillclimber algorithm"
+
     def run(self) -> t.Tuple[T, np.float32, np.uint64]:
         while not self._criteria_function(
             self._best_score, self._decode(self._best_value), self._generation

@@ -2,13 +2,18 @@ import typing as t
 import numpy as np
 import numpy.typing as npt
 from algorithms.binary_hillclimber.binary_hillclimber import BinaryHillclimber
-from algorithms.binary_genetic_algorithm.binary_genetic_algorithm import BinaryGeneticAlgorithm
+from algorithms.binary_genetic_algorithm.binary_genetic_algorithm import (
+    BinaryGeneticAlgorithm,
+)
 from algorithms.binary_genetic_algorithm.individual import DecodedIndividual, Individual
-from algorithms.binary_genetic_algorithm.selection_functions import roulette_wheel_selection
+from algorithms.binary_genetic_algorithm.selection_functions import (
+    roulette_wheel_selection,
+)
 from functions.definition import FunctionDefinition
 from util.sort import maximise, minimise, quicksort
 
 T = t.TypeVar("T")
+
 
 class HybridAlgorithm(BinaryGeneticAlgorithm):
     _hillclimber_run_interval: np.uint32
@@ -84,7 +89,9 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
         ] = "auto",
         crossover_points: t.List[np.uint32] = [],
         mutation_chance: np.float16 = 0.02,
-        hillclimber_neighbor_selection_function: t.Union[None, t.Callable[[T], bool]] = None,
+        hillclimber_neighbor_selection_function: t.Union[
+            None, t.Callable[[T], bool]
+        ] = None,
         hillclimber_run_interval: np.uint32 = np.uint32(10),
         hillclimber_step: np.float32 = np.float32(0.1),
         hillclimber_acceleration: np.float32 = np.float32(0.1),
@@ -126,6 +133,10 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
             hillclimber_acceleration=hillclimber_acceleration,
             debug=debug,
         )
+
+    @property
+    def name(self) -> str:
+        return "Hybrid algorithm"
 
     def step(self) -> t.Tuple[any, any, np.uint64]:
         self._print(self._generation)
