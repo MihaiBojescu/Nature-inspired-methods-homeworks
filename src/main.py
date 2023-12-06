@@ -32,6 +32,7 @@ def build_discrete_instances():
         (
             function_definition,
             dimension,
+            generations,
             inertia_weight,
             cognitive_parameter,
             social_parameter,
@@ -40,16 +41,12 @@ def build_discrete_instances():
             MeteredParticleSwarmOptimisation.from_function_definition(
                 function_definition=function_definition,
                 dimensions=dimension,
-                generations=100,
+                generations=generations,
                 inertia_weight=inertia_weight,
                 cognitive_parameter=cognitive_parameter,
                 social_parameter=social_parameter,
             ),
         )
-        for inertia_weight in [0.0, 0.25, 0.5, 0.75, 1.0]
-        for cognitive_parameter in [0.0, 0.25, 0.5, 0.75, 1.0]
-        for social_parameter in [0.0, 0.25, 0.5, 0.75, 1.0]
-        for random_jitter_parameter in [0.0, 0.25, 0.5, 1, 2]
         for dimension in [2, 30, 100]
         for function_definition in [
             rosenbrock_definition,
@@ -57,6 +54,11 @@ def build_discrete_instances():
             griewangk_definition,
             rastrigin_definition,
         ]
+        for generations in [100]
+        for inertia_weight in [0.0, 0.25, 0.5, 0.75, 1.0]
+        for cognitive_parameter in [0.0, 0.25, 0.5, 0.75, 1.0]
+        for social_parameter in [0.0, 0.25, 0.5, 0.75, 1.0]
+        for random_jitter_parameter in [0.0, 0.25, 0.5, 1, 2]
     )
 
 
@@ -65,6 +67,7 @@ def build_stochastic_instances():
         (
             function_definition,
             dimension,
+            generations,
             inertia_weight,
             cognitive_parameter,
             social_parameter,
@@ -73,26 +76,12 @@ def build_stochastic_instances():
             MeteredParticleSwarmOptimisation.from_function_definition(
                 function_definition=function_definition,
                 dimensions=dimension,
-                generations=100,
+                generations=generations,
                 inertia_weight=inertia_weight,
                 cognitive_parameter=cognitive_parameter,
                 social_parameter=social_parameter,
             ),
         )
-        for (
-            inertia_weight,
-            cognitive_parameter,
-            social_parameter,
-            random_jitter_parameter,
-        ) in [
-            (
-                np.random.uniform(low=0.0, high=1.0),
-                np.random.uniform(low=0.0, high=1.0),
-                np.random.uniform(low=0.0, high=1.0),
-                np.random.uniform(low=0.0, high=5.0),
-            )
-            for _ in range(100)
-        ]
         for dimension in [2, 30, 100]
         for function_definition in [
             rosenbrock_definition,
@@ -100,12 +89,28 @@ def build_stochastic_instances():
             griewangk_definition,
             rastrigin_definition,
         ]
+        for (
+            generations,
+            inertia_weight,
+            cognitive_parameter,
+            social_parameter,
+            random_jitter_parameter,
+        ) in [
+            (
+                np.random.randint(low=0, high=500),
+                np.random.uniform(low=0.0, high=1.0),
+                np.random.uniform(low=0.0, high=1.0),
+                np.random.uniform(low=0.0, high=1.0),
+                np.random.uniform(low=0.0, high=5.0),
+            )
+            for _ in range(100)
+        ]
     )
 
 
 def wrap_instances_in_processes(
     instances: t.List[
-        t.Tuple[FunctionDefinition, int, float, float, float, str, BaseAlgorithm]
+        t.Tuple[FunctionDefinition, int, int, float, float, float, str, BaseAlgorithm]
     ],
     concurrency: int,
 ):
@@ -116,6 +121,7 @@ def wrap_instances_in_processes(
         for (
             function_definition,
             dimensions,
+            generations,
             inertia,
             cognitive_parameter,
             team_bias,
@@ -128,6 +134,7 @@ def wrap_instances_in_processes(
                 args=(
                     function_definition,
                     dimensions,
+                    generations,
                     inertia,
                     cognitive_parameter,
                     team_bias,
@@ -150,6 +157,7 @@ def wrap_instances_in_processes(
 def process(
     function_definition: FunctionDefinition,
     dimensions: int,
+    generations: int,
     inertia_weight: float,
     cognitive_parameter: float,
     social_parameter: float,
@@ -159,7 +167,7 @@ def process(
     semaphore: Semaphore,
 ):
     try:
-        name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, inertia = {inertia_weight}, team_bias = {social_parameter}, cognitive_parameter = {cognitive_parameter}, random_jitter_parameter = {random_jitter_parameter})"
+        name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, generations = {generations}, inertia = {inertia_weight}, team_bias = {social_parameter}, cognitive_parameter = {cognitive_parameter}, random_jitter_parameter = {random_jitter_parameter})"
 
         print(f"Running {name}")
         result = algorithm.run()
