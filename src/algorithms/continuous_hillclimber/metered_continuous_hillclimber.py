@@ -10,9 +10,8 @@ from util.sort import maximise, minimise
 
 class MeteredContinuousHillclimber(ContinuousHillclimber):
     _metrics_runtime: t.List[t.Tuple[np.uint64, np.uint64]]
-    _metrics_best_value: t.List[t.Tuple[np.uint64, np.float32]]
-    _metrics_best_step: t.List[t.Tuple[np.uint64, np.float32]]
-    _metrics_best_score: t.List[t.Tuple[np.uint64, np.float32]]
+    _metrics_values: t.List[t.Tuple[np.uint64, np.float32]]
+    _metrics_fitness: t.List[t.Tuple[np.uint64, np.float32]]
 
     def __init__(
         self,
@@ -36,9 +35,9 @@ class MeteredContinuousHillclimber(ContinuousHillclimber):
             debug=debug,
         )
         self._metrics_runtime = []
-        self._metrics_best_value = []
+        self._metrics_values = []
         self._metrics_best_step = []
-        self._metrics_best_score = []
+        self._metrics_fitness = []
 
     @staticmethod
     def from_function_definition(
@@ -86,15 +85,15 @@ class MeteredContinuousHillclimber(ContinuousHillclimber):
         then = time.time_ns()
 
         while not self._criteria_function(
-            self._best_score, self._best_value, self._generation
+            self._best_value, self._best_score, self._generation
         ):
             self.step()
 
             now = time.time_ns()
             self._metrics_runtime.append((self._generation, now - then))
-            self._metrics_best_value.append((self._generation, self._best_value))
+            self._metrics_values.append((self._generation, self._best_value))
             self._metrics_best_step.append((self._generation, self._best_step))
-            self._metrics_best_score.append((self._generation, self._best_score))
+            self._metrics_fitness.append((self._generation, self._best_score))
 
         return self._best_score, self._best_value, self._generation
 
@@ -103,13 +102,9 @@ class MeteredContinuousHillclimber(ContinuousHillclimber):
         return self._metrics_runtime
 
     @property
-    def metrics_best_value(self) -> t.List[t.Tuple[np.uint64, np.float32]]:
-        return self._metrics_best_value
+    def metrics_values(self) -> t.List[t.Tuple[np.uint64, np.float32]]:
+        return self._metrics_values
 
     @property
-    def metrics_best_step(self) -> t.List[t.Tuple[np.uint64, np.float32]]:
-        return self._metrics_best_step
-
-    @property
-    def metrics_best_score(self) -> t.List[t.Tuple[np.uint64, np.float32]]:
-        return self._metrics_best_score
+    def metrics_fitness(self) -> t.List[t.Tuple[np.uint64, np.float32]]:
+        return self._metrics_fitness

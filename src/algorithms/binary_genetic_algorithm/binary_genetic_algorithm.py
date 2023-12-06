@@ -82,10 +82,12 @@ class BinaryGeneticAlgorithm(BaseAlgorithm):
                 )
             ]
         ),
-        decode: t.Callable[[npt.NDArray[np.uint8]], T] = lambda x: [
-            np.frombuffer(np.array(batch).tobytes(), dtype=np.float32)[0]
-            for batch in [x[i : i + 4] for i in range(0, len(x), 4)]
-        ],
+        decode: t.Callable[[npt.NDArray[np.uint8]], T] = lambda x: np.array(
+            [
+                np.frombuffer(np.array(batch).tobytes(), dtype=np.float32)[0]
+                for batch in [x[i : i + 4] for i in range(0, len(x), 4)]
+            ]
+        ),
         dimensions: int = 1,
         population_size: int = 100,
         generations: int = 100,
@@ -114,13 +116,15 @@ class BinaryGeneticAlgorithm(BaseAlgorithm):
             encode=encode,
             decode=decode,
             generate_initial_population=lambda: [
-                [
-                    np.random.uniform(
-                        low=function_definition.value_boundaries.min,
-                        high=function_definition.value_boundaries.max,
-                    )
-                    for _ in range(dimensions)
-                ]
+                np.array(
+                    [
+                        np.random.uniform(
+                            low=function_definition.value_boundaries.min,
+                            high=function_definition.value_boundaries.max,
+                        )
+                        for _ in range(dimensions)
+                    ]
+                )
                 for _ in range(population_size)
             ],
             fitness_function=function_definition.function,

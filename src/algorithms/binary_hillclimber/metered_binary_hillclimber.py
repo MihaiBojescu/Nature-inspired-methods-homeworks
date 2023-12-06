@@ -8,10 +8,11 @@ from util.sort import maximise, minimise
 
 T = t.TypeVar("T")
 
+
 class MeteredBinaryHillclimber(BinaryHillclimber):
     _metrics_runtime: t.List[t.Tuple[np.uint64, np.uint64]]
-    _metrics_best_value: t.List[t.Tuple[np.uint64, np.float32]]
-    _metrics_best_score: t.List[t.Tuple[np.uint64, np.float32]]
+    _metrics_values: t.List[t.Tuple[np.uint64, np.float32]]
+    _metrics_fitness: t.List[t.Tuple[np.uint64, np.float32]]
 
     def __init__(
         self,
@@ -35,8 +36,8 @@ class MeteredBinaryHillclimber(BinaryHillclimber):
             debug=debug,
         )
         self._metrics_runtime = []
-        self._metrics_best_value = []
-        self._metrics_best_score = []
+        self._metrics_values = []
+        self._metrics_fitness = []
 
     @staticmethod
     def from_function_definition(
@@ -50,10 +51,12 @@ class MeteredBinaryHillclimber(BinaryHillclimber):
                 )
             ]
         ),
-        decode: t.Callable[[npt.NDArray[np.uint8]], T] = lambda x: [
-            np.frombuffer(np.array(batch).tobytes(), dtype=np.float32)[0]
-            for batch in [x[i : i + 4] for i in range(0, len(x), 4)]
-        ],
+        decode: t.Callable[[npt.NDArray[np.uint8]], T] = lambda x: np.array(
+            [
+                np.frombuffer(np.array(batch).tobytes(), dtype=np.float32)[0]
+                for batch in [x[i : i + 4] for i in range(0, len(x), 4)]
+            ]
+        ),
         dimensions: int = 1,
         generations: int = 100,
         neighbor_selection_function: t.Union[
@@ -94,18 +97,19 @@ class MeteredBinaryHillclimber(BinaryHillclimber):
             criteria_function=criteria_function,
             debug=debug,
         )
+
     def run(self) -> t.Tuple[T, np.float32, np.uint64]:
         then = time.time_ns()
 
         while not self._criteria_function(
-            self._best_score, self._decode(self._best_value), self._generation
+            self._decode(self._best_value), self._best_score, self._generation
         ):
             self.step()
 
             now = time.time_ns()
             self._metrics_runtime.append((self._generation, now - then))
-            self._metrics_best_value.append((self._generation, self._best_value))
-            self._metrics_best_score.append((self._generation, self._best_score))
+            self._metrics_values.append((self._generation, self._best_value))
+            self._metrics_fitness.append((self._generation, self._best_score))
 
         return self._best_score, self._decode(self._best_value), self._generation
 
@@ -114,9 +118,9 @@ class MeteredBinaryHillclimber(BinaryHillclimber):
         return self._metrics_runtime
 
     @property
-    def metrics_best_value(self) -> t.List[t.Tuple[np.uint64, np.float32]]:
-        return self._metrics_best_value
+    def metrics_values(self) -> t.List[t.Tuple[np.uint64, np.float32]]:
+        return self._metrics_values
 
     @property
-    def metrics_best_score(self) -> t.List[t.Tuple[np.uint64, np.float32]]:
-        return self._metrics_best_score
+    def metrics_fitness(self) -> t.List[t.Tuple[np.uint64, np.float32]]:
+        return self._metrics_fitness

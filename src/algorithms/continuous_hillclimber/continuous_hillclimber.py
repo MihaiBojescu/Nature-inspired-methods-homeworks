@@ -108,11 +108,11 @@ class ContinuousHillclimber(BaseAlgorithm):
 
     def run(self) -> t.Tuple[np.float32, np.float32, np.uint64]:
         while not self._criteria_function(
-            self._best_score, self._best_value, self._generation
+            self._best_value, self._best_score, self._generation
         ):
             self.step()
 
-        return self._best_score, self._best_value, self._generation
+        return self._best_value, self._best_score, self._generation
 
     def step(self) -> t.Tuple[np.float32, np.float32, np.uint64]:
         self._print(self._generation)
@@ -132,7 +132,7 @@ class ContinuousHillclimber(BaseAlgorithm):
 
         self._generation += 1
 
-        return self._best_score, self._best_value, self._generation
+        return self._best_value, self._best_score, self._generation
 
     def _print(self, generation: np.uint64) -> None:
         if self._debug:

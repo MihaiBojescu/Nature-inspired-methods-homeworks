@@ -66,10 +66,12 @@ class BinaryHillclimber(BaseAlgorithm):
                 )
             ]
         ),
-        decode: t.Callable[[npt.NDArray[np.uint8]], T] = lambda x: [
-            np.frombuffer(np.array(batch).tobytes(), dtype=np.float32)[0]
-            for batch in [x[i : i + 4] for i in range(0, len(x), 4)]
-        ],
+        decode: t.Callable[[npt.NDArray[np.uint8]], T] = lambda x: np.array(
+            [
+                np.frombuffer(np.array(batch).tobytes(), dtype=np.float32)[0]
+                for batch in [x[i : i + 4] for i in range(0, len(x), 4)]
+            ]
+        ),
         dimensions: int = 1,
         generations: int = 100,
         neighbor_selection_function: t.Union[
@@ -117,11 +119,11 @@ class BinaryHillclimber(BaseAlgorithm):
 
     def run(self) -> t.Tuple[T, np.float32, np.uint64]:
         while not self._criteria_function(
-            self._best_score, self._decode(self._best_value), self._generation
+            self._decode(self._best_value), self._best_score, self._generation
         ):
             self.step()
 
-        return self._best_score, self._decode(self._best_value), self._generation
+        return self._decode(self._best_value), self._best_score, self._generation
 
     def step(self) -> t.Tuple[T, np.float32, np.uint64]:
         self._print(self._generation)
@@ -147,7 +149,7 @@ class BinaryHillclimber(BaseAlgorithm):
 
         self._generation += 1
 
-        return self._best_value, self._decode(self._best_value), self._generation
+        return self._decode(self._best_value), self._best_value, self._generation
 
     def _print(self, generation: np.uint64) -> None:
         if self._debug:
