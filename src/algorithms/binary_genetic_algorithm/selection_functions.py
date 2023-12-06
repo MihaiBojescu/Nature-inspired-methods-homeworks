@@ -1,9 +1,9 @@
 import random
 import typing as t
 import numpy as np
-from data.individual import DecodedIndividual
+from algorithms.binary_genetic_algorithm.individual import DecodedIndividual
 from util.sort import quicksort
-from util.population import correct_population
+from algorithms.binary_genetic_algorithm.population import correct_population
 
 
 def tournament_selection(

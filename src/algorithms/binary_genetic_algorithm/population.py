@@ -1,7 +1,7 @@
 import math
 import typing as t
 import numpy as np
-from data.individual import DecodedIndividual
+from algorithms.binary_genetic_algorithm.individual import DecodedIndividual
 
 
 def correct_population(population: t.List[DecodedIndividual]):
