@@ -7,7 +7,7 @@ def main():
     semaphore = Semaphore(8)
     processes = [
         Process(
-            target=collect,
+            target=collect_discrete,
             args=(
                 function,
                 metric,
@@ -28,7 +28,7 @@ def main():
         process.join()
 
 
-def collect(function: str, metric: str, dimensions: int, semaphore: Semaphore):
+def collect_discrete(function: str, metric: str, dimensions: int, semaphore: Semaphore):
     try:
         metric_values_and_configurations = [
             (
