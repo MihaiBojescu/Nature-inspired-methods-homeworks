@@ -20,7 +20,8 @@ class BinaryHillclimber(BaseAlgorithm):
     _best_value: np.float32
     _best_score: np.float32
     _before_best_score: np.float32
-    _value_bits: np.int32
+    _value_bits: np.uint32
+    _bit_shifts: np.uint32
 
     _debug: bool
 
@@ -33,6 +34,7 @@ class BinaryHillclimber(BaseAlgorithm):
         fitness_compare_function: t.Callable[[np.float32, np.float32], bool],
         neighbor_selection_function: t.Union[None, t.Callable[[T], bool]],
         criteria_function: t.Callable[[T, np.float32, np.uint64], bool],
+        bit_shifts: np.uint32,
         debug: bool = False,
     ) -> None:
         self._encode = encode
@@ -51,6 +53,7 @@ class BinaryHillclimber(BaseAlgorithm):
         self._best_score = self._fitness_function(self._decode(self._best_value))
         self._before_best_score = None
         self._value_bits = len(self._best_value) * 8
+        self._bit_shifts = bit_shifts
 
         self._debug = debug
 
@@ -81,6 +84,7 @@ class BinaryHillclimber(BaseAlgorithm):
             t.Literal["auto"],
             t.Callable[[t.List[np.float32], np.float32, np.uint64], bool],
         ] = "auto",
+        bit_shifts: np.uint32 = np.uint32(1),
         debug: bool = False,
     ):
         cached_min_best_result = function_definition.best_result - 0.05
@@ -110,6 +114,7 @@ class BinaryHillclimber(BaseAlgorithm):
             else minimise,
             neighbor_selection_function=neighbor_selection_function,
             criteria_function=criteria_function,
+            bit_shifts=bit_shifts,
             debug=debug,
         )
 
@@ -129,7 +134,7 @@ class BinaryHillclimber(BaseAlgorithm):
         self._print(self._generation)
         self._before_best_score = self._best_score
 
-        for _ in range(0, self._value_bits):
+        for _ in range(0, self._bit_shifts):
             random_bit = np.random.randint(low=0, high=self._value_bits)
             bit = random_bit % 8
             byte = random_bit // 8

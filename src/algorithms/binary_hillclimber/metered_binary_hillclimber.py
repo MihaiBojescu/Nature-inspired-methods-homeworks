@@ -23,6 +23,7 @@ class MeteredBinaryHillclimber(BinaryHillclimber):
         fitness_compare_function: t.Callable[[T, T], bool],
         neighbor_selection_function: t.Union[None, t.Callable[[T], bool]],
         criteria_function: t.Callable[[T, np.float32, np.uint64], bool],
+        bit_shifts: np.uint32,
         debug: bool = False,
     ) -> None:
         super().__init__(
@@ -33,6 +34,7 @@ class MeteredBinaryHillclimber(BinaryHillclimber):
             fitness_compare_function=fitness_compare_function,
             neighbor_selection_function=neighbor_selection_function,
             criteria_function=criteria_function,
+            bit_shifts=bit_shifts,
             debug=debug,
         )
         self._metrics_runtime = []
@@ -66,6 +68,7 @@ class MeteredBinaryHillclimber(BinaryHillclimber):
             t.Literal["auto"],
             t.Callable[[t.List[np.float32], np.float32, np.uint64], bool],
         ] = "auto",
+        bit_shifts: np.uint32 = np.uint32(1),
         debug: bool = False,
     ):
         cached_min_best_result = function_definition.best_result - 0.05
@@ -95,6 +98,7 @@ class MeteredBinaryHillclimber(BinaryHillclimber):
             else minimise,
             neighbor_selection_function=neighbor_selection_function,
             criteria_function=criteria_function,
+            bit_shifts=bit_shifts,
             debug=debug,
         )
 
