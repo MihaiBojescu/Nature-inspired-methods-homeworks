@@ -154,28 +154,30 @@ def process(
     algorithm: BaseAlgorithm,
     semaphore: Semaphore,
 ):
-    name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions})"
+    try:
+        name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions})"
 
-    print(f"Running {name}")
-    result = algorithm.run()
-    print(f"Finished {name}: {result[1]} for {result[2]} generations")
+        print(f"Running {name}")
+        result = algorithm.run()
+        print(f"Finished {name}: {result[0]} for {result[2]} generations")
 
-    save_metrics(
-        name=f"{name}: Runtime",
-        metrics=algorithm.metrics_runtime,
-        metric_names=("generation", "runtime"),
-    )
-    save_metrics(
-        name=f"{name}: Fitness",
-        metrics=algorithm.metrics_fitness,
-        metric_names=("generation", "fitness"),
-    )
-    save_metrics(
-        name=f"{name}: Values",
-        metrics=algorithm.metrics_values,
-        metric_names=("generation", "values"),
-    )
-    semaphore.release()
+        save_metrics(
+            name=f"{name}: Runtime",
+            metrics=algorithm.metrics_runtime,
+            metric_names=("generation", "runtime"),
+        )
+        save_metrics(
+            name=f"{name}: Fitness",
+            metrics=algorithm.metrics_fitness,
+            metric_names=("generation", "fitness"),
+        )
+        save_metrics(
+            name=f"{name}: Values",
+            metrics=algorithm.metrics_values,
+            metric_names=("generation", "values"),
+        )
+    finally:
+        semaphore.release()
 
 if __name__ == "__main__":
     main()
