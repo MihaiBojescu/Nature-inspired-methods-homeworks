@@ -16,17 +16,15 @@ T = t.TypeVar("T")
 
 
 class HybridAlgorithm(BinaryGeneticAlgorithm):
-    _hillclimber_run_interval: np.uint32
-    _hillclimber_step: np.float32
-    _hillclimber_acceleration: np.float32
+    _hillclimber_bit_shifts: np.uint32
 
     def __init__(
         self,
-        encode: t.Callable[[any], npt.NDArray[np.uint8]],
-        decode: t.Callable[[npt.NDArray[np.uint8]], any],
-        generate_initial_population: t.Callable[[], t.List[any]],
-        fitness_function: t.Callable[[any], np.float32],
-        fitness_compare_function: t.Callable[[any, any], bool],
+        encode: t.Callable[[T], npt.NDArray[np.uint8]],
+        decode: t.Callable[[npt.NDArray[np.uint8]], T],
+        generate_initial_population: t.Callable[[], t.List[T]],
+        fitness_function: t.Callable[[T], np.float32],
+        fitness_compare_function: t.Callable[[T, T], bool],
         selection_function: t.Callable[
             [t.List[DecodedIndividual]],
             t.List[DecodedIndividual],
@@ -34,10 +32,9 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
         criteria_function: t.Callable[[np.uint64, t.List[DecodedIndividual]], bool],
         crossover_points: t.List[np.uint32],
         mutation_chance: np.float16,
-        hillclimber_neighbor_selection_function: t.Union[None, t.Callable[[any], bool]],
+        hillclimber_neighbor_selection_function: t.Union[None, t.Callable[[T], bool]],
         hillclimber_run_interval: np.uint32,
-        hillclimber_step: np.float32 = np.float32(0.1),
-        hillclimber_acceleration: np.float32 = np.float32(0.1),
+        hillclimber_bit_shifts: np.uint32 = np.uint32(1),
         debug: bool = False,
     ) -> None:
         super().__init__(
@@ -57,8 +54,7 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
             hillclimber_neighbor_selection_function
         )
         self._hillclimber_run_interval = hillclimber_run_interval
-        self._hillclimber_step = hillclimber_step
-        self._hillclimber_acceleration = hillclimber_acceleration
+        self._hillclimber_bit_shifts = hillclimber_bit_shifts
 
     @staticmethod
     def from_function_definition(
@@ -98,8 +94,7 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
             None, t.Callable[[T], bool]
         ] = None,
         hillclimber_run_interval: np.uint32 = np.uint32(10),
-        hillclimber_step: np.float32 = np.float32(0.1),
-        hillclimber_acceleration: np.float32 = np.float32(0.1),
+        hillclimber_bit_shifts: np.uint32 = np.uint32(1),
         debug: bool = False,
     ):
         cached_min_best_result = function_definition.best_result - 0.05
@@ -141,8 +136,7 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
             mutation_chance=mutation_chance,
             hillclimber_neighbor_selection_function=hillclimber_neighbor_selection_function,
             hillclimber_run_interval=hillclimber_run_interval,
-            hillclimber_step=hillclimber_step,
-            hillclimber_acceleration=hillclimber_acceleration,
+            hillclimber_bit_shifts=hillclimber_bit_shifts,
             debug=debug,
         )
 
@@ -150,7 +144,7 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
     def name(self) -> str:
         return "Hybrid algorithm"
 
-    def step(self) -> t.Tuple[any, any, np.uint64]:
+    def step(self) -> t.Tuple[T, np.float32, np.uint64]:
         self._print(self._generation)
         self._population = quicksort(
             data=self._population,
@@ -195,7 +189,7 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
 
         best_individual = self._population[0]
 
-        return best_individual.fitness, best_individual.value, self._generation
+        return best_individual.value, best_individual.fitness, self._generation
 
     def _print(self, generation: np.uint64) -> None:
         if self._debug:
@@ -215,6 +209,7 @@ class HybridAlgorithm(BinaryGeneticAlgorithm):
                 fitness_compare_function=self._fitness_compare_function,
                 neighbor_selection_function=self._hillclimber_neighbor_selection_function,
                 criteria_function=lambda _1, _2, _3: True,
+                bit_shifts=self._hillclimber_bit_shifts,
                 debug=self._debug,
             )
             optimised_individual, _best_score, _generation = binary_hill_climber.step()

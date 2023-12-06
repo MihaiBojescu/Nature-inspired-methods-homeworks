@@ -159,7 +159,7 @@ def process(
 
         print(f"Running {name}")
         result = algorithm.run()
-        print(f"Finished {name}: {result[0]} for {result[2]} generations")
+        print(f"Finished {name}: {result[1]} for {result[2]} generations")
 
         save_metrics(
             name=f"{name}: Runtime",

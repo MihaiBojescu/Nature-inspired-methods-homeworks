@@ -152,7 +152,7 @@ class MeteredBinaryGenericAlgorithm(BinaryGeneticAlgorithm):
 
         best_individual = self._population[0]
 
-        return best_individual.fitness, best_individual.value, self._generation
+        return best_individual.value, best_individual.fitness, self._generation
 
     @property
     def metrics_runtime(self) -> t.List[t.Tuple[np.uint64, np.uint64]]:

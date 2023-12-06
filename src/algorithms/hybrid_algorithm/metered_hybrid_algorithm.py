@@ -15,16 +15,16 @@ T = t.TypeVar("T")
 
 class MeteredHybridAlgorithm(HybridAlgorithm):
     _metrics_runtime: t.List[t.Tuple[np.uint64, np.uint64]]
-    _metrics_values: t.List[t.Tuple[np.uint64, any]]
+    _metrics_values: t.List[t.Tuple[np.uint64, T]]
     _metrics_fitness: t.List[t.Tuple[np.uint64, np.float32]]
 
     def __init__(
         self,
-        encode: t.Callable[[any], npt.NDArray[np.uint8]],
-        decode: t.Callable[[npt.NDArray[np.uint8]], any],
-        generate_initial_population: t.Callable[[], t.List[any]],
-        fitness_function: t.Callable[[any], np.float32],
-        fitness_compare_function: t.Callable[[any, any], bool],
+        encode: t.Callable[[T], npt.NDArray[np.uint8]],
+        decode: t.Callable[[npt.NDArray[np.uint8]], T],
+        generate_initial_population: t.Callable[[], t.List[T]],
+        fitness_function: t.Callable[[T], np.float32],
+        fitness_compare_function: t.Callable[[T, T], bool],
         selection_function: t.Callable[
             [t.List[DecodedIndividual]],
             t.Tuple[DecodedIndividual, DecodedIndividual],
@@ -32,10 +32,9 @@ class MeteredHybridAlgorithm(HybridAlgorithm):
         criteria_function: t.Callable[[np.uint64, t.List[DecodedIndividual]], bool],
         crossover_points: t.List[np.uint32],
         mutation_chance: np.float16,
-        hillclimber_neighbor_selection_function: t.Union[None, t.Callable[[any], bool]],
+        hillclimber_neighbor_selection_function: t.Union[None, t.Callable[[T], bool]],
         hillclimber_run_interval: np.uint32,
-        hillclimber_step: np.float32 = np.float32(0.1),
-        hillclimber_acceleration: np.float32 = np.float32(0.1),
+        hillclimber_bit_shifts: np.uint32 = np.uint32(1),
         debug: bool = False,
     ) -> None:
         super().__init__(
@@ -50,8 +49,7 @@ class MeteredHybridAlgorithm(HybridAlgorithm):
             mutation_chance=mutation_chance,
             hillclimber_neighbor_selection_function=hillclimber_neighbor_selection_function,
             hillclimber_run_interval=hillclimber_run_interval,
-            hillclimber_step=hillclimber_step,
-            hillclimber_acceleration=hillclimber_acceleration,
+            hillclimber_bit_shifts=hillclimber_bit_shifts,
             debug=debug,
         )
         self._metrics_runtime = []
@@ -96,8 +94,7 @@ class MeteredHybridAlgorithm(HybridAlgorithm):
             None, t.Callable[[T], bool]
         ] = None,
         hillclimber_run_interval: np.uint32 = np.uint32(10),
-        hillclimber_step: np.float32 = np.float32(0.1),
-        hillclimber_acceleration: np.float32 = np.float32(0.1),
+        hillclimber_bit_shifts: np.uint32 = np.uint32(1),
         debug: bool = False,
     ):
         cached_min_best_result = function_definition.best_result - 0.05
@@ -118,13 +115,15 @@ class MeteredHybridAlgorithm(HybridAlgorithm):
             encode=encode,
             decode=decode,
             generate_initial_population=lambda: [
-                np.array([
-                    np.random.uniform(
-                        low=function_definition.value_boundaries.min,
-                        high=function_definition.value_boundaries.max,
-                    )
-                    for _ in range(dimensions)
-                ])
+                np.array(
+                    [
+                        np.random.uniform(
+                            low=function_definition.value_boundaries.min,
+                            high=function_definition.value_boundaries.max,
+                        )
+                        for _ in range(dimensions)
+                    ]
+                )
                 for _ in range(population_size)
             ],
             fitness_function=function_definition.function,
@@ -137,12 +136,11 @@ class MeteredHybridAlgorithm(HybridAlgorithm):
             mutation_chance=mutation_chance,
             hillclimber_neighbor_selection_function=hillclimber_neighbor_selection_function,
             hillclimber_run_interval=hillclimber_run_interval,
-            hillclimber_step=hillclimber_step,
-            hillclimber_acceleration=hillclimber_acceleration,
+            hillclimber_bit_shifts=hillclimber_bit_shifts,
             debug=debug,
         )
 
-    def run(self) -> t.Tuple[any, any, np.uint64]:
+    def run(self) -> t.Tuple[T, np.float32, np.uint64]:
         then = time.time_ns()
         self._population = quicksort(
             data=self._population,
@@ -153,7 +151,7 @@ class MeteredHybridAlgorithm(HybridAlgorithm):
         best_individual = self._population[0]
 
         while not self._criteria_function(
-            best_individual.fitness, best_individual.value, self._generation
+            best_individual.value, best_individual.fitness, self._generation
         ):
             self.step()
 
@@ -166,14 +164,14 @@ class MeteredHybridAlgorithm(HybridAlgorithm):
 
         best_individual = self._population[0]
 
-        return best_individual.fitness, best_individual.value, self._generation
+        return best_individual.value, best_individual.fitness, self._generation
 
     @property
     def metrics_runtime(self) -> t.List[t.Tuple[np.uint64, np.uint64]]:
         return self._metrics_runtime
 
     @property
-    def metrics_values(self) -> t.List[t.Tuple[np.uint64, any]]:
+    def metrics_values(self) -> t.List[t.Tuple[np.uint64, T]]:
         return self._metrics_values
 
     @property

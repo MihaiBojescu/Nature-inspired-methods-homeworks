@@ -115,7 +115,7 @@ class MeteredBinaryHillclimber(BinaryHillclimber):
             self._metrics_values.append((self._generation, self._best_value))
             self._metrics_fitness.append((self._generation, self._best_score))
 
-        return self._best_score, self._decode(self._best_value), self._generation
+        return self._decode(self._best_value), self._best_score, self._generation
 
     @property
     def metrics_runtime(self) -> t.List[t.Tuple[np.uint64, np.uint64]]:

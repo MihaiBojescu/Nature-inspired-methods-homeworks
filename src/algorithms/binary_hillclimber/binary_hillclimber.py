@@ -154,7 +154,7 @@ class BinaryHillclimber(BaseAlgorithm):
 
         self._generation += 1
 
-        return self._decode(self._best_value), self._best_value, self._generation
+        return self._decode(self._best_value), self._best_score, self._generation
 
     def _print(self, generation: np.uint64) -> None:
         if self._debug:
