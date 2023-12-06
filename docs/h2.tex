@@ -1,0 +1,248 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{epstopdf}
+\usepackage[inkscapeformat=png]{svg}
+\usepackage[font=small,labelfont=bf]{caption}
+
+\epstopdfDeclareGraphicsRule{.gif}{png}{.png}{convert gif:#1 png:\OutputFile}
+\AppendGraphicsExtensions{.gif}
+
+\begin{document}
+
+\title{Numeric function optimisation using the Particle Swarm Optimisation algorithm}
+
+\author{\IEEEauthorblockN{Mihai Bojescu}
+\IEEEauthorblockA{\textit{Master in Artificial Intelligence and optimisation} \\
+\textit{Faculty of Computer Science of University ``Alexandru Ioan Cuza'' of Iași}\\
+Iași, Romania \\
+bojescu.mihai@gmail.com}
+}
+\maketitle
+
+\begin{abstract}
+    This document contains the results of the experiments of running the Particle Swarm Optimisation algorithm on 4 benchmark
+    functions with the scope of finding the global minumums of each of the functions. The document also details what differences
+    do the hyperparameters of the algorithm bring in relation with the results of the numeric function minimums. The functions
+    that the algorithms were applied on were Rastrigin's, Rosenbrock's, Michalewicz's and Griewangk's. The results were collected
+    from 6250 runs of the algorithm using discrete values and 100 runs of the algorithm using random values, resulting in about
+    46GB of data. Each run took about 1 hour to finish for an Intel 1260p machine with 32GB of RAM at a constant speed of
+    2100MHz on all cores. The algorithm is considerably fast and precise.
+\end{abstract}
+
+\begin{IEEEkeywords}
+PSO, Particle swarm optimisation, Rastrigin, Rosenbrock, Michalewicz, Griewangk, optimisation, numeric optimisation
+\end{IEEEkeywords}
+
+\section{Introduction}
+Particle Swarm Optimisation is a computational method that optimises a given problem by iteratively improving upon the results
+of its candidate solutions with respect to the results of each solution. Its behavior is inspired from birds, which have a natural
+tendence to flock towards their optimal places for food and shelter. In the algorithm, each candidate solution is represented
+as a particle which has its own velocity, its own personal velocity and even its own set of tunable hyperparameters.
+
+The most significant advantage that PSO brings compared to GAs is its speed in finding the global optima, and compared to Hillclimbers
+is its tendency to visit the search space significantly better, thus finding the global optima with higher chances of success.
+
+In this document, PSO will be used to find the global minima of the 4 aforementioned functions, functions for which the global
+minimas are well known and highly-auditable, being benchmark functions. The following sections will detail the used hyperparameters,
+the results of the algorithm, the differences the hyperparameters bring to the results and optimal hyperparameters.
+
+\section{Functions}
+In this paper, the following functions were used in order to test the benchmark performance of the implementation:
+
+\begin{enumerate}
+    \item Rastrigin's
+    \item Rosenbrock's
+    \item Michalewicz's
+    \item Griewangk's
+\end{enumerate}
+
+Each of the above functions is a well-known benchmark function and has well-known global minimas, thus they can audited
+in a great manner.
+
+\section{PSO initialisation}
+The initialisation for the PSO algorithm's particles was performed at random with respect to the given limits:
+
+\begin{enumerate}
+    \item For Rastringin's, $position_{initial} = [-5.12, 5.12]$
+    \item For Rosenbrock's, $position_{initial} = [-2.048, 2.048]$
+    \item For Michalewicz's, $position_{initial} = [0, \pi]$
+    \item For Griewangk's, $position_{initial} = [-600, 600]$
+\end{enumerate}
+
+\section{PSO hyperparameters}
+The Particle Swarm Optimisation algorithm comes with a set of tunable hyperparameters:
+
+\begin{enumerate}
+    \item $w$, which is the inertia weight, indicating the importance of the current direction of the current particle 
+    \item $\phi_p$, which is the cognitive parameter, indicating the tendency towards the personal best of the particle
+    \item $r_p$, which is the random cognitive parameter, which adds randomness to the cognitive parameter for each particle, with $r_p \in [0, 1]$
+    \item $\phi_g$, which is the social parameter, indicating the tendency towards the population's best of the particle
+    \item $r_g$, which is the random social parameter, which adds randomness to the social parameter for each particle, with $r_g \in [0, 1]$ 
+    \item $\phi_r$, which is the random jitter parameter, which deviates the particle from its course to hopefully find better values
+    \item $r_r$, which is the random \textit{random} jitter parameter, which adds randomness to the random jitter parameter for each particle, with $r_r \in [0, 1]$
+    \item $iterations$, which is the number of 
+\end{enumerate}
+
+And thus, the formula for the velocity becomes:
+
+\begin{multline}
+    v_{i,d} \leftarrow w \cdot v_{i,d}  + \\ \phi_p \cdot r_p \cdot (p_{i,d} - x_{i,d})  + \\ \phi_g \cdot r_g \cdot (g_d - x_{i,d}) + \\ \phi_r \cdot r_r \cdot (random_{uniform}(0, 1)^n)
+\end{multline}
+
+Each parameter is tunable for each particle in order to increase the probability .
+
+\section{Used hyperparameters}
+In this paper, PSO used the each combination of the following discrete values for the hyperparameters for its $5 \cdot 5 \cdot 5 \cdot 5 \cdot 5 = 3125 \cdot 2 = 6250$ runs:
+
+\begin{enumerate}
+    \item $w \in \{0.0, 0.25, 0.5, 0.75, 1.0\}$
+    \item $\phi_p \in \{0.0, 0.25, 0.5, 0.75, 1.0\}$
+    \item $\phi_g \in \{0.0, 0.25, 0.5, 0.75, 1.0\}$
+    \item $\phi_r \in \{0.0, 0.25, 0.5, 1.0, 2.0\}$
+    \item $iterations \in \mathbb{N}, iterations = 100$
+\end{enumerate}
+
+In addition to the above, a stochastic search for the optimal hyperparameters was performed, in which for $100$ runs of the algorithm
+all of the previous parameters were picked at random from the following values:
+
+\begin{enumerate}
+    \item $w \in [0.0, 1.0]$
+    \item $\phi_p \in [0.0, 1.0]$
+    \item $\phi_g \in [0.0, 1.0]$
+    \item $\phi_r \in [0.0, 5.0]$
+    \item $iterations \in \mathbb{N}, iterations \in [0, 500]$
+\end{enumerate}
+
+\section{Results}
+
+\subsection{Using discrete values for the hyperparameters}
+For the given functions, the algorithm reached its best results in the following configurations when it used predetermined
+hyperparameter values:
+
+\vspace{1em}
+\resizebox{\columnwidth}{!}{
+    \begin{tabular}{|c|c|c|c|c|c|c|c|}
+        \hline
+        Function & Dimensions & $w$ & $\phi_p$ & $\phi_g$ & $\phi_r$ & Result \\ 
+        \hline
+        & 2 & 0.75 & 0.75 & 0.75 & 1 & 0.8507 \\  
+        Rosenbrock & 30 & 0.5 & 0.75 & 1.0 & 0.25 & 23.7119 \\  
+        & 100 & 0.5 & 0.0 & 0.75 & 2 & 211.0306 \\  
+        \hline
+        & 2 & 0.0 & 0.0 & 1.0 & 0.5 & -0.7809 \\  
+        Michalewicz & 30 & 0.25 & 0.5 & 0.75 & 1 & -7.6693 \\  
+        & 100 & 0.5 & 1.0 & 1.0 & 0.25 & -16.5641 \\  
+        \hline
+        & 2 & 0.5 & 0.75 & 1.0 & 0.5 & 0.0681 \\  
+        Griewangk & 30 & 0.75 & 1.0 & 1.0 & 0.0 & 11.0005 \\  
+        & 100 & 0.75 & 0.25 & 0.25 & 1 & 99.2303 \\  
+        \hline
+        & 2 & 0.75 & 0.0 & 0.75 & 0.5 & 1.8574 \\  
+        Rastrigin & 30 & 0.5 & 1.0 & 1.0 & 0.0 & 62.2359 \\  
+        & 100 & 0.5 & 0.5 & 1.0 & 1.0 & 401.5661 \\  
+        \hline
+    \end{tabular}
+}
+\captionof{figure}{Best configurations and results for each function}
+\vspace{1em}
+
+By inspecting the results of the runs, the following table of results was constructed:
+
+\vspace{1em}
+\resizebox{\columnwidth}{!}{
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        Function & Dimensions & Best & Mean & Median & Worst \\ 
+        \hline
+        & 2 & 0.8507 & 5172432488647702.0 & 1315.7223 & 1.6984463040247992e+18 \\  
+        Rosenbrock & 30 & 23.7119 & 5651452613067.534 & 8681.3337 & 3215979323453591.0 \\  
+        & 100 & 211.0306 & 2814336435952.742 & 34693.6484 & 895539440289262.0 \\  
+        \hline
+        & 2 & -0.7809 & 0.0393 & 1.370502861939843e-44 & 0.9671 \\  
+        Michalewicz & 30 & -7.6693 & -0.9319 & -1.6650 & 5.5189 \\  
+        & 100 & -16.5641 & -6.0466 & -8.7856 & 11.3162 \\  
+        \hline
+        & 2 & 0.0681 & 298636717.0540 & 69.6293 & 185181230605.94724 \\  
+        Griewangk & 30 & 11.005 & 52585497.7302 & 614.3538 & 32767680955.6039 \\  
+        & 100 & 99.2303 & 21275029.3745 & 2143.8349 & 13239089535.1134 \\  
+        \hline
+        & 2 & 1.8574 & 466176982.7571 & 57.1042 & 1249342665394690.0 \\  
+        Rastrigin & 30 & 62.2359 & 1567439093.6272 & 587.9396 & 88005482.5026 \\  
+        & 100 & 401.5661 & 3537866300.1552 & 1849.9024 & 124938258.0600 \\  
+        \hline
+    \end{tabular}
+}
+\captionof{figure}{Results for all each function}
+\vspace{20em}
+
+And timings:
+
+\vspace{1em}
+\resizebox{\columnwidth}{!}{
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        Function & Dimensions & Best & Mean & Median & Worst \\  
+        \hline
+        & 2 & 0.2537s & 0.4898s & 0.5264s & 0.8967s \\  
+        Rosenbrock & 30 & 1.027s & 1.6542s & 1.5225s & 6.4293s \\  
+        & 100 & 2.8903s & 4.4177s & 3.7387s & 22.6468s \\  
+        \hline
+        & 2 & 0.2793s & 0.5529s & 0.6123s & 1.6663s \\  
+        Michalewicz & 30 & 1.4397s & 2.5030s & 2.3365s & 8.8616s \\  
+        & 100 & 4.2606s & 6.5478s & 5.1187s & 38.3012s \\  
+        \hline
+        & 2 & 0.3138s & 0.6627s & 0.7282s & 1.2361s \\  
+        Griewangk & 30 & 1.5731s & 2.8272s & 3.0778s & 17.2428s \\  
+        & 100 & 4.5282s & 6.6292s & 5.4489s & 35.9371s \\  
+        \hline
+        & 2 & 0.2503s & 0.4672s & 0.5257s & 0.8833s \\  
+        Rastrigin & 30 & 0.8120s & 1.5674s & 1.8188s & 10.4140s \\  
+        & 100 & 2.1498s & 3.5378s & 3.0707s & 24.3978s \\  
+        \hline
+    \end{tabular}
+}
+\captionof{figure}{Timings for each function}
+\vspace{1em}
+
+\subsection{Stochastic search for hyperparameters}
+In this approach, random values were used as hyperparameters for the PSO algorithm. From the 100 runs, the following best
+configurations and values were extracted:
+
+
+
+\subsection{Worst values, skewed data}
+For both the discrete hyperparameters and the stochastic search for hyperparameters approach, the worst results were achieved in the following case:
+
+\begin{enumerate}
+    \item The cognitive parameter $\phi_p$ being set to $0.0$ $\Rightarrow$ The particles continued ``their movement'' by not considering
+    their previously learned steps
+    \item The social parameter $\phi_g$ being set to $0.0$ $\Rightarrow$ The particles continued ``their movement'' independent of
+    each other
+\end{enumerate}
+
+This combination would make the particles move in a random direction without taking into account their known optimas, which
+can be considered as a free-for-all scenario. Many runs presented one or both of the traits from the above, thus skewing the
+data towards values far from the optimas of the functions, skews which can be easily seen in the mean and median values.
+
+\begin{thebibliography}{00}
+    \bibitem{b1} Luchian Henri; Eugen Croitoru. ``Genetic algorithms (2022)'', Faculty of Computer Science of University ``Alexandru Ioan Cuza'' of Iași.
+    \bibitem{b1} Russell, Stuart J.; Norvig, Peter (2003). ``Artificial Intelligence: A Modern Approach (2nd ed.)'', Upper Saddle River, New Jersey: Prentice Hall, pp. 111-114, ISBN 0-13-790395-2 
+    \bibitem{b1} Banzhaf, Wolfgang; Nordin, Peter; Keller, Robert; Francone, Frank (1998). ``Genetic Programming - An Introduction''. San Francisco, CA: Morgan Kaufmann. ISBN 978-1558605107.
+    \bibitem{b1} Hartmut Pohlheim, The Genetic and Evolutionary Algorithm Toolbox (2006), \url{http://www.geatbx.com/docu/fcnindex-01.html#P129_5426}
+    \bibitem{b1} Hartmut Pohlheim, The Genetic and Evolutionary Algorithm Toolbox (2006), \url{http://www.geatbx.com/docu/fcnindex-01.html#P140_6155}
+    \bibitem{b1} Hartmut Pohlheim, The Genetic and Evolutionary Algorithm Toolbox (2006), \url{http://www.geatbx.com/docu/fcnindex-01.html#P160_7291}
+    \bibitem{b1} Hartmut Pohlheim, The Genetic and Evolutionary Algorithm Toolbox (2006), \url{http://www.geatbx.com/docu/fcnindex-01.html#P204_10395}
+    \bibitem{b1} \url{https://en.wikipedia.org/wiki/Genetic_algorithm} (2023)
+    \bibitem{b1} \url{https://en.wikipedia.org/wiki/Hill_climbing} (2023)
+\end{thebibliography}
+    
+\end{document}
+    
