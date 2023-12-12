@@ -77,7 +77,15 @@ In this paper, the following functions were used in order to test the benchmark 
 Each of the above functions is a well-known benchmark function and has well-known global minimas, thus they can audited
 in a great manner.
 
-\section{PSO initialisation}
+\section{Setup}
+
+\subsection{Paralellisation}
+In order to perform the computations in a more time-efficient manner, the algorithm was executed in a separate process.
+The process computed results for 1 set of hyperparameter and 1 function.
+
+Executions were performed in batches of 8 in order to maximise the compute performance of the device the algorithm was run on.
+
+\subsection{PSO initialisation}
 The initialisation for the PSO algorithm's particles was performed at random with respect to the given limits:
 
 \begin{enumerate}
@@ -87,7 +95,7 @@ The initialisation for the PSO algorithm's particles was performed at random wit
     \item For Griewangk's, $position_{initial} \in [-600, 600]^{dim}$
 \end{enumerate}
 
-\section{PSO hyperparameters}
+\subsection{PSO hyperparameters}
 The Particle Swarm Optimisation algorithm uses a set of tunable hyperparameters:
 
 \begin{enumerate}
@@ -109,7 +117,7 @@ And thus, the formula for the velocity becomes:
 
 Each parameter is tunable for each particle in order to increase the probability .
 
-\section{Used hyperparameters}
+\subsection{Used hyperparameters}
 In this paper, PSO used each combination of the following discrete values for the hyperparameters for its $5 \cdot 5 \cdot 5 \cdot 5 \cdot 5 = 3125 \cdot 2 = 6250$
 runs, generating 46GB of data:
 
