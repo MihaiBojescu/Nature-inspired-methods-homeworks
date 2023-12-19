@@ -8,7 +8,6 @@ from util.sort import maximise, minimise, quicksort
 
 T = t.TypeVar("T")
 U = t.TypeVar("U")
-V = t.TypeVar("V")
 
 
 class CombinatorialParticleSwarmOptimisation(BaseAlgorithm):
@@ -24,7 +23,7 @@ class CombinatorialParticleSwarmOptimisation(BaseAlgorithm):
         generate_initial_population: t.Callable[[], npt.NDArray[np.float32]],
         fitness_function: t.Callable[[np.float32], np.float32],
         fitness_compare_function: t.Callable[[np.float32, np.float32], bool],
-        criteria_function: t.Callable[[t.List[U], np.float32, np.uint64], bool],
+        criteria_function: t.Callable[[t.List[T], np.float32, np.uint64], bool],
         inertia_weight: np.float32,
         cognitive_parameter: np.float32,
         social_parameter: np.float32,
@@ -63,11 +62,11 @@ class CombinatorialParticleSwarmOptimisation(BaseAlgorithm):
         population_size: int = 100,
         generate_initial_population: t.Union[
             t.Literal["auto"],
-            t.Callable[[], t.List[U]],
+            t.Callable[[], t.List[T]],
         ] = "auto",
         criteria_function: t.Union[
             t.Literal["auto"],
-            t.Callable[[t.List[U], np.float32, np.uint64], bool],
+            t.Callable[[t.List[T], np.float32, np.uint64], bool],
         ] = "auto",
         inertia_bias: float = 0.4,
         personal_best_position_bias: float = 0.7,

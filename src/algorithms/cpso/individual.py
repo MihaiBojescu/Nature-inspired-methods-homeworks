@@ -88,7 +88,7 @@ class Individual:
     ) -> npt.NDArray[np.int8]:
         y = np.zeros(self.__x.shape, dtype=np.int8)
 
-        for i in range(len(y)):
+        for i, _ in enumerate(y):
             if (
                 self.__x[i] == self.__personal_best_x[i]
                 and self.__x[i] == team_best_x[i]
@@ -111,7 +111,7 @@ class Individual:
     ) -> npt.NDArray[np.int8]:
         y = np.zeros(self.__x.shape, dtype=np.int8)
 
-        for i in range(len(y)):
+        for i, _ in enumerate(y):
             if lambda_t[i] > self.__intensification_parameter:
                 y[i] = 1
                 continue
@@ -129,7 +129,7 @@ class Individual:
     ) -> int:
         x = np.zeros(self.__x.shape)
 
-        for i in range(len(x)):
+        for i, _ in enumerate(x):
             if y[i] == 1:
                 x[i] = team_best_x
                 continue
