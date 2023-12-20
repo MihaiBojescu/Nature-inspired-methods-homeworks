@@ -6,8 +6,8 @@ from algorithms.cpso.metered_algorithm import (
     MeteredCombinatorialParticleSwarmOptimisation,
 )
 from algorithms.base.algorithm import BaseAlgorithm
-from functions.combinatorial.tsp.eil51 import eil51
 from functions.combinatorial.definition import CombinatorialFunctionDefinition
+from functions.combinatorial.tsp.eil51 import make_eil51
 from functions.combinatorial.tsp.common import generate_initial_population
 from util.import_export import save_metrics
 
@@ -27,37 +27,54 @@ def build_instances():
 
 def build_discrete_instances():
     return iter(
-        (
-            function_definition,
-            dimension,
-            generations,
-            inertia_weight,
-            cognitive_parameter,
-            social_parameter,
-            intensification_parameter,
-            "outputs/discrete",
-            MeteredCombinatorialParticleSwarmOptimisation.from_function_definition(
-                function_definition=function_definition,
-                generate_initial_population=generate_initial_population(
-                    function_definition=function_definition,
-                    population_size=100,
-                    dimensions=dimension,
-                ),
-                dimensions=dimension,
-                inertia_weight=inertia_weight,
-                cognitive_parameter=cognitive_parameter,
-                social_parameter=social_parameter,
-            ),
+        tsp_generator(
+            function_definition_constructor=function_definition_constructor,
+            dimension=dimension,
+            generations=generations,
+            inertia_weight=inertia_weight,
+            cognitive_parameter=cognitive_parameter,
+            social_parameter=social_parameter,
+            intensification_parameter=intensification_parameter,
         )
         for dimension in [2, 3]
-        for function_definition in [
-            eil51,
+        for function_definition_constructor in [
+            make_eil51,
         ]
         for generations in [100]
         for inertia_weight in [0.0, 0.25, 0.5, 0.75, 1.0]
         for cognitive_parameter in [0.0, 0.25, 0.5, 0.75, 1.0]
         for social_parameter in [0.0, 0.25, 0.5, 0.75, 1.0]
         for intensification_parameter in [0.0, 0.5, 1.0]
+    )
+
+
+def tsp_generator(
+    function_definition_constructor: t.Callable[[int], CombinatorialFunctionDefinition],
+    dimension: int,
+    generations: int,
+    inertia_weight: float,
+    cognitive_parameter: float,
+    social_parameter: float,
+    intensification_parameter: float,
+):
+    function_definition = function_definition_constructor(dimension)
+    return (
+        function_definition,
+        dimension,
+        generations,
+        inertia_weight,
+        cognitive_parameter,
+        social_parameter,
+        intensification_parameter,
+        "outputs/discrete",
+        MeteredCombinatorialParticleSwarmOptimisation.from_function_definition(
+            function_definition=function_definition,
+            generate_initial_population=generate_initial_population(function_definition, 100),
+            dimensions=dimension,
+            inertia_weight=inertia_weight,
+            cognitive_parameter=cognitive_parameter,
+            social_parameter=social_parameter,
+        ),
     )
 
 
