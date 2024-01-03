@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+import math
 import numpy as np
 import numpy.typing as npt
 import typing as t
@@ -25,43 +26,57 @@ class TspResult:
     )
     optimal_cost: float = 0
 
+    def __gt__(self, other):
+        return self.optimal_cost > other.optimal_cost
+
+    def __eq__(self, other):
+        return self.optimal_cost == other.optimal_cost
+
+    def __lt__(self, other):
+        return self.optimal_cost < other.optimal_cost
+
 
 class InstanceSegmenter:
     __fn: t.Callable[[t.List[t.List[City]]], TspResult]
-    __dimensions: int
-    __sections: t.Optional[t.List[int]]
+    __salesmen: int
+    __tours: t.Optional[t.List[int]]
 
     def __init__(
-        self, fn: t.Callable[[t.List[t.List[City]]], TspResult], dimensions: int
+        self,
+        fn: t.Callable[[t.List[t.List[City]]], TspResult],
+        salesmen: int,
     ):
-        if dimensions < 1:
-            raise IndexError("Dimension < 1 in segment function")
+        if salesmen < 1:
+            raise IndexError("Salesmen < 1 in segment function")
 
         self.__fn = fn
-        self.__dimensions = dimensions
-        self.__sections = None
+        self.__salesmen = salesmen
+        self.__tours = None
 
     def __call__(self, salesmen_routes: npt.NDArray[np.int64]) -> TspResult:
-        if self.__sections is None:
-            sections = [0]
-            current_index = 0
-            max_size = (len(salesmen_routes) // 2) - 1
+        if self.__tours is None:
+            tours = []
+            unpicked_cities = salesmen_routes.copy()
 
-            for _ in range(self.__dimensions - 1):
-                size = np.random.randint(
-                    low=1,
-                    high=max_size,
+            for salesman in range(self.__salesmen, 1, -1):
+                max_tour_size = math.floor(
+                    ((len(unpicked_cities) - 1 + salesman) / salesman) + 1
                 )
-                sections.append(current_index + size)
-                current_index += size
+                tour = np.random.choice(
+                    unpicked_cities,
+                    size=min(max_tour_size, len(unpicked_cities)),
+                    replace=False,
+                )
+                unpicked_cities = np.array(
+                    [city for city in unpicked_cities if city not in tour]
+                )
+                tours.append(tour)
 
-            sections.append(len(salesmen_routes))
+            tours.append(unpicked_cities)
+            np.random.shuffle(tours)
+            self.__tours = tours
 
-        salesmen_routes_copy = [
-            salesmen_routes[sections[i] : sections[i + 1]]
-            for i in range(len(sections) - 1)
-        ]
-        result = self.__fn(salesmen_routes_copy)
+        result = self.__fn(self.__tours)
         return result
 
 
@@ -79,13 +94,9 @@ class InstanceTransformer:
 
     def __call__(self, salesmen_routes: t.List[npt.NDArray[np.int64]]) -> TspResult:
         salesmen_routes_copy = [
-            [self.__cities[city] for city in salesman_route]
+            np.array([self.__cities[city] for city in salesman_route], dtype=City)
             for salesman_route in salesmen_routes
         ]
-
-        # for i, salesman_route in enumerate(salesmen_routes):
-        #     for city in salesman_route:
-        #         salesmen_routes_copy[i].append(self.__cities[city])
 
         result = self.__fn(salesmen_routes_copy)
         return result
@@ -102,12 +113,12 @@ class InstanceAugmenter:
         self.__home_city = home_city
 
     def __call__(self, salesmen_routes: t.List[t.List[City]]) -> TspResult:
-        for i, _ in enumerate(salesmen_routes):
-            salesmen_routes[i] = np.concatenate(
-                ([self.__home_city], salesmen_routes[i])
-            )
+        salesmen_routes_copy = [
+            np.concatenate(([self.__home_city], salesmen_route))
+            for salesmen_route in salesmen_routes
+        ]
 
-        result = self.__fn(salesmen_routes)
+        result = self.__fn(salesmen_routes_copy)
         return result
 
 
@@ -121,7 +132,7 @@ def min_max_multiple_tsp(salesmen_routes: t.List[t.List[City]]) -> TspResult:
         result.optimal_min_max.max = max(result.optimal_min_max.max, cost)
         result.optimal_cost += cost
 
-    return result.optimal_cost
+    return result
 
 
 def tsp(salesman_route: t.List[City]) -> float:

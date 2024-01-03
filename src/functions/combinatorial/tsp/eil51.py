@@ -14,7 +14,7 @@ def make_eil51(dimensions: int) -> CombinatorialFunctionDefinition:
     function = min_max_multiple_tsp
     function = InstanceAugmenter(fn=function, home_city=__parser_result.coordinates[0])
     function = InstanceTransformer(fn=function, cities=__parser_result.coordinates)
-    function = InstanceSegmenter(fn=function, dimensions=dimensions)
+    function = InstanceSegmenter(fn=function, salesmen=dimensions)
 
     return CombinatorialFunctionDefinition(
         name=__parser_result.name,
