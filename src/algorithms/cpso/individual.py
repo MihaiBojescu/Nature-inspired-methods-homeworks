@@ -73,7 +73,7 @@ class Individual:
 
         self.__x = self.__calculate_x_by_y(
             y,
-            team_best_position[i],
+            team_best_position,
         )
         self.__fitness = self.__fitness_function(self.__x)
 
@@ -127,15 +127,15 @@ class Individual:
         y: npt.NDArray[np.int8],
         team_best_x: npt.NDArray[np.uint32],
     ) -> int:
-        x = np.zeros(self.__x.shape)
+        x = np.zeros(self.__x.shape, dtype=self.__x.dtype)
 
         for i, _ in enumerate(x):
             if y[i] == 1:
-                x[i] = team_best_x
+                x[i] = team_best_x[i]
                 continue
 
             if y[i] == -1:
-                x[i] = self.__personal_best_x
+                x[i] = self.__personal_best_x[i]
                 continue
 
             x[i] = np.random.randint(low=0, high=len(x))
