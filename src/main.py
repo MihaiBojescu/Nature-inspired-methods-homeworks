@@ -8,7 +8,7 @@ from algorithms.cpso.metered_algorithm import (
 from algorithms.base.algorithm import BaseAlgorithm
 from functions.combinatorial.definition import CombinatorialFunctionDefinition
 from functions.combinatorial.tsp.eil51 import make_eil51
-from functions.combinatorial.tsp.common import generate_initial_population
+from functions.combinatorial.tsp.common import InitialPopulationGenerator
 from util.import_export import save_metrics
 
 
@@ -69,7 +69,7 @@ def tsp_generator(
         "outputs/discrete",
         MeteredCombinatorialParticleSwarmOptimisation.from_function_definition(
             function_definition=function_definition,
-            generate_initial_population=generate_initial_population(function_definition, 100),
+            generate_initial_population=InitialPopulationGenerator(function_definition, 100),
             dimensions=dimension,
             inertia_weight=inertia_weight,
             cognitive_parameter=cognitive_parameter,

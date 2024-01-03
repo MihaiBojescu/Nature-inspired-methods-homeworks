@@ -99,18 +99,24 @@ def __calculate_distance(a: City, b: City) -> float:
     return np.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2)
 
 
-def generate_initial_population(
-    function_definition: CombinatorialFunctionDefinition,
-    population_size: int,
-):
-    def run():
+class InitialPopulationGenerator:
+    __function_definition: CombinatorialFunctionDefinition
+    __population_size: int
+
+    def __init__(
+        self,
+        function_definition: CombinatorialFunctionDefinition,
+        population_size: int,
+    ):
+        self.__function_definition = function_definition
+        self.__population_size = population_size
+
+    def __call__(self):
         return [
             np.random.choice(
-                function_definition.values[1:],
-                size=len(function_definition.values) - 1,
+                [city.identifier for city in self.__function_definition.values[1:]],
+                size=len(self.__function_definition.values) - 1,
                 replace=False,
             )
-            for _ in range(population_size)
+            for _ in range(self.__population_size)
         ]
-
-    return run
