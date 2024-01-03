@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 import numpy as np
+import numpy.typing as npt
 import typing as t
 from functions.combinatorial.definition import CombinatorialFunctionDefinition
 
@@ -25,23 +26,28 @@ class TspResult:
     optimal_cost: float = 0
 
 
-def segment_instances(
-    fn: t.Callable[[t.List[t.List[City]]], TspResult], dimensions: int
-) -> t.Callable[[t.List[City]], TspResult]:
-    if dimensions < 1:
-        raise IndexError("Dimension < 1 in segment function")
+class InstanceSegmenter:
+    __fn: t.Callable[[t.List[t.List[City]]], TspResult]
+    __dimensions: int
+    __sections: t.Optional[t.List[int]]
 
-    sections = None
+    def __init__(
+        self, fn: t.Callable[[t.List[t.List[City]]], TspResult], dimensions: int
+    ):
+        if dimensions < 1:
+            raise IndexError("Dimension < 1 in segment function")
 
-    def run(salesmen_routes: t.List[t.List[City]]) -> TspResult:
-        nonlocal sections
+        self.__fn = fn
+        self.__dimensions = dimensions
+        self.__sections = None
 
-        if sections is None:
+    def __call__(self, salesmen_routes: npt.NDArray[np.int64]) -> TspResult:
+        if self.__sections is None:
             sections = [0]
             current_index = 0
             max_size = (len(salesmen_routes) // 2) - 1
 
-            for _ in range(dimensions - 1):
+            for _ in range(self.__dimensions - 1):
                 size = np.random.randint(
                     low=1,
                     high=max_size,
@@ -51,26 +57,58 @@ def segment_instances(
 
             sections.append(len(salesmen_routes))
 
-        salesmen_routes = [
-            salesmen_routes[sections[i] : sections[i + 1]] for i in range(len(sections) - 1)
+        salesmen_routes_copy = [
+            salesmen_routes[sections[i] : sections[i + 1]]
+            for i in range(len(sections) - 1)
         ]
-        result = fn(salesmen_routes)
+        result = self.__fn(salesmen_routes_copy)
         return result
 
-    return run
+
+class InstanceTransformer:
+    __fn: t.Callable[[t.List[t.List[City]]], TspResult]
+    __cities: t.List[City]
+
+    def __init__(
+        self,
+        fn: t.Callable[[t.List[t.List[City]]], TspResult],
+        cities: t.List[City],
+    ):
+        self.__fn = fn
+        self.__cities = cities
+
+    def __call__(self, salesmen_routes: t.List[npt.NDArray[np.int64]]) -> TspResult:
+        salesmen_routes_copy = [
+            [self.__cities[city] for city in salesman_route]
+            for salesman_route in salesmen_routes
+        ]
+
+        # for i, salesman_route in enumerate(salesmen_routes):
+        #     for city in salesman_route:
+        #         salesmen_routes_copy[i].append(self.__cities[city])
+
+        result = self.__fn(salesmen_routes_copy)
+        return result
 
 
-def augment_instances(
-    fn: t.Callable[[t.List[t.List[City]]], TspResult], home_city: City
-) -> t.Callable[[t.List[t.List[City]]], TspResult]:
-    def run(salesmen_routes: t.List[t.List[City]]) -> TspResult:
+class InstanceAugmenter:
+    __fn: t.Callable[[t.List[t.List[City]]], TspResult]
+    __home_city: City
+
+    def __init__(
+        self, fn: t.Callable[[t.List[t.List[City]]], TspResult], home_city: City
+    ):
+        self.__fn = fn
+        self.__home_city = home_city
+
+    def __call__(self, salesmen_routes: t.List[t.List[City]]) -> TspResult:
         for i, _ in enumerate(salesmen_routes):
-            salesmen_routes[i] = np.concatenate(([home_city], salesmen_routes[i]))
+            salesmen_routes[i] = np.concatenate(
+                ([self.__home_city], salesmen_routes[i])
+            )
 
-        result = fn(salesmen_routes)
+        result = self.__fn(salesmen_routes)
         return result
-
-    return run
 
 
 def min_max_multiple_tsp(salesmen_routes: t.List[t.List[City]]) -> TspResult:
@@ -83,7 +121,7 @@ def min_max_multiple_tsp(salesmen_routes: t.List[t.List[City]]) -> TspResult:
         result.optimal_min_max.max = max(result.optimal_min_max.max, cost)
         result.optimal_cost += cost
 
-    return result
+    return result.optimal_cost
 
 
 def tsp(salesman_route: t.List[City]) -> float:
@@ -114,7 +152,7 @@ class InitialPopulationGenerator:
     def __call__(self):
         return [
             np.random.choice(
-                [city.identifier for city in self.__function_definition.values[1:]],
+                [city.identifier - 1 for city in self.__function_definition.values[1:]],
                 size=len(self.__function_definition.values) - 1,
                 replace=False,
             )
