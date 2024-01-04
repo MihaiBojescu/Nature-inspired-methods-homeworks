@@ -2,9 +2,7 @@
 import typing as t
 from itertools import chain
 from multiprocessing import Process, Semaphore
-from algorithms.cpso.metered_algorithm import (
-    MeteredCombinatorialParticleSwarmOptimisation,
-)
+from algorithms.apso.metered_algorithm import MeteredAdaptiveParticleSwarmOptimisation
 from algorithms.base.algorithm import BaseAlgorithm
 from functions.combinatorial.definition import CombinatorialFunctionDefinition
 from functions.combinatorial.tsp.eil51 import make_eil51
@@ -31,20 +29,12 @@ def build_discrete_instances():
             function_definition_constructor=function_definition_constructor,
             dimension=dimension,
             generations=generations,
-            inertia_weight=inertia_weight,
-            cognitive_parameter=cognitive_parameter,
-            social_parameter=social_parameter,
-            intensification_parameter=intensification_parameter,
         )
-        for dimension in [2, 3]
+        for dimension in [2]
         for function_definition_constructor in [
             make_eil51,
         ]
-        for generations in [100]
-        for inertia_weight in [0.0, 0.25, 0.5, 0.75, 1.0]
-        for cognitive_parameter in [0.0, 0.25, 0.5, 0.75, 1.0]
-        for social_parameter in [0.0, 0.25, 0.5, 0.75, 1.0]
-        for intensification_parameter in [0.0, 0.5, 1.0]
+        for generations in [2000]
     )
 
 
@@ -52,28 +42,17 @@ def tsp_generator(
     function_definition_constructor: t.Callable[[int], CombinatorialFunctionDefinition],
     dimension: int,
     generations: int,
-    inertia_weight: float,
-    cognitive_parameter: float,
-    social_parameter: float,
-    intensification_parameter: float,
 ):
     function_definition = function_definition_constructor(dimension)
     return (
         function_definition,
         dimension,
         generations,
-        inertia_weight,
-        cognitive_parameter,
-        social_parameter,
-        intensification_parameter,
         "outputs/discrete",
-        MeteredCombinatorialParticleSwarmOptimisation.from_function_definition(
+        MeteredAdaptiveParticleSwarmOptimisation.from_function_definition(
             function_definition=function_definition,
-            generate_initial_population=InitialPopulationGenerator(function_definition, 100),
+            generate_initial_population=InitialPopulationGenerator(function_definition, 1),
             dimensions=dimension,
-            inertia_weight=inertia_weight,
-            cognitive_parameter=cognitive_parameter,
-            social_parameter=social_parameter,
         ),
     )
 
@@ -84,9 +63,6 @@ def wrap_instances_in_processes(
             CombinatorialFunctionDefinition,
             int,
             int,
-            float,
-            float,
-            float,
             str,
             BaseAlgorithm,
         ]
@@ -101,10 +77,6 @@ def wrap_instances_in_processes(
             function_definition,
             dimensions,
             generations,
-            inertia,
-            cognitive_parameter,
-            social_parameter,
-            intensification_parameter,
             output_folder,
             algorithm,
         ) in instances:
@@ -114,10 +86,6 @@ def wrap_instances_in_processes(
                     function_definition,
                     dimensions,
                     generations,
-                    inertia,
-                    cognitive_parameter,
-                    social_parameter,
-                    intensification_parameter,
                     output_folder,
                     algorithm,
                     semaphore,
@@ -137,16 +105,12 @@ def process(
     function_definition: CombinatorialFunctionDefinition,
     dimensions: int,
     generations: int,
-    inertia_weight: float,
-    cognitive_parameter: float,
-    social_parameter: float,
-    intensification_parameter: float,
     output_folder: str,
     algorithm: BaseAlgorithm,
     semaphore: Semaphore,
 ):
     try:
-        name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, generations = {generations}, inertia = {inertia_weight}, team_bias = {social_parameter}, cognitive_parameter = {cognitive_parameter}, intensification_parameter = {intensification_parameter})"
+        name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, generations = {generations})"
 
         print(f"Running {name}")
         result = algorithm.run()
