@@ -12,6 +12,9 @@ class City:
     x: float
     y: float
 
+    def to_index(self):
+        return self.identifier - 1
+
 
 class CostCalculator:
     def __call__(self, cities: t.List[City]):
@@ -160,7 +163,12 @@ class MinMaxMultipleTSP:
         total_cost = 0
 
         for i in range(len(salesman_route) - 1):
-            total_cost += self.__costs[salesman_route[i]][salesman_route[i + 1]]
+            city_a = salesman_route[i].to_index()
+            city_b = salesman_route[i + 1].to_index()
+            total_cost += self.__costs[city_a][city_b]
+
+        last_city = salesman_route[-1].to_index()
+        total_cost += self.__costs[last_city][0]
 
         return total_cost
 
@@ -180,7 +188,7 @@ class InitialPopulationGenerator:
     def __call__(self):
         return [
             np.random.choice(
-                [city.identifier - 1 for city in self.__function_definition.values[1:]],
+                [city.to_index() for city in self.__function_definition.values[1:]],
                 size=len(self.__function_definition.values) - 1,
                 replace=False,
             )
