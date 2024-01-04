@@ -40,9 +40,7 @@ class TspResultOptimalMinMax:
 
 @dataclass
 class TspResult:
-    optimal_min_max: TspResultOptimalMinMax = field(
-        default_factory=TspResultOptimalMinMax
-    )
+    optimal_min_max: TspResultOptimalMinMax = field(default_factory=TspResultOptimalMinMax)
     optimal_cost: float = 0
 
     def __add__(self, other):
@@ -60,45 +58,50 @@ class TspResult:
 
 class InstanceSegmenter:
     __fn: t.Callable[[t.List[t.List[City]]], TspResult]
+    __cities: int
     __salesmen: int
-    __tours: t.Optional[t.List[int]]
+    __sections: t.Optional[t.List[int]]
 
     def __init__(
         self,
         fn: t.Callable[[t.List[t.List[City]]], TspResult],
+        cities: int,
         salesmen: int,
     ):
         if salesmen < 1:
             raise IndexError("Salesmen < 1 in segment function")
 
         self.__fn = fn
+        self.__cities = cities
         self.__salesmen = salesmen
-        self.__tours = None
+        self.__sections = self.__perform_segmentation()
+
+    def __perform_segmentation(self):
+        sections = []
+        unpicked_cities = list(range(self.__cities))
+
+        for salesman in range(self.__salesmen, 1, -1):
+            max_tour_size = math.floor(((len(unpicked_cities) - 1 + salesman) / salesman) + 1)
+            section = np.random.choice(
+                unpicked_cities,
+                size=min(max_tour_size, len(unpicked_cities)),
+                replace=False,
+            )
+            unpicked_cities = np.array([city for city in unpicked_cities if city not in section])
+            sections.append(section)
+
+        sections.append(unpicked_cities)
+        np.random.shuffle(sections)
+        return sections
 
     def __call__(self, salesmen_routes: npt.NDArray[np.int64]) -> TspResult:
-        if self.__tours is None:
-            tours = []
-            unpicked_cities = salesmen_routes.copy()
+        if len(salesmen_routes) < self.__cities:
+            result = self.__fn([salesmen_routes])
+            return result
 
-            for salesman in range(self.__salesmen, 1, -1):
-                max_tour_size = math.floor(
-                    ((len(unpicked_cities) - 1 + salesman) / salesman) + 1
-                )
-                tour = np.random.choice(
-                    unpicked_cities,
-                    size=min(max_tour_size, len(unpicked_cities)),
-                    replace=False,
-                )
-                unpicked_cities = np.array(
-                    [city for city in unpicked_cities if city not in tour]
-                )
-                tours.append(tour)
+        salesmen_routes_copy = [np.array([salesmen_routes[index] for index in section]) for section in self.__sections]
 
-            tours.append(unpicked_cities)
-            np.random.shuffle(tours)
-            self.__tours = tours
-
-        result = self.__fn(self.__tours)
+        result = self.__fn(salesmen_routes_copy)
         return result
 
 
@@ -128,16 +131,13 @@ class InstanceAugmenter:
     __fn: t.Callable[[t.List[t.List[City]]], TspResult]
     __home_city: City
 
-    def __init__(
-        self, fn: t.Callable[[t.List[t.List[City]]], TspResult], home_city: City
-    ):
+    def __init__(self, fn: t.Callable[[t.List[t.List[City]]], TspResult], home_city: City):
         self.__fn = fn
         self.__home_city = home_city
 
     def __call__(self, salesmen_routes: t.List[t.List[City]]) -> TspResult:
         salesmen_routes_copy = [
-            np.concatenate(([self.__home_city], salesmen_route))
-            for salesmen_route in salesmen_routes
+            np.concatenate(([self.__home_city], salesmen_route)) for salesmen_route in salesmen_routes
         ]
 
         result = self.__fn(salesmen_routes_copy)
