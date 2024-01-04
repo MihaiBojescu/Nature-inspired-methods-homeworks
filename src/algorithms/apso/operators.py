@@ -1,8 +1,13 @@
 import typing as t
 import numpy as np
 
+T = t.TypeVar("T")
 
-class TwoOptOperator:
+class BaseOperator:
+    def run(self, values: t.List[T]) -> t.List[np.int64]:
+        return []
+
+class TwoOptOperator(BaseOperator):
     __fitness_function: t.Callable[[t.List[np.int64]], np.float32]
     __fitness_compare_function: t.Callable[[np.float32, np.float32], bool]
 
@@ -27,9 +32,11 @@ class TwoOptOperator:
                     b = values_copy[i]
                     c = values_copy[j]
                     d = values_copy[j + 1]
+                    b_pos = i
+                    d_pos = j + 1
 
                     if self.__is_cost_lower_after_swap(a, b, c, d):
-                        values_copy[b:d] = reversed(values_copy[b:d])
+                        values_copy[b_pos:d_pos] = np.flip(values_copy[b_pos:d_pos])
                         improved = True
 
         return values_copy
@@ -41,7 +48,7 @@ class TwoOptOperator:
         return self.__fitness_compare_function(original_cost, swapped_cost)
 
 
-class PathLinkerOperator:
+class PathLinkerOperator(BaseOperator):
     __fitness_function: t.Callable[[t.List[np.int64]], np.float32]
     __fitness_compare_function: t.Callable[[np.float32, np.float32], bool]
 
@@ -83,7 +90,7 @@ class PathLinkerOperator:
         return self.__fitness_compare_function(original_cost, swapped_cost)
 
 
-class SwapOperator:
+class SwapOperator(BaseOperator):
     def run(self, values: t.List[np.int64]):
         values_copy = values.copy()
 
