@@ -45,6 +45,9 @@ class TspResult:
     )
     optimal_cost: float = 0
 
+    def __add__(self, other):
+        return self.optimal_cost + other.optimal_cost
+
     def __gt__(self, other):
         return self.optimal_cost > other.optimal_cost
 
