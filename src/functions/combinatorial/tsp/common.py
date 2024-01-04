@@ -13,6 +13,22 @@ class City:
     y: float
 
 
+class CostCalculator:
+    def __call__(self, cities: t.List[City]):
+        result = [[0.0 for _ in range(len(cities))] for _ in range(len(cities))]
+
+        for i in range(0, len(cities) - 1):
+            for j in range(i + 1, len(cities)):
+                cost = self.__calculate_distance(cities[i], cities[j])
+                result[i][j] = cost
+                result[j][i] = cost
+
+        return result
+
+    def __calculate_distance(self, a: City, b: City) -> float:
+        return np.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2)
+
+
 @dataclass
 class TspResultOptimalMinMax:
     min: float = +np.inf
@@ -122,30 +138,31 @@ class InstanceAugmenter:
         return result
 
 
-def min_max_multiple_tsp(salesmen_routes: t.List[t.List[City]]) -> TspResult:
-    result = TspResult()
+class MinMaxMultipleTSP:
+    __costs: t.List[t.List[float]]
 
-    for salesman_route in salesmen_routes:
-        cost = tsp(salesman_route)
+    def __init__(self, costs: t.List[t.List[float]]) -> None:
+        self.__costs = costs
 
-        result.optimal_min_max.min = min(result.optimal_min_max.min, cost)
-        result.optimal_min_max.max = max(result.optimal_min_max.max, cost)
-        result.optimal_cost += cost
+    def __call__(self, salesmen_routes: t.List[t.List[City]]) -> TspResult:
+        result = TspResult()
 
-    return result
+        for salesman_route in salesmen_routes:
+            cost = self.__tsp(salesman_route)
 
+            result.optimal_min_max.min = min(result.optimal_min_max.min, cost)
+            result.optimal_min_max.max = max(result.optimal_min_max.max, cost)
+            result.optimal_cost += cost
 
-def tsp(salesman_route: t.List[City]) -> float:
-    total_cost = 0
+        return result
 
-    for i in range(len(salesman_route) - 1):
-        total_cost += __calculate_distance(salesman_route[i], salesman_route[i + 1])
+    def __tsp(self, salesman_route: t.List[City]) -> float:
+        total_cost = 0
 
-    return total_cost
+        for i in range(len(salesman_route) - 1):
+            total_cost += self.__costs[salesman_route[i]][salesman_route[i + 1]]
 
-
-def __calculate_distance(a: City, b: City) -> float:
-    return np.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2)
+        return total_cost
 
 
 class InitialPopulationGenerator:
