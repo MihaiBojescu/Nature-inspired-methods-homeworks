@@ -1,19 +1,9 @@
 from dataclasses import dataclass, field
 import math
 import numpy as np
-import numpy.typing as npt
 import typing as t
 from functions.combinatorial.definition import CombinatorialFunctionDefinition
-
-
-@dataclass
-class City:
-    identifier: int
-    x: float
-    y: float
-
-    def to_index(self):
-        return self.identifier - 1
+from functions.combinatorial.tsp.util.data import City
 
 
 class CostCalculator:

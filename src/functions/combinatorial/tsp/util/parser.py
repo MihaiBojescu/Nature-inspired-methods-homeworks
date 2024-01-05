@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 import os
+import re
 import typing as t
-from functions.combinatorial.tsp.common import City
+from functions.combinatorial.tsp.util.common import City
 
-path = os.path.join(os.path.dirname(__file__), "../../../../")
+path = os.path.join(os.path.dirname(__file__), "../../../../../")
 
 
 @dataclass
@@ -44,25 +45,19 @@ class Parser:
                 continue
 
             if "COMMENT : " in lines[self.__line_index]:
-                description, increment = self.__parse_description(
-                    lines, self.__line_index
-                )
+                description, increment = self.__parse_description(lines, self.__line_index)
                 result.description = description
                 self.__line_index += increment
                 continue
 
             if "DIMENSION : " in lines[self.__line_index]:
-                dimensions, increment = self.__parse_dimensions(
-                    lines, self.__line_index
-                )
+                dimensions, increment = self.__parse_dimensions(lines, self.__line_index)
                 result.dimensions = dimensions
                 self.__line_index += increment
                 continue
 
             if "NODE_COORD_SECTION" in lines[self.__line_index]:
-                coordinates, increment = self.__parse_coordinates(
-                    lines, self.__line_index
-                )
+                coordinates, increment = self.__parse_coordinates(lines, self.__line_index)
                 result.coordinates = coordinates
                 self.__line_index += increment
                 continue
@@ -89,13 +84,14 @@ class Parser:
     def __parse_coordinates(self, lines: t.List[str], index: int) -> t.Tuple[int, int]:
         coordinates = []
         increment = 1
+        number_regex = re.compile(r"\d+[.,]?\d*")
 
         for i in range(index + 1, len(lines)):
             if "EOF" in lines[i]:
                 increment += 1
                 break
 
-            identifier, x, y = lines[i].split(" ")
+            identifier, x, y = number_regex.findall(lines[i])
             coordinates.append(City(identifier=int(identifier), x=float(x), y=float(y)))
             increment += 1
 

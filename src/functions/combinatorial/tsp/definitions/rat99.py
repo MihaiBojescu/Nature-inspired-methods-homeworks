@@ -1,6 +1,6 @@
 from functions.combinatorial.definition import CombinatorialFunctionDefinition
-from functions.combinatorial.tsp.parser import Parser
-from functions.combinatorial.tsp.common import (
+from functions.combinatorial.tsp.util.parser import Parser
+from functions.combinatorial.tsp.util.common import (
     CostCalculator,
     InstanceAugmenter,
     InstanceTransformer,
@@ -8,10 +8,10 @@ from functions.combinatorial.tsp.common import (
     MinMaxMultipleTSP,
 )
 
-__parser_result = Parser().parse("./src/functions/combinatorial/tsp/eil51.tsp")
+__parser_result = Parser().parse("./src/functions/combinatorial/tsp/data/rat99.tsp")
 
 
-def make_eil51(dimensions: int) -> CombinatorialFunctionDefinition:
+def make_rat99(dimensions: int) -> CombinatorialFunctionDefinition:
     cost_calculator = CostCalculator()
     segmenter = Segmenter(cities=len(__parser_result.coordinates) - 1, salesmen=dimensions)
     costs = cost_calculator(__parser_result.coordinates)

@@ -5,8 +5,11 @@ from multiprocessing import Process, Semaphore
 from algorithms.apso.metered_algorithm import MeteredAdaptiveParticleSwarmOptimisation
 from algorithms.base.algorithm import BaseAlgorithm
 from functions.combinatorial.definition import CombinatorialFunctionDefinition
-from functions.combinatorial.tsp.eil51 import make_eil51
-from functions.combinatorial.tsp.common import InitialPopulationGenerator
+from functions.combinatorial.tsp.definitions.eil51 import make_eil51
+from functions.combinatorial.tsp.definitions.berlin52 import make_berlin52
+from functions.combinatorial.tsp.definitions.eil76 import make_eil76
+from functions.combinatorial.tsp.definitions.rat99 import make_rat99
+from functions.combinatorial.tsp.util.common import InitialPopulationGenerator
 from util.import_export import save_metrics
 
 
@@ -29,12 +32,17 @@ def build_discrete_instances():
             function_definition_constructor=function_definition_constructor,
             dimension=dimension,
             generations=generations,
+            probabilities=probabilities,
         )
-        for dimension in [2]
-        for function_definition_constructor in [
-            make_eil51,
+        for dimension in [2, 3]
+        for function_definition_constructor in [make_eil51, make_berlin52, make_eil76, make_rat99]
+        for generations in [100, 2000]
+        for probabilities in [
+            (0.1, 0.2, 0.7),
+            (0.3, 0.2, 0.5),
+            (0.3333, 0.3333, 0.3334),
+            (0.4, 0.4, 0.2),
         ]
-        for generations in [2000]
     )
 
 
@@ -42,19 +50,25 @@ def tsp_generator(
     function_definition_constructor: t.Callable[[int], CombinatorialFunctionDefinition],
     dimension: int,
     generations: int,
+    probabilities: (float, float, float),
 ):
     function_definition = function_definition_constructor(dimension)
     return (
         function_definition,
         dimension,
         generations,
+        probabilities,
         "outputs/discrete",
         MeteredAdaptiveParticleSwarmOptimisation.from_function_definition(
             function_definition=function_definition,
+            dimensions=dimension,
             generate_initial_population=InitialPopulationGenerator(
                 function_definition=function_definition, population_size=20
             ),
-            dimensions=dimension,
+            criteria_function=lambda _best_individual, _best_individual_fitness, generation: generation > generations,
+            two_opt_operator_probability=probabilities[0],
+            path_linker_operator_probability=probabilities[1],
+            swap_operator_probability=probabilities[2],
         ),
     )
 
@@ -65,6 +79,7 @@ def wrap_instances_in_processes(
             CombinatorialFunctionDefinition,
             int,
             int,
+            t.Tuple[float, float, float],
             str,
             BaseAlgorithm,
         ]
@@ -79,6 +94,7 @@ def wrap_instances_in_processes(
             function_definition,
             dimensions,
             generations,
+            probabilities,
             output_folder,
             algorithm,
         ) in instances:
@@ -88,6 +104,7 @@ def wrap_instances_in_processes(
                     function_definition,
                     dimensions,
                     generations,
+                    probabilities,
                     output_folder,
                     algorithm,
                     semaphore,
@@ -107,12 +124,13 @@ def process(
     function_definition: CombinatorialFunctionDefinition,
     dimensions: int,
     generations: int,
+    probabilities: (float, float, float),
     output_folder: str,
     algorithm: BaseAlgorithm,
     semaphore: Semaphore,
 ):
     try:
-        name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, generations = {generations})"
+        name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, generations = {generations}, 2-opt_probability = {probabilities[0]}, path-relinker_probability = {probabilities[1]}, swap_probability = {probabilities[2]})"
 
         print(f"Running {name}")
         result = algorithm.run()
