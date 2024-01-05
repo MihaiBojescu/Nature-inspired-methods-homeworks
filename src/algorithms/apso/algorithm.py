@@ -21,13 +21,25 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm):
         fitness_function: t.Callable[[t.List[np.int64]], np.float32],
         fitness_compare_function: t.Callable[[np.float32, np.float32], bool],
         criteria_function: t.Callable[[t.List[np.int64], np.float32, np.uint64], bool],
+        two_opt_operator_probability: float,
+        path_linker_operator_probability: float,
+        swap_operator_probability: float,
         debug: bool = False,
     ) -> None:
+        self.__check_operator_probabilities(
+            two_opt_operator_probability=two_opt_operator_probability,
+            path_linker_operator_probability=path_linker_operator_probability,
+            swap_operator_probability=swap_operator_probability,
+        )
+
         self._population = [
             Individual(
                 initial_position=position,
                 fitness_function=fitness_function,
                 fitness_compare_function=fitness_compare_function,
+                two_opt_operator_probability=two_opt_operator_probability,
+                path_linker_operator_probability=path_linker_operator_probability,
+                swap_operator_probability=swap_operator_probability,
             )
             for position in generate_initial_population()
         ]
@@ -42,6 +54,15 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm):
             comparator=lambda a, b: self._fitness_compare_function(a.fitness, b.fitness),
         )
 
+    def __check_operator_probabilities(
+        self,
+        two_opt_operator_probability: float,
+        path_linker_operator_probability: float,
+        swap_operator_probability: float,
+    ):
+        if two_opt_operator_probability + path_linker_operator_probability + swap_operator_probability != 1.0:
+            raise RuntimeError("Operator probabilities do not sum up to 1.0f")
+
     @staticmethod
     def from_function_definition(
         function_definition: CombinatorialFunctionDefinition,
@@ -55,6 +76,9 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm):
             t.Literal["auto"],
             t.Callable[[t.List[np.int64], np.float32, np.uint64], bool],
         ] = "auto",
+        two_opt_operator_probability: float = 0.3333,
+        path_linker_operator_probability: float = 0.3333,
+        swap_operator_probability: float = 0.3334,
         debug: bool = False,
     ):
         def default_criteria_function(_values, _fitness, generation):
@@ -86,6 +110,9 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm):
             fitness_function=function_definition.function,
             fitness_compare_function=fitness_compare_function,
             criteria_function=criteria_function,
+            two_opt_operator_probability=two_opt_operator_probability,
+            path_linker_operator_probability=path_linker_operator_probability,
+            swap_operator_probability=swap_operator_probability,
             debug=debug,
         )
 

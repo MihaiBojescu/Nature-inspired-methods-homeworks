@@ -12,6 +12,9 @@ class Individual:
     __fitness_function: t.Callable[[t.List[t.List[np.int64]]], np.float32]
     __fitness_compare_function: t.Callable[[np.float32, np.float32], bool]
 
+    __two_opt_operator_probability: float
+    __path_linker_operator_probability: float
+    __swap_operator_probability: float
     __two_opt_operator: TwoOptOperator
     __path_linker_operator: PathLinkerOperator
     __swap_operator: SwapOperator
@@ -21,6 +24,9 @@ class Individual:
         initial_position: t.List[t.List[np.int64]],
         fitness_function: t.Callable[[t.List[t.List[np.int64]]], np.float32],
         fitness_compare_function: t.Callable[[np.float32, np.float32], bool],
+        two_opt_operator_probability: float,
+        path_linker_operator_probability: float,
+        swap_operator_probability: float,
     ) -> None:
         self.__x = initial_position
         self.__personal_best_x = initial_position.copy()
@@ -30,6 +36,9 @@ class Individual:
         self.__fitness = self.__fitness_function(self.__x)
         self.__personal_best_fitness = self.__fitness
 
+        self.__two_opt_operator_probability = two_opt_operator_probability
+        self.__path_linker_operator_probability = path_linker_operator_probability
+        self.__swap_operator_probability = swap_operator_probability
         self.__two_opt_operator = TwoOptOperator(
             fitness_function=self.__fitness_function, fitness_compare_function=self.__fitness_compare_function
         )
@@ -55,7 +64,16 @@ class Individual:
         return self.__personal_best_fitness
 
     def update(self) -> None:
-        match np.random.randint(low=1, high=4):
+        match np.random.choice(
+            [1, 2, 3],
+            p=[
+                self.__two_opt_operator_probability,
+                self.__path_linker_operator_probability,
+                self.__swap_operator_probability,
+            ],
+            size=1,
+            replace=False,
+        ):
             case 1:
                 self.__x = self.__two_opt_operator.run(self.__x)
             case 2:

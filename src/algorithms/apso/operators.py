@@ -128,12 +128,14 @@ class PathLinkerOperator(BaseOperator):
 class SwapOperator(BaseOperator):
     def run(self, values: t.List[t.List[np.int64]]):
         values_copy = values.copy()
-        edited_segment = np.random.randint(low=0, high=len(values_copy))
 
-        [a, b] = np.random.choice(list(range(len(values_copy[edited_segment]))), size=2, replace=False)
-        values_copy[edited_segment][a], values_copy[edited_segment][b] = (
-            values_copy[edited_segment][b],
-            values_copy[edited_segment][a],
+        [segment_1, segment_2] = np.random.choice(list(range(len(values_copy))), size=2, replace=False)
+        value_1 = np.random.randint(low=0, high=len(values_copy[segment_1]))
+        value_2 = np.random.randint(low=0, high=len(values_copy[segment_2]))
+
+        values_copy[segment_1][value_1], values_copy[segment_2][value_2] = (
+            values_copy[segment_2][value_2],
+            values_copy[segment_1][value_1],
         )
 
         return values_copy
