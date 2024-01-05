@@ -56,55 +56,6 @@ class TspResult:
         return self.optimal_cost < other.optimal_cost
 
 
-class InstanceSegmenter:
-    __fn: t.Callable[[t.List[t.List[City]]], TspResult]
-    __cities: int
-    __salesmen: int
-    __sections: t.Optional[t.List[int]]
-
-    def __init__(
-        self,
-        fn: t.Callable[[t.List[t.List[City]]], TspResult],
-        cities: int,
-        salesmen: int,
-    ):
-        if salesmen < 1:
-            raise IndexError("Salesmen < 1 in segment function")
-
-        self.__fn = fn
-        self.__cities = cities
-        self.__salesmen = salesmen
-        self.__sections = self.__perform_segmentation()
-
-    def __perform_segmentation(self):
-        sections = []
-        unpicked_cities = list(range(self.__cities))
-
-        for salesman in range(self.__salesmen, 1, -1):
-            max_tour_size = math.floor(((len(unpicked_cities) - 1 + salesman) / salesman) + 1)
-            section = np.random.choice(
-                unpicked_cities,
-                size=min(max_tour_size, len(unpicked_cities)),
-                replace=False,
-            )
-            unpicked_cities = np.array([city for city in unpicked_cities if city not in section])
-            sections.append(section)
-
-        sections.append(unpicked_cities)
-        np.random.shuffle(sections)
-        return sections
-
-    def __call__(self, salesmen_routes: npt.NDArray[np.int64]) -> TspResult:
-        if len(salesmen_routes) < self.__cities:
-            result = self.__fn([salesmen_routes])
-            return result
-
-        salesmen_routes_copy = [np.array([salesmen_routes[index] for index in section]) for section in self.__sections]
-
-        result = self.__fn(salesmen_routes_copy)
-        return result
-
-
 class InstanceTransformer:
     __fn: t.Callable[[t.List[t.List[City]]], TspResult]
     __cities: t.List[City]
@@ -117,7 +68,7 @@ class InstanceTransformer:
         self.__fn = fn
         self.__cities = cities
 
-    def __call__(self, salesmen_routes: t.List[npt.NDArray[np.int64]]) -> TspResult:
+    def __call__(self, salesmen_routes: t.List[t.List[np.int64]]) -> TspResult:
         salesmen_routes_copy = [
             np.array([self.__cities[city] for city in salesman_route], dtype=City)
             for salesman_route in salesmen_routes
@@ -142,6 +93,46 @@ class InstanceAugmenter:
 
         result = self.__fn(salesmen_routes_copy)
         return result
+
+
+class Segmenter:
+    __cities: int
+    __salesmen: int
+    __segments: t.List[t.List[np.int64]]
+
+    def __init__(
+        self,
+        cities: int,
+        salesmen: int,
+    ):
+        if salesmen < 1:
+            raise IndexError("Salesmen < 1 in segment function")
+
+        self.__cities = cities
+        self.__salesmen = salesmen
+        self.__segments = self.__perform_segmentation()
+
+    def __perform_segmentation(self) -> t.List[t.List[np.int64]]:
+        sections = []
+        unpicked_cities = list(range(self.__cities))
+
+        for salesman in range(self.__salesmen, 1, -1):
+            max_tour_size = math.floor(((len(unpicked_cities) - 1 + salesman) / salesman) + 1)
+            section = np.random.choice(
+                unpicked_cities,
+                size=min(max_tour_size, len(unpicked_cities)),
+                replace=False,
+            )
+            unpicked_cities = np.array([city for city in unpicked_cities if city not in section])
+            sections.append(section)
+
+        sections.append(unpicked_cities)
+        np.random.shuffle(sections)
+        return sections
+
+    @property
+    def segments(self) -> t.List[np.int64]:
+        return self.__segments
 
 
 class MinMaxMultipleTSP:
@@ -189,11 +180,20 @@ class InitialPopulationGenerator:
         self.__population_size = population_size
 
     def __call__(self):
-        return [
-            np.random.choice(
-                [city.to_index() for city in self.__function_definition.values[1:]],
-                size=len(self.__function_definition.values) - 1,
-                replace=False,
-            )
-            for _ in range(self.__population_size)
+        return [self.__generate_individual() for _ in range(self.__population_size)]
+
+    def __generate_individual(self):
+        individual = np.random.choice(
+            [city.to_index() for city in self.__function_definition.values[1:]],
+            size=len(self.__function_definition.values) - 1,
+            replace=False,
+        )
+        individual = self.__segment(individual)
+
+        return individual
+
+    def __segment(self, individual: t.List[np.int64]) -> t.List[t.List[np.int64]]:
+        individual = [
+            np.array([individual[index] for index in segment]) for segment in self.__function_definition.segmentation
         ]
+        return individual
