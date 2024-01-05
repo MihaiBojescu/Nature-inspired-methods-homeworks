@@ -1,3 +1,4 @@
+import copy
 import typing as t
 import numpy as np
 import numpy.typing as npt
@@ -13,6 +14,7 @@ U = t.TypeVar("U")
 class CombinatorialParticleSwarmOptimisation(BaseAlgorithm):
     _population: t.List[Individual]
     _generation: np.uint64
+    _best_individual: Individual
     _fitness_compare_function: t.Callable[[np.float32, np.float32], bool]
     _criteria_function: t.Callable[[t.List[np.float32], np.float32, np.uint64], bool]
 
@@ -50,10 +52,9 @@ class CombinatorialParticleSwarmOptimisation(BaseAlgorithm):
 
         self._population = quicksort(
             data=self._population,
-            comparator=lambda a, b: self._fitness_compare_function(
-                a.fitness, b.fitness
-            ),
+            comparator=lambda a, b: self._fitness_compare_function(a.fitness, b.fitness),
         )
+        self._best_individual = self._population[0]
 
     @staticmethod
     def from_function_definition(
@@ -95,14 +96,8 @@ class CombinatorialParticleSwarmOptimisation(BaseAlgorithm):
             if generate_initial_population != "auto"
             else default_generate_initial_population
         )
-        criteria_function = (
-            criteria_function
-            if criteria_function != "auto"
-            else default_criteria_function
-        )
-        fitness_compare_function = (
-            maximise if function_definition.target == "maximise" else minimise
-        )
+        criteria_function = criteria_function if criteria_function != "auto" else default_criteria_function
+        fitness_compare_function = maximise if function_definition.target == "maximise" else minimise
 
         return CombinatorialParticleSwarmOptimisation(
             generate_initial_population=generate_initial_population,
@@ -121,41 +116,36 @@ class CombinatorialParticleSwarmOptimisation(BaseAlgorithm):
         return "C-PSO algorithm"
 
     def run(self) -> t.Tuple[np.float32, np.float32, np.uint64]:
-        best_individual = self._population[0]
-
         while not self._criteria_function(
-            best_individual.position, best_individual.fitness, self._generation
+            self._best_individual.position, self._best_individual.fitness, self._generation
         ):
             self.step()
 
-        best_individual = self._population[0]
-
-        return best_individual.position, best_individual.fitness, self._generation
+        return self._best_individual.position, self._best_individual.fitness, self._generation
 
     def step(self) -> t.Tuple[np.float32, np.float32, np.uint64]:
-        self._print(self._generation)
-        best_individual = self._population[0]
+        self._print()
 
         for individual in self._population:
-            individual.update(team_best_position=best_individual.personal_best_position)
+            individual.update(team_best_position=self._best_individual.personal_best_position)
 
         self._population = quicksort(
             data=self._population,
-            comparator=lambda a, b: self._fitness_compare_function(
-                a.fitness, b.fitness
-            ),
+            comparator=lambda a, b: self._fitness_compare_function(a.fitness, b.fitness),
         )
-        best_individual = self._population[0]
-
+        self._best_individual = (
+            copy.deepcopy(self._population[0])
+            if self._fitness_compare_function(self._population[0].fitness, self._best_individual.fitness)
+            else self._best_individual
+        )
         self._generation += 1
 
-        return best_individual.position, best_individual.fitness, self._generation
+        return self._best_individual.position, self._best_individual.fitness, self._generation
 
-    def _print(self, generation: int) -> None:
+    def _print(self) -> None:
         if not self.__debug:
             return
 
-        best_individual = self._population[0]
         print(
-            f"Combinatorial particle swarm optimisation algorithm generation {generation}: {best_individual.fitness}"
+            f"Combinatorial particle swarm optimisation algorithm generation {self._generation}: {self._best_individual.fitness}"
         )
