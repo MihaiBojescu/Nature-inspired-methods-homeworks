@@ -51,7 +51,9 @@ def tsp_generator(
         "outputs/discrete",
         MeteredAdaptiveParticleSwarmOptimisation.from_function_definition(
             function_definition=function_definition,
-            generate_initial_population=InitialPopulationGenerator(function_definition, 1),
+            generate_initial_population=InitialPopulationGenerator(
+                function_definition=function_definition, population_size=20
+            ),
             dimensions=dimension,
         ),
     )
