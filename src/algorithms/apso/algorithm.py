@@ -1,3 +1,4 @@
+import copy
 import typing as t
 import numpy as np
 import numpy.typing as npt
@@ -144,7 +145,11 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm):
             data=self._population,
             comparator=lambda a, b: self._fitness_compare_function(a.fitness, b.fitness),
         )
-        self._best_individual = self._population[0]
+        self._best_individual = (
+            copy.deepcopy(self._population[0])
+            if self._fitness_compare_function(self._population[0].fitness, self._best_individual.fitness)
+            else self._best_individual
+        )
         self._generation += 1
 
         return self._best_individual.position, self._best_individual.fitness, self._generation
