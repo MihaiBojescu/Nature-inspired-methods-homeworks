@@ -10,8 +10,13 @@ from util.sort import maximise, minimise, quicksort
 class AdaptiveParticleSwarmOptimisation(BaseAlgorithm):
     _population: t.List[Individual]
     _generation: np.uint64
+    _best_individual: Individual
     _fitness_compare_function: t.Callable[[np.float32, np.float32], bool]
     _criteria_function: t.Callable[[t.List[np.int64], np.float32, np.uint64], bool]
+
+    _two_opt_operator_probability: float
+    _path_linker_operator_probability: float
+    _swap_operator_probability: float
 
     __debug: bool
 
@@ -53,6 +58,7 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm):
             data=self._population,
             comparator=lambda a, b: self._fitness_compare_function(a.fitness, b.fitness),
         )
+        self._best_individual = self._population[0]
 
     def __check_operator_probabilities(
         self,
@@ -121,17 +127,15 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm):
         return "APSO algorithm"
 
     def run(self) -> t.Tuple[np.float32, np.float32, np.uint64]:
-        best_individual = self._population[0]
-
-        while not self._criteria_function(best_individual.position, best_individual.fitness, self._generation):
+        while not self._criteria_function(
+            self._best_individual.position, self._best_individual.fitness, self._generation
+        ):
             self.step()
 
-        best_individual = self._population[0]
-
-        return best_individual.position, best_individual.fitness, self._generation
+        return self._best_individual.position, self._best_individual.fitness, self._generation
 
     def step(self) -> t.Tuple[t.List[np.int64], np.float32, np.uint64]:
-        self._print(self._generation)
+        self._print()
 
         for individual in self._population:
             individual.update()
@@ -140,15 +144,15 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm):
             data=self._population,
             comparator=lambda a, b: self._fitness_compare_function(a.fitness, b.fitness),
         )
+        self._best_individual = self._population[0]
         self._generation += 1
 
-        best_individual = self._population[0]
+        return self._best_individual.position, self._best_individual.fitness, self._generation
 
-        return best_individual.position, best_individual.fitness, self._generation
-
-    def _print(self, generation: int) -> None:
+    def _print(self) -> None:
         if not self.__debug:
             return
 
-        best_individual = self._population[0]
-        print(f"Adaptive particle swarm optimisation algorithm generation {generation}: {best_individual.fitness}")
+        print(
+            f"Adaptive particle swarm optimisation algorithm generation {self._generation}: {self._best_individual.fitness}"
+        )

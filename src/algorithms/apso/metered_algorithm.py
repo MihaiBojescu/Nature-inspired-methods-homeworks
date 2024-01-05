@@ -18,6 +18,9 @@ class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation
         fitness_function: t.Callable[[np.float32], np.float32],
         fitness_compare_function: t.Callable[[np.float32, np.float32], bool],
         criteria_function: t.Callable[[t.List[np.int64], np.float32, np.uint64], bool],
+        two_opt_operator_probability: float = 0.3333,
+        path_linker_operator_probability: float = 0.3333,
+        swap_operator_probability: float = 0.3334,
         debug: bool = False,
     ) -> None:
         super().__init__(
@@ -25,6 +28,9 @@ class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation
             fitness_function=fitness_function,
             fitness_compare_function=fitness_compare_function,
             criteria_function=criteria_function,
+            two_opt_operator_probability=two_opt_operator_probability,
+            path_linker_operator_probability=path_linker_operator_probability,
+            swap_operator_probability=swap_operator_probability,
             debug=debug,
         )
 
@@ -45,6 +51,9 @@ class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation
             t.Literal["auto"],
             t.Callable[[t.List[np.int64], np.float32, np.uint64], bool],
         ] = "auto",
+        two_opt_operator_probability: float = 0.3333,
+        path_linker_operator_probability: float = 0.3333,
+        swap_operator_probability: float = 0.3334,
         debug: bool = False,
     ):
         def default_criteria_function(_values, _fitness, generation):
@@ -76,26 +85,26 @@ class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation
             fitness_function=function_definition.function,
             fitness_compare_function=fitness_compare_function,
             criteria_function=criteria_function,
+            two_opt_operator_probability=two_opt_operator_probability,
+            path_linker_operator_probability=path_linker_operator_probability,
+            swap_operator_probability=swap_operator_probability,
             debug=debug,
         )
 
     def run(self) -> t.Tuple[t.List[np.int64], np.float32, np.uint64]:
         then = time.time_ns()
-        best_individual = self._population[0]
 
-        while not self._criteria_function(best_individual.position, best_individual.fitness, self._generation):
+        while not self._criteria_function(
+            self._best_individual.position, self._best_individual.fitness, self._generation
+        ):
             self.step()
 
             now = time.time_ns()
             self.__metrics_runtime.append((self._generation, now - then))
+            self.__metrics_values.append((self._generation, self._best_individual.position))
+            self.__metrics_fitness.append((self._generation, self._best_individual.fitness))
 
-            for individual in self._population:
-                self.__metrics_values.append((self._generation, individual.position))
-                self.__metrics_fitness.append((self._generation, individual.fitness))
-
-        best_individual = self._population[0]
-
-        return best_individual.position, best_individual.fitness, self._generation
+        return self._best_individual.position, self._best_individual.fitness, self._generation
 
     @property
     def metrics_runtime(self) -> t.List[t.Tuple[np.uint64, np.uint64]]:
