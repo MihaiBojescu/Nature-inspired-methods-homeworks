@@ -5,11 +5,11 @@ from algorithms.apso.operators import TwoOptOperator, PathLinkerOperator, SwapOp
 
 
 class Individual:
-    __x: npt.NDArray[np.float32]
-    __personal_best_x: npt.NDArray[np.float32]
+    __x: t.List[t.List[np.int64]]
+    __personal_best_x: t.List[t.List[np.int64]]
     __fitness: np.float32
     __personal_best_fitness: np.float32
-    __fitness_function: t.Callable[[npt.NDArray[np.float32]], np.float32]
+    __fitness_function: t.Callable[[t.List[t.List[np.int64]]], np.float32]
     __fitness_compare_function: t.Callable[[np.float32, np.float32], bool]
 
     __two_opt_operator: TwoOptOperator
@@ -18,12 +18,12 @@ class Individual:
 
     def __init__(
         self,
-        initial_position: npt.NDArray[np.float32],
-        fitness_function: t.Callable[[npt.NDArray[np.float32]], np.float32],
+        initial_position: t.List[t.List[np.int64]],
+        fitness_function: t.Callable[[t.List[t.List[np.int64]]], np.float32],
         fitness_compare_function: t.Callable[[np.float32, np.float32], bool],
     ) -> None:
-        self.__x = np.array(initial_position)
-        self.__personal_best_x = np.copy(initial_position)
+        self.__x = initial_position
+        self.__personal_best_x = initial_position.copy()
         self.__fitness_function = fitness_function
         self.__fitness_compare_function = fitness_compare_function
 
@@ -39,11 +39,11 @@ class Individual:
         self.__swap_operator = SwapOperator()
 
     @property
-    def position(self) -> npt.NDArray[np.float32]:
+    def position(self) -> t.List[t.List[np.int64]]:
         return self.__x
 
     @property
-    def personal_best_position(self) -> npt.NDArray[np.float32]:
+    def personal_best_position(self) -> t.List[t.List[np.int64]]:
         return self.__personal_best_x
 
     @property

@@ -3,9 +3,11 @@ import numpy as np
 
 T = t.TypeVar("T")
 
+
 class BaseOperator:
-    def run(self, values: t.List[T]) -> t.List[np.int64]:
+    def run(self, values: t.List[t.List[T]]) -> t.List[np.int64]:
         return []
+
 
 class TwoOptOperator(BaseOperator):
     __fitness_function: t.Callable[[t.List[np.int64]], np.float32]
@@ -19,33 +21,49 @@ class TwoOptOperator(BaseOperator):
         self.__fitness_function = fitness_function
         self.__fitness_compare_function = fitness_compare_function
 
-    def run(self, values: t.List[np.uint64]):
-        values_copy = values.copy()
-        improved = True
+    def run(self, values: t.List[t.List[np.uint64]]):
+        values_copy = [segment.copy() for segment in values]
 
-        while improved:
-            improved = False
+        for segment in values_copy:
+            improved = True
 
-            for i in range(1, len(values_copy) - 2):
-                for j in range(i + 1, len(values_copy) - 1):
-                    a = values_copy[i - 1]
-                    b = values_copy[i]
-                    c = values_copy[j]
-                    d = values_copy[j + 1]
-                    b_pos = i
-                    d_pos = j + 1
+            while improved:
+                improved = False
 
-                    if self.__is_cost_lower_after_swap(a, b, c, d):
-                        values_copy[b_pos:d_pos] = np.flip(values_copy[b_pos:d_pos])
+                for i in range(1, len(segment) - 2):
+                    for j in range(i + 1, len(segment) - 1):
+                        a = segment[i - 1]
+                        b = segment[i]
+                        c = segment[j]
+                        d = segment[j + 1]
+                        b_pos = i
+                        d_pos = j + 1
+
+                        if not self.__is_cost_lower_edge_swap(a, b, c, d):
+                            continue
+
+                        swapped_segment = segment.copy()
+                        swapped_segment[b_pos:d_pos] = np.flip(segment[b_pos:d_pos])
+
+                        if not self.__is_cost_lower_instance_swap(segment, swapped_segment):
+                            continue
+
+                        segment[b_pos:d_pos] = np.flip(segment[b_pos:d_pos])
                         improved = True
 
         return values_copy
 
-    def __is_cost_lower_after_swap(self, a: np.int64, b: np.int64, c: np.int64, d: np.int64):
-        original_cost = self.__fitness_function([a, b]) + self.__fitness_function([c, d])
-        swapped_cost = self.__fitness_function([a, c]) + self.__fitness_function([b, d])
+    def __is_cost_lower_edge_swap(self, a: np.int64, b: np.int64, c: np.int64, d: np.int64):
+        original_cost = self.__fitness_function([[a, b]]) + self.__fitness_function([[c, d]])
+        swapped_cost = self.__fitness_function([[a, c]]) + self.__fitness_function([[b, d]])
 
-        return self.__fitness_compare_function(original_cost, swapped_cost)
+        return self.__fitness_compare_function(swapped_cost, original_cost)
+
+    def __is_cost_lower_instance_swap(self, values: t.List[np.int64], swapped_values: t.List[np.int64]):
+        original_cost = self.__fitness_function([values])
+        swapped_cost = self.__fitness_function([swapped_values])
+
+        return self.__fitness_compare_function(swapped_cost, original_cost)
 
 
 class PathLinkerOperator(BaseOperator):
@@ -60,19 +78,34 @@ class PathLinkerOperator(BaseOperator):
         self.__fitness_function = fitness_function
         self.__fitness_compare_function = fitness_compare_function
 
-    def run(self, values: t.List[np.int64]):
-        values_copy = values.copy()
-        improved = True
+    def run(self, values: t.List[t.List[np.int64]]):
+        values_copy = [segment.copy() for segment in values]
 
-        while improved:
-            improved = False
+        for segment_index, _ in enumerate(values_copy):
+            values_without_segment = [
+                current_segment
+                for current_segment in values_copy
+                if np.array_equal(current_segment, values_copy[segment_index])
+            ]
+            improved = True
 
-            for i in range(len(values_copy) - 1):
-                for j in range(i + 1, len(values_copy)):
-                    swapped_values = self.__swap(values_copy, i, j)
+            while improved:
+                improved = False
+                segment = values_copy[segment_index]
 
-                    if self.__compare(values_copy, swapped_values):
-                        values_copy = swapped_values
+                for i in range(len(segment) - 1):
+                    for j in range(i + 1, len(segment)):
+                        swapped_values = self.__swap(segment, i, j)
+
+                        if not self.__is_cost_lower_instance_swap([segment], [swapped_values]):
+                            continue
+
+                        if not self.__is_cost_lower_instance_swap(
+                            [*values_without_segment, segment], [*values_without_segment, swapped_values]
+                        ):
+                            continue
+
+                        values_copy[segment_index] = swapped_values
                         improved = True
 
         return values_copy
@@ -83,18 +116,24 @@ class PathLinkerOperator(BaseOperator):
 
         return swapped_values
 
-    def __compare(self, original_values: t.List[np.int64], swapped_values: t.List[np.int64]):
+    def __is_cost_lower_instance_swap(
+        self, original_values: t.List[t.List[np.int64]], swapped_values: t.List[t.List[np.int64]]
+    ):
         original_cost = self.__fitness_function(original_values)
         swapped_cost = self.__fitness_function(swapped_values)
 
-        return self.__fitness_compare_function(original_cost, swapped_cost)
+        return self.__fitness_compare_function(swapped_cost, original_cost)
 
 
 class SwapOperator(BaseOperator):
-    def run(self, values: t.List[np.int64]):
+    def run(self, values: t.List[t.List[np.int64]]):
         values_copy = values.copy()
+        edited_segment = np.random.randint(low=0, high=len(values_copy))
 
-        [a, b] = np.random.choice(list(range(len(values_copy))), size=2, replace=False)
-        values_copy[a], values_copy[b] = values_copy[b], values_copy[a]
+        [a, b] = np.random.choice(list(range(len(values_copy[edited_segment]))), size=2, replace=False)
+        values_copy[edited_segment][a], values_copy[edited_segment][b] = (
+            values_copy[edited_segment][b],
+            values_copy[edited_segment][a],
+        )
 
         return values_copy
