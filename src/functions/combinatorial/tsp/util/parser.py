@@ -38,25 +38,25 @@ class Parser:
 
             previous_line_index = self.__line_index
 
-            if "NAME : " in lines[self.__line_index]:
+            if re.match(r"^NAME", lines[self.__line_index]):
                 name, increment = self.__parse_name(lines, self.__line_index)
                 result.name = name
                 self.__line_index += increment
                 continue
 
-            if "COMMENT : " in lines[self.__line_index]:
+            if re.match(r"^COMMENT", lines[self.__line_index]):
                 description, increment = self.__parse_description(lines, self.__line_index)
                 result.description = description
                 self.__line_index += increment
                 continue
 
-            if "DIMENSION : " in lines[self.__line_index]:
+            if re.match(r"^DIMENSION", lines[self.__line_index]):
                 dimensions, increment = self.__parse_dimensions(lines, self.__line_index)
                 result.dimensions = dimensions
                 self.__line_index += increment
                 continue
 
-            if "NODE_COORD_SECTION" in lines[self.__line_index]:
+            if re.match(r"^NODE_COORD_SECTION", lines[self.__line_index]):
                 coordinates, increment = self.__parse_coordinates(lines, self.__line_index)
                 result.coordinates = coordinates
                 self.__line_index += increment
@@ -67,17 +67,17 @@ class Parser:
         return result
 
     def __parse_name(self, lines: t.List[str], index: int) -> t.Tuple[str, int]:
-        name = lines[index][len("NAME : ") : -1]
+        name = lines[index].split(":")[1].strip()
         increment = 1
         return name, increment
 
     def __parse_description(self, lines: t.List[str], index: int) -> t.Tuple[str, int]:
-        description = lines[index][len("COMMENT : ") : -1]
+        description = lines[index].split(":")[1].strip()
         increment = 1
         return description, increment
 
     def __parse_dimensions(self, lines: t.List[str], index: int) -> t.Tuple[int, int]:
-        dimensions = int(lines[index][len("DIMENSION : ") : -1])
+        dimensions = int(lines[index].split(":")[1].strip())
         increment = 1
         return dimensions, increment
 
