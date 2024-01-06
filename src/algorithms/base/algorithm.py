@@ -3,7 +3,7 @@ import numpy as np
 
 T = t.TypeVar("T")
 
-class BaseAlgorithm:
+class BaseAlgorithm(t.Generic[T]):
     @property
     def name(self) -> str:
         return "Base algorithm"
