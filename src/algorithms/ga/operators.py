@@ -1,27 +1,19 @@
 import typing as t
-import numpy as np
+from algorithms.ga.individual import Individual
+
+T = t.TypeVar("T")
 
 
-class BaseSelectionOperator:
-    def run(self, population: t.List[t.List[np.int64]]) -> t.List[t.List[np.int64]]:
+class BaseSelectionOperator(t.Generic[T]):
+    def run(self, population: t.List[Individual[T]]) -> t.List[Individual[T]]:
         return population
 
 
-class BaseCrossoverOperator:
-    def run(
-        self, parent_1: t.List[np.int64], parent_2: t.List[np.int64]
-    ) -> t.Tuple[t.List[np.int64], t.List[np.int64]]:
+class BaseCrossoverOperator(t.Generic[T]):
+    def run(self, parent_1: Individual[T], parent_2: Individual[T]) -> t.Tuple[Individual[T], Individual[T]]:
         return parent_1, parent_2
 
 
-class BaseMutationOperator:
-    def run(self, child: t.List[np.int64]) -> t.List[np.int64]:
-        return child
-
-
-class SwapMutationOperator(BaseMutationOperator):
-    def run(self, child: t.List[np.int64]) -> t.List[np.int64]:
-        [a, b] = np.random.choice(len(child), size=2, replace=False)
-        child[a], child[b] = child[b], child[a]
-
+class BaseMutationOperator(t.Generic[T]):
+    def run(self, child: Individual[T]) -> Individual[T]:
         return child
