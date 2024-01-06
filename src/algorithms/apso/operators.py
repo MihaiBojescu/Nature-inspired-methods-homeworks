@@ -1,11 +1,9 @@
 import typing as t
 import numpy as np
 
-T = t.TypeVar("T")
-
 
 class BaseOperator:
-    def run(self, values: t.List[t.List[T]]) -> t.List[np.int64]:
+    def run(self, values: t.List[t.List[np.int64]]) -> t.List[t.List[np.int64]]:
         return []
 
 
@@ -129,7 +127,7 @@ class SwapOperator(BaseOperator):
     def run(self, values: t.List[t.List[np.int64]]):
         values_copy = values.copy()
 
-        [segment_1, segment_2] = np.random.choice(list(range(len(values_copy))), size=2, replace=False)
+        [segment_1, segment_2] = np.random.choice(len(values_copy), size=2, replace=False)
         value_1 = np.random.randint(low=0, high=len(values_copy[segment_1]))
         value_2 = np.random.randint(low=0, high=len(values_copy[segment_2]))
 
