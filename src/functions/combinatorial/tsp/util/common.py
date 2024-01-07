@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 import math
-import numpy as np
+import random
 import typing as t
 from functions.combinatorial.definition import CombinatorialFunctionDefinition
 from functions.combinatorial.tsp.util.data import City
@@ -19,13 +19,13 @@ class CostCalculator:
         return result
 
     def __calculate_distance(self, a: City, b: City) -> float:
-        return np.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2)
+        return math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2)
 
 
 @dataclass
 class TspResultOptimalMinMax:
-    min: float = +np.inf
-    max: float = -np.inf
+    min: float = float("inf")
+    max: float = float("-inf")
 
 
 @dataclass
@@ -58,11 +58,8 @@ class InstanceTransformer:
         self.__fn = fn
         self.__cities = cities
 
-    def __call__(self, salesmen_routes: t.List[t.List[np.int64]]) -> TspResult:
-        salesmen_routes_copy = [
-            np.array([self.__cities[city] for city in salesman_route], dtype=City)
-            for salesman_route in salesmen_routes
-        ]
+    def __call__(self, salesmen_routes: t.List[t.List[int]]) -> TspResult:
+        salesmen_routes_copy = [[self.__cities[city] for city in salesman_route] for salesman_route in salesmen_routes]
 
         result = self.__fn(salesmen_routes_copy)
         return result
@@ -77,9 +74,7 @@ class InstanceAugmenter:
         self.__home_city = home_city
 
     def __call__(self, salesmen_routes: t.List[t.List[City]]) -> TspResult:
-        salesmen_routes_copy = [
-            np.concatenate(([self.__home_city], salesmen_route)) for salesmen_route in salesmen_routes
-        ]
+        salesmen_routes_copy = [[self.__home_city] + salesmen_route for salesmen_route in salesmen_routes]
 
         result = self.__fn(salesmen_routes_copy)
         return result
@@ -88,7 +83,7 @@ class InstanceAugmenter:
 class Segmenter:
     __cities: int
     __salesmen: int
-    __segments: t.List[t.List[np.int64]]
+    __segments: t.List[int]
 
     def __init__(
         self,
@@ -102,26 +97,21 @@ class Segmenter:
         self.__salesmen = salesmen
         self.__segments = self.__perform_segmentation()
 
-    def __perform_segmentation(self) -> t.List[t.List[np.int64]]:
-        sections = []
-        unpicked_cities = list(range(self.__cities))
+    def __perform_segmentation(self) -> t.List[t.List[int]]:
+        segments = []
+        unpicked_cities = self.__cities
 
         for salesman in range(self.__salesmen, 1, -1):
-            max_tour_size = math.floor(((len(unpicked_cities) - 1 + salesman) / salesman) + 1)
-            section = np.random.choice(
-                unpicked_cities,
-                size=min(max_tour_size, len(unpicked_cities)),
-                replace=False,
-            )
-            unpicked_cities = np.array([city for city in unpicked_cities if city not in section])
-            sections.append(section)
+            segment = math.floor(((unpicked_cities - 1 + salesman) / salesman) + 1)
+            unpicked_cities -= segment
+            segments.append(segment)
 
-        sections.append(unpicked_cities)
-        np.random.shuffle(sections)
-        return sections
+        segments.append(unpicked_cities)
+        random.shuffle(segments)
+        return segments
 
     @property
-    def segments(self) -> t.List[np.int64]:
+    def segments(self) -> t.List[int]:
         return self.__segments
 
 
@@ -173,17 +163,20 @@ class InitialPopulationGenerator:
         return [self.__generate_individual() for _ in range(self.__population_size)]
 
     def __generate_individual(self):
-        individual = np.random.choice(
+        individual = random.sample(
             [city.to_index() for city in self.__function_definition.values[1:]],
-            size=len(self.__function_definition.values) - 1,
-            replace=False,
+            k=len(self.__function_definition.values) - 1,
         )
         individual = self.__segment(individual)
 
         return individual
 
-    def __segment(self, individual: t.List[np.int64]) -> t.List[t.List[np.int64]]:
-        individual = [
-            np.array([individual[index] for index in segment]) for segment in self.__function_definition.segmentation
-        ]
-        return individual
+    def __segment(self, individual: t.List[int]) -> t.List[t.List[int]]:
+        result = [[None for _ in range(segment)] for segment in self.__function_definition.segmentation]
+        start = 0
+
+        for i, segment in enumerate(self.__function_definition.segmentation):
+            result[i] = individual[start : start + segment]
+            start += segment
+
+        return result

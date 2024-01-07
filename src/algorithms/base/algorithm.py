@@ -3,13 +3,14 @@ import numpy as np
 
 T = t.TypeVar("T")
 
+
 class BaseAlgorithm(t.Generic[T]):
     @property
     def name(self) -> str:
         return "Base algorithm"
 
-    def run(self) -> t.Tuple[T, np.float32, np.uint64]:
+    def run(self) -> t.Tuple[T, float, int]:
         pass
 
-    def step(self) -> t.Tuple[T, np.float32, np.uint64]:
+    def step(self) -> t.Tuple[T, float, int]:
         pass

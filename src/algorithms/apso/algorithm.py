@@ -1,32 +1,34 @@
 import copy
+import random
 import typing as t
-import numpy as np
-import numpy.typing as npt
-from algorithms.apso.individual import Individual
-from algorithms.base.algorithm import BaseAlgorithm
 from functions.combinatorial.definition import CombinatorialFunctionDefinition
+from algorithms.base.algorithm import BaseAlgorithm
+from algorithms.apso.individual import Individual
+from algorithms.apso.operators import BasePathLinkerOperator, BaseSwapOperator, BaseTwoOptOperator
 from util.sort import maximise, minimise, quicksort
 
+T = t.TypeVar("T")
 
-class AdaptiveParticleSwarmOptimisation(BaseAlgorithm):
-    _population: t.List[Individual]
-    _generation: np.uint64
+
+class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T]):
+    __population: t.List[Individual]
     _best_individual: Individual
-    _fitness_compare_function: t.Callable[[np.float32, np.float32], bool]
-    _criteria_function: t.Callable[[t.List[np.int64], np.float32, np.uint64], bool]
+    __fitness_compare_function: t.Callable[[float, float], bool]
+    _criteria_function: t.Callable[[T, float, int], bool]
 
-    _two_opt_operator_probability: float
-    _path_linker_operator_probability: float
-    _swap_operator_probability: float
+    _generation: int
 
     __debug: bool
 
     def __init__(
         self,
-        generate_initial_population: t.Callable[[], npt.NDArray[np.float32]],
-        fitness_function: t.Callable[[t.List[np.int64]], np.float32],
-        fitness_compare_function: t.Callable[[np.float32, np.float32], bool],
-        criteria_function: t.Callable[[t.List[np.int64], np.float32, np.uint64], bool],
+        generate_initial_population: t.Callable[[], t.List[T]],
+        fitness_function: t.Callable[[T], float],
+        fitness_compare_function: t.Callable[[float, float], bool],
+        criteria_function: t.Callable[[T, float, int], bool],
+        two_opt_operator: BaseTwoOptOperator[T],
+        path_linker_operator: BasePathLinkerOperator[T],
+        swap_operator: BaseSwapOperator[T],
         two_opt_operator_probability: float,
         path_linker_operator_probability: float,
         swap_operator_probability: float,
@@ -38,28 +40,31 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm):
             swap_operator_probability=swap_operator_probability,
         )
 
-        self._population = [
+        self.__population = [
             Individual(
                 initial_position=position,
                 fitness_function=fitness_function,
                 fitness_compare_function=fitness_compare_function,
+                two_opt_operator=two_opt_operator,
+                path_linker_operator=path_linker_operator,
+                swap_operator=swap_operator,
                 two_opt_operator_probability=two_opt_operator_probability,
                 path_linker_operator_probability=path_linker_operator_probability,
                 swap_operator_probability=swap_operator_probability,
             )
             for position in generate_initial_population()
         ]
-        self._generation = np.uint64(0)
-        self._fitness_compare_function = fitness_compare_function
+        self.__fitness_compare_function = fitness_compare_function
         self._criteria_function = criteria_function
 
+        self._generation = 0
         self.__debug = debug
 
-        self._population = quicksort(
-            data=self._population,
-            comparator=lambda a, b: self._fitness_compare_function(a.fitness, b.fitness),
+        self.__population = quicksort(
+            data=self.__population,
+            comparator=lambda a, b: self.__fitness_compare_function(a.fitness, b.fitness),
         )
-        self._best_individual = self._population[0]
+        self._best_individual = self.__population[0]
 
     def __check_operator_probabilities(
         self,
@@ -73,34 +78,32 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm):
     @staticmethod
     def from_function_definition(
         function_definition: CombinatorialFunctionDefinition,
-        dimensions: int = 1,
         population_size: int = 100,
         generate_initial_population: t.Union[
             t.Literal["auto"],
-            t.Callable[[], t.List[np.int64]],
+            t.Callable[[], T],
         ] = "auto",
         criteria_function: t.Union[
             t.Literal["auto"],
-            t.Callable[[t.List[np.int64], np.float32, np.uint64], bool],
+            t.Callable[[T, float, int], bool],
         ] = "auto",
+        two_opt_operator: t.Union[t.Literal["auto"], BaseTwoOptOperator[T]] = "auto",
+        path_linker_operator: t.Union[t.Literal["auto"], BasePathLinkerOperator[T]] = "auto",
+        swap_operator: t.Union[t.Literal["auto"], BaseSwapOperator[T]] = "auto",
         two_opt_operator_probability: float = 0.3333,
         path_linker_operator_probability: float = 0.3333,
         swap_operator_probability: float = 0.3334,
         debug: bool = False,
-    ):
+    ) -> t.Self:
         def default_criteria_function(_values, _fitness, generation):
             return generation > 100
 
         def default_generate_initial_population():
             return [
-                [
-                    np.random.choice(
-                        function_definition.values,
-                        size=len(function_definition.values),
-                        replace=False,
-                    )
-                    for _ in range(dimensions)
-                ]
+                random.sample(
+                    function_definition.values,
+                    k=len(function_definition.values),
+                )
                 for _ in range(population_size)
             ]
 
@@ -111,12 +114,18 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm):
         )
         criteria_function = criteria_function if criteria_function != "auto" else default_criteria_function
         fitness_compare_function = maximise if function_definition.target == "maximise" else minimise
+        two_opt_operator = two_opt_operator if two_opt_operator != "auto" else BaseTwoOptOperator()
+        path_linker_operator = path_linker_operator if path_linker_operator != "auto" else BasePathLinkerOperator()
+        swap_operator = swap_operator if swap_operator != "auto" else BaseSwapOperator()
 
         return AdaptiveParticleSwarmOptimisation(
             generate_initial_population=generate_initial_population,
             fitness_function=function_definition.function,
             fitness_compare_function=fitness_compare_function,
             criteria_function=criteria_function,
+            two_opt_operator=two_opt_operator,
+            path_linker_operator=path_linker_operator,
+            swap_operator=swap_operator,
             two_opt_operator_probability=two_opt_operator_probability,
             path_linker_operator_probability=path_linker_operator_probability,
             swap_operator_probability=swap_operator_probability,
@@ -127,7 +136,7 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm):
     def name(self) -> str:
         return "APSO algorithm"
 
-    def run(self) -> t.Tuple[np.float32, np.float32, np.uint64]:
+    def run(self) -> t.Tuple[float, float, int]:
         while not self._criteria_function(
             self._best_individual.position, self._best_individual.fitness, self._generation
         ):
@@ -135,19 +144,19 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm):
 
         return self._best_individual.position, self._best_individual.fitness, self._generation
 
-    def step(self) -> t.Tuple[t.List[np.int64], np.float32, np.uint64]:
+    def step(self) -> t.Tuple[T, float, int]:
         self._print()
 
-        for individual in self._population:
+        for individual in self.__population:
             individual.update()
 
-        self._population = quicksort(
-            data=self._population,
-            comparator=lambda a, b: self._fitness_compare_function(a.fitness, b.fitness),
+        self.__population = quicksort(
+            data=self.__population,
+            comparator=lambda a, b: self.__fitness_compare_function(a.fitness, b.fitness),
         )
         self._best_individual = (
-            copy.deepcopy(self._population[0])
-            if self._fitness_compare_function(self._population[0].fitness, self._best_individual.fitness)
+            copy.deepcopy(self.__population[0])
+            if self.__fitness_compare_function(self.__population[0].fitness, self._best_individual.fitness)
             else self._best_individual
         )
         self._generation += 1

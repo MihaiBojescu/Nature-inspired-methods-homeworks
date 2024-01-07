@@ -1,26 +1,25 @@
 import typing as t
-import numpy as np
 
 T = t.TypeVar("T")
-DecodedIndividual = t.Tuple[T, np.float32]
+DecodedIndividual = t.Tuple[T, float]
 
 
 class Individual(t.Generic[T]):
     __genes: T
-    __fitness: np.float32
-    __fitness_function: t.Callable[[T], np.float32]
+    __fitness: float
+    __fitness_function: t.Callable[[T], float]
 
     def __init__(
         self,
         genes: T,
-        fitness_function: t.Callable[[T], np.float32],
+        fitness_function: t.Callable[[T], float],
     ) -> None:
         self.__genes = genes
         self.__fitness = fitness_function(genes)
         self.__fitness_function = fitness_function
 
     @staticmethod
-    def from_genes(genes: T, fitness_function: t.Callable[[T], np.float32]) -> t.Self[T]:
+    def from_genes(genes: T, fitness_function: t.Callable[[T], float]) -> t.Self:
         return Individual(genes=genes, fitness_function=fitness_function)
 
     @property
@@ -33,5 +32,5 @@ class Individual(t.Generic[T]):
         self.__fitness = self.__fitness_function(self.__genes)
 
     @property
-    def fitness(self) -> np.float32:
+    def fitness(self) -> float:
         return self.__fitness

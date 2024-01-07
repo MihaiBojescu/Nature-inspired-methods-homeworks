@@ -1,28 +1,18 @@
 import random
+import time
 import typing as t
 from functions.combinatorial.definition import CombinatorialFunctionDefinition
-from algorithms.base.algorithm import BaseAlgorithm
-from algorithms.ga.individual import Individual
+from algorithms.ga.algorithm import GeneticAlgorithm
 from algorithms.ga.operators import BaseCrossoverOperator, BaseMutationOperator, BaseSelectionOperator
-from util.sort import maximise, minimise, quicksort
+from util.sort import maximise, minimise
 
 T = t.TypeVar("T")
 
 
-class GeneticAlgorithm(BaseAlgorithm[T]):
-    __population: t.List[Individual[T]]
-    _best_individual: Individual[T]
-    __fitness_compare_function: t.Callable[[float, float], bool]
-    __criteria_function: t.Callable[[T, float, int], bool]
-
-    __selection_operator: BaseSelectionOperator[T]
-    __crossover_operator: BaseCrossoverOperator[T]
-    __mutation_operator: BaseMutationOperator[T]
-
-    __mutation_chance: float
-    _generation: int
-
-    __debug: bool
+class MeteredGeneticAlgorithm(GeneticAlgorithm[T]):
+    __metrics_runtime: t.List[t.Tuple[int, int]]
+    __metrics_values: t.List[t.Tuple[int, T]]
+    __metrics_fitness: t.List[t.Tuple[int, float]]
 
     def __init__(
         self,
@@ -36,26 +26,21 @@ class GeneticAlgorithm(BaseAlgorithm[T]):
         mutation_chance: float,
         debug: bool = False,
     ) -> None:
-        self.__population = [
-            Individual(genes=genes, fitness_function=fitness_function) for genes in generate_initial_population()
-        ]
-        self.__fitness_compare_function = fitness_compare_function
-        self.__selection_operator = selection_operator
-        self.__criteria_function = criteria_function
-
-        self.__selection_operator = selection_operator
-        self.__crossover_operator = crossover_operator
-        self.__mutation_operator = mutation_operator
-        self.__mutation_chance = mutation_chance
-
-        self._generation = 0
-        self.__debug = debug
-
-        self.__population = quicksort(
-            data=self.__population,
-            comparator=lambda a, b: self.__fitness_compare_function(a, b),
+        super().__init__(
+            generate_initial_population=generate_initial_population,
+            fitness_function=fitness_function,
+            fitness_compare_function=fitness_compare_function,
+            criteria_function=criteria_function,
+            selection_operator=selection_operator,
+            crossover_operator=crossover_operator,
+            mutation_operator=mutation_operator,
+            mutation_chance=mutation_chance,
+            debug=debug,
         )
-        self._best_individual = self.__population[0]
+
+        self.__metrics_runtime = []
+        self.__metrics_values = []
+        self.__metrics_fitness = []
 
     @staticmethod
     def from_function_definition(
@@ -94,7 +79,7 @@ class GeneticAlgorithm(BaseAlgorithm[T]):
         crossover_operator = crossover_operator if crossover_operator != "auto" else BaseCrossoverOperator()
         mutation_operator = mutation_operator if mutation_operator != "auto" else BaseMutationOperator()
 
-        return GeneticAlgorithm(
+        return MeteredGeneticAlgorithm(
             generate_initial_population=lambda: [
                 random.sample(function_definition.values, k=len(function_definition.values))
                 for _ in range(population_size)
@@ -109,50 +94,29 @@ class GeneticAlgorithm(BaseAlgorithm[T]):
             debug=debug,
         )
 
-    @property
-    def name(self) -> str:
-        return "Genetic algorithm"
-
     def run(self) -> t.Tuple[T, float, int]:
+        then = time.time_ns()
+
         while not self.__criteria_function(
-            self._best_individual.genes, self._best_individual.fitness, self._generation
+            self._best_individual.position, self._best_individual.fitness, self._generation
         ):
             self.step()
 
-        return self._best_individual.genes, self._best_individual.fitness, self._generation
+            now = time.time_ns()
+            self.__metrics_runtime.append((self._generation, now - then))
+            self.__metrics_values.append((self._generation, self._best_individual.position))
+            self.__metrics_fitness.append((self._generation, self._best_individual.fitness))
 
-    def step(self) -> t.Tuple[T, float, int]:
-        self.__print()
+        return self._best_individual.position, self._best_individual.fitness, self._generation
 
-        next_generation = []
-        selected_population = self.__selection_operator.run(self.__population)
+    @property
+    def metrics_runtime(self) -> t.List[t.Tuple[int, int]]:
+        return self.__metrics_runtime
 
-        for index in range(0, len(selected_population) - 1, 2):
-            parent_1 = selected_population[index]
-            parent_2 = selected_population[index + 1]
+    @property
+    def metrics_values(self) -> t.List[t.Tuple[int, T]]:
+        return self.__metrics_values
 
-            child_1, child_2 = self.__crossover_operator.run(parent_1, parent_2)
-
-            if random.random() > self.__mutation_chance:
-                child_1 = self.__mutation_operator.run(child_1)
-
-            if random.random() > self.__mutation_chance:
-                child_2 = self.__mutation_operator.run(child_2)
-
-            next_generation.extend([child_1, child_2])
-
-        self.__population = next_generation
-        self.__population = quicksort(
-            data=self.__population,
-            comparator=lambda a, b: self.__fitness_compare_function(a.fitness, b.fitness),
-        )
-        self._best_individual = self.__population[0]
-        self._generation += 1
-
-        return self._best_individual.decode(), self._best_individual.fitness, self._generation
-
-    def __print(self) -> None:
-        if not self.__debug:
-            return
-
-        print(f"Genetic algorithm generation: {self._generation}: {self._best_individual.fitness}")
+    @property
+    def metrics_fitness(self) -> t.List[t.Tuple[int, float]]:
+        return self.__metrics_fitness

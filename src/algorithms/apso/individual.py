@@ -1,88 +1,91 @@
+import random
 import typing as t
-import numpy as np
-import numpy.typing as npt
-from algorithms.apso.operators import TwoOptOperator, PathLinkerOperator, SwapOperator
+from algorithms.apso.operators import (
+    BasePathLinkerOperator,
+    BaseSwapOperator,
+    BaseTwoOptOperator,
+)
+
+T = t.TypeVar("T")
 
 
-class Individual:
-    __x: t.List[t.List[np.int64]]
-    __personal_best_x: t.List[t.List[np.int64]]
-    __fitness: np.float32
-    __personal_best_fitness: np.float32
-    __fitness_function: t.Callable[[t.List[t.List[np.int64]]], np.float32]
-    __fitness_compare_function: t.Callable[[np.float32, np.float32], bool]
+class Individual(t.Generic[T]):
+    __position: T
+    __personal_best_position: T
+    __fitness: float
+    __personal_best_fitness: float
+    __fitness_function: t.Callable[[T], float]
+    __fitness_compare_function: t.Callable[[float, float], bool]
 
+    __two_opt_operator: BaseTwoOptOperator[T]
+    __path_linker_operator: BasePathLinkerOperator[T]
+    __swap_operator: BaseSwapOperator[T]
     __two_opt_operator_probability: float
     __path_linker_operator_probability: float
     __swap_operator_probability: float
-    __two_opt_operator: TwoOptOperator
-    __path_linker_operator: PathLinkerOperator
-    __swap_operator: SwapOperator
 
     def __init__(
         self,
-        initial_position: t.List[t.List[np.int64]],
-        fitness_function: t.Callable[[t.List[t.List[np.int64]]], np.float32],
-        fitness_compare_function: t.Callable[[np.float32, np.float32], bool],
+        initial_position: T,
+        fitness_function: t.Callable[[T], float],
+        fitness_compare_function: t.Callable[[float, float], bool],
+        two_opt_operator: BaseTwoOptOperator[T],
+        path_linker_operator: BasePathLinkerOperator[T],
+        swap_operator: BaseSwapOperator[T],
         two_opt_operator_probability: float,
         path_linker_operator_probability: float,
         swap_operator_probability: float,
     ) -> None:
-        self.__x = initial_position
-        self.__personal_best_x = initial_position.copy()
+        self.__position = initial_position
+        self.__personal_best_position = initial_position.copy()
         self.__fitness_function = fitness_function
         self.__fitness_compare_function = fitness_compare_function
 
-        self.__fitness = self.__fitness_function(self.__x)
+        self.__fitness = self.__fitness_function(self.__position)
         self.__personal_best_fitness = self.__fitness
 
+        self.__two_opt_operator = two_opt_operator
+        self.__path_linker_operator = path_linker_operator
+        self.__swap_operator = swap_operator
         self.__two_opt_operator_probability = two_opt_operator_probability
         self.__path_linker_operator_probability = path_linker_operator_probability
         self.__swap_operator_probability = swap_operator_probability
-        self.__two_opt_operator = TwoOptOperator(
-            fitness_function=self.__fitness_function, fitness_compare_function=self.__fitness_compare_function
-        )
-        self.__path_linker_operator = PathLinkerOperator(
-            fitness_function=self.__fitness_function, fitness_compare_function=self.__fitness_compare_function
-        )
-        self.__swap_operator = SwapOperator()
 
     @property
-    def position(self) -> t.List[t.List[np.int64]]:
-        return self.__x
+    def position(self) -> T:
+        return self.__position
 
     @property
-    def personal_best_position(self) -> t.List[t.List[np.int64]]:
-        return self.__personal_best_x
+    def personal_best_position(self) -> T:
+        return self.__personal_best_position
 
     @property
-    def fitness(self) -> np.float32:
+    def fitness(self) -> float:
         return self.__fitness
 
     @property
-    def personal_best_fitness(self) -> np.float32:
+    def personal_best_fitness(self) -> float:
         return self.__personal_best_fitness
 
     def update(self) -> None:
-        match np.random.choice(
+        match random.choices(
             [1, 2, 3],
-            p=[
+            weights=[
                 self.__two_opt_operator_probability,
                 self.__path_linker_operator_probability,
                 self.__swap_operator_probability,
             ],
-            size=1,
-            replace=False,
-        ):
+            k=1,
+        )[0]:
             case 1:
-                self.__x = self.__two_opt_operator.run(self.__x)
+                self.__position = self.__two_opt_operator.run(self.__position)
             case 2:
-                self.__x = self.__path_linker_operator.run(self.__x)
+                self.__position = self.__path_linker_operator.run(self.__position)
             case 3:
-                self.__x = self.__swap_operator.run(self.__x)
+                self.__position = self.__swap_operator.run(self.__position)
 
-        self.__fitness = self.__fitness_function(self.__x)
+        self.__fitness = self.__fitness_function(self.__position)
 
         if self.__fitness_compare_function(self.__fitness, self.__personal_best_fitness):
-            self.__personal_best_x = self.__x
+            self.__personal_best_position = self.__position
             self.__personal_best_fitness = self.__fitness
