@@ -23,14 +23,14 @@ class CostCalculator:
 
 
 @dataclass
-class TspResultOptimalMinMax:
+class MTSPResultOptimalMinMax:
     min: float = float("inf")
     max: float = float("-inf")
 
 
 @dataclass
-class TspResult:
-    optimal_min_max: TspResultOptimalMinMax = field(default_factory=TspResultOptimalMinMax)
+class MTSPResult:
+    optimal_min_max: MTSPResultOptimalMinMax = field(default_factory=MTSPResultOptimalMinMax)
     optimal_cost: float = 0
 
     def __add__(self, other):
@@ -47,18 +47,18 @@ class TspResult:
 
 
 class InstanceTransformer:
-    __fn: t.Callable[[t.List[t.List[City]]], TspResult]
+    __fn: t.Callable[[t.List[t.List[City]]], MTSPResult]
     __cities: t.List[City]
 
     def __init__(
         self,
-        fn: t.Callable[[t.List[t.List[City]]], TspResult],
+        fn: t.Callable[[t.List[t.List[City]]], MTSPResult],
         cities: t.List[City],
     ):
         self.__fn = fn
         self.__cities = cities
 
-    def __call__(self, salesmen_routes: t.List[t.List[int]]) -> TspResult:
+    def __call__(self, salesmen_routes: t.List[t.List[int]]) -> MTSPResult:
         salesmen_routes_copy = [[self.__cities[city] for city in salesman_route] for salesman_route in salesmen_routes]
 
         result = self.__fn(salesmen_routes_copy)
@@ -66,14 +66,14 @@ class InstanceTransformer:
 
 
 class InstanceAugmenter:
-    __fn: t.Callable[[t.List[t.List[City]]], TspResult]
+    __fn: t.Callable[[t.List[t.List[City]]], MTSPResult]
     __home_city: City
 
-    def __init__(self, fn: t.Callable[[t.List[t.List[City]]], TspResult], home_city: City):
+    def __init__(self, fn: t.Callable[[t.List[t.List[City]]], MTSPResult], home_city: City):
         self.__fn = fn
         self.__home_city = home_city
 
-    def __call__(self, salesmen_routes: t.List[t.List[City]]) -> TspResult:
+    def __call__(self, salesmen_routes: t.List[t.List[City]]) -> MTSPResult:
         salesmen_routes_copy = [[self.__home_city] + salesmen_route for salesmen_route in salesmen_routes]
 
         result = self.__fn(salesmen_routes_copy)
@@ -121,8 +121,8 @@ class MinMaxMultipleTSP:
     def __init__(self, costs: t.List[t.List[float]]) -> None:
         self.__costs = costs
 
-    def __call__(self, salesmen_routes: t.List[t.List[City]]) -> TspResult:
-        result = TspResult()
+    def __call__(self, salesmen_routes: t.List[t.List[City]]) -> MTSPResult:
+        result = MTSPResult()
 
         for salesman_route in salesmen_routes:
             cost = self.__tsp(salesman_route)

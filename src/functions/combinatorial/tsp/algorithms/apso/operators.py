@@ -2,24 +2,24 @@ import random
 import typing as t
 from algorithms.apso.operators import BaseTwoOptOperator, BasePathLinkerOperator, BaseSwapOperator
 from algorithms.apso.individual import Individual
-from functions.combinatorial.tsp.util.common import TspResult
+from functions.combinatorial.tsp.util.common import MTSPResult
 
 MTSPSolution = t.List[t.List[int]]
 
 
-class TwoOptOperator(BaseTwoOptOperator[MTSPSolution, TspResult]):
-    __fitness_function: t.Callable[[MTSPSolution], TspResult]
-    __fitness_compare_function: t.Callable[[TspResult, TspResult], bool]
+class TwoOptOperator(BaseTwoOptOperator[MTSPSolution, MTSPResult]):
+    __fitness_function: t.Callable[[MTSPSolution], MTSPResult]
+    __fitness_compare_function: t.Callable[[MTSPResult, MTSPResult], bool]
 
     def __init__(
         self,
-        fitness_function: t.Callable[[MTSPSolution], TspResult],
-        fitness_compare_function: t.Callable[[TspResult, TspResult], bool],
+        fitness_function: t.Callable[[MTSPSolution], MTSPResult],
+        fitness_compare_function: t.Callable[[MTSPResult, MTSPResult], bool],
     ):
         self.__fitness_function = fitness_function
         self.__fitness_compare_function = fitness_compare_function
 
-    def run(self, individual: Individual[MTSPSolution, TspResult]):
+    def run(self, individual: Individual[MTSPSolution, MTSPResult]):
         values = [segment.copy() for segment in individual.position]
 
         for segment in values:
@@ -65,19 +65,19 @@ class TwoOptOperator(BaseTwoOptOperator[MTSPSolution, TspResult]):
         return self.__fitness_compare_function(swapped_cost, original_cost)
 
 
-class PathLinkerOperator(BasePathLinkerOperator[MTSPSolution, TspResult]):
-    __fitness_function: t.Callable[[MTSPSolution], TspResult]
-    __fitness_compare_function: t.Callable[[TspResult, TspResult], bool]
+class PathLinkerOperator(BasePathLinkerOperator[MTSPSolution, MTSPResult]):
+    __fitness_function: t.Callable[[MTSPSolution], MTSPResult]
+    __fitness_compare_function: t.Callable[[MTSPResult, MTSPResult], bool]
 
     def __init__(
         self,
-        fitness_function: t.Callable[[MTSPSolution], TspResult],
-        fitness_compare_function: t.Callable[[TspResult, TspResult], bool],
+        fitness_function: t.Callable[[MTSPSolution], MTSPResult],
+        fitness_compare_function: t.Callable[[MTSPResult, MTSPResult], bool],
     ):
         self.__fitness_function = fitness_function
         self.__fitness_compare_function = fitness_compare_function
 
-    def run(self, individual: Individual[MTSPSolution, TspResult]):
+    def run(self, individual: Individual[MTSPSolution, MTSPResult]):
         values = [segment.copy() for segment in individual.position]
        
         for segment_index, _ in enumerate(values):
@@ -123,8 +123,8 @@ class PathLinkerOperator(BasePathLinkerOperator[MTSPSolution, TspResult]):
         return self.__fitness_compare_function(swapped_cost, original_cost)
 
 
-class SwapOperator(BaseSwapOperator[MTSPSolution, TspResult]):
-    def run(self, individual: Individual[MTSPSolution, TspResult]):
+class SwapOperator(BaseSwapOperator[MTSPSolution, MTSPResult]):
+    def run(self, individual: Individual[MTSPSolution, MTSPResult]):
         [segment_1, segment_2] = random.sample(range(len(individual.position)), k=2)
         value_1 = random.randint(a=0, b=len(individual.position[segment_1]) - 1)
         value_2 = random.randint(a=0, b=len(individual.position[segment_2]) - 1)

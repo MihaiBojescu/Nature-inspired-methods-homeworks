@@ -3,13 +3,13 @@ import typing as t
 from algorithms.ga.operators import BaseCrossoverOperator, BaseMutationOperator, BaseSelectionOperator
 from algorithms.ga.individual import Individual
 from functions.combinatorial.tsp.algorithms.ga.encoder import Encoder
-from functions.combinatorial.tsp.util.common import TspResult
+from functions.combinatorial.tsp.util.common import MTSPResult
 from util.sort import quicksort
 
 MTSPSolution = t.List[t.List[int]]
 
 
-class TournamentSelectionOperator(BaseSelectionOperator[MTSPSolution, TspResult]):
+class TournamentSelectionOperator(BaseSelectionOperator[MTSPSolution, MTSPResult]):
     __fitness_compare_function: t.Callable[[float, float], bool]
     __tournament_size: int
 
@@ -22,8 +22,8 @@ class TournamentSelectionOperator(BaseSelectionOperator[MTSPSolution, TspResult]
         self.__tournament_size = tournament_size
 
     def run(
-        self, population: t.List[Individual[MTSPSolution, TspResult]]
-    ) -> t.List[Individual[MTSPSolution, TspResult]]:
+        self, population: t.List[Individual[MTSPSolution, MTSPResult]]
+    ) -> t.List[Individual[MTSPSolution, MTSPResult]]:
         selected_parents = []
 
         while len(selected_parents) < len(population):
@@ -37,7 +37,7 @@ class TournamentSelectionOperator(BaseSelectionOperator[MTSPSolution, TspResult]
         return selected_parents
 
 
-class RouletteWheelSelectionOperator(BaseMutationOperator[MTSPSolution, TspResult]):
+class RouletteWheelSelectionOperator(BaseMutationOperator[MTSPSolution, MTSPResult]):
     __target: t.Union[t.Literal["maximise"], t.Literal["minimise"]]
 
     def __init__(
@@ -48,7 +48,7 @@ class RouletteWheelSelectionOperator(BaseMutationOperator[MTSPSolution, TspResul
 
     def run(
         self,
-        population: t.List[Individual[MTSPSolution, TspResult]],
+        population: t.List[Individual[MTSPSolution, MTSPResult]],
     ) -> MTSPSolution:
         fitness_sum = sum(individual.fitness.optimal_cost for individual in population)
         selection_probabilities = (
@@ -78,7 +78,7 @@ class RouletteWheelSelectionOperator(BaseMutationOperator[MTSPSolution, TspResul
             maximise_probability_comparator if self.__target == "maximise" else minimise_probability_comparator
         )
 
-        selected_individuals: t.List[Individual[MTSPSolution, TspResult]] = []
+        selected_individuals: t.List[Individual[MTSPSolution, MTSPResult]] = []
         selected_individual = None
 
         for _ in range(0, len(population)):
@@ -100,17 +100,17 @@ class RouletteWheelSelectionOperator(BaseMutationOperator[MTSPSolution, TspResul
         return selected_individuals
 
 
-class CrossoverOperator(BaseCrossoverOperator[MTSPSolution, TspResult]):
+class CrossoverOperator(BaseCrossoverOperator[MTSPSolution, MTSPResult]):
     __encoder: Encoder
-    __fitness_function: t.Callable[[MTSPSolution], TspResult]
+    __fitness_function: t.Callable[[MTSPSolution], MTSPResult]
 
-    def __init__(self, encoder: Encoder, fitness_function: t.Callable[[MTSPSolution], TspResult]):
+    def __init__(self, encoder: Encoder, fitness_function: t.Callable[[MTSPSolution], MTSPResult]):
         self.__encoder = encoder
         self.__fitness_function = fitness_function
 
     def run(
-        self, parent_1: Individual[MTSPSolution, TspResult], parent_2: Individual[MTSPSolution, TspResult]
-    ) -> t.Tuple[Individual[MTSPSolution, TspResult], Individual[MTSPSolution, TspResult]]:
+        self, parent_1: Individual[MTSPSolution, MTSPResult], parent_2: Individual[MTSPSolution, MTSPResult]
+    ) -> t.Tuple[Individual[MTSPSolution, MTSPResult], Individual[MTSPSolution, MTSPResult]]:
         """
         Implements Crossover from https://www.growingscience.com/dsl/Vol10/dsl_2021_22.pdf. Order of operations is
         reversed due to encoding.
@@ -143,35 +143,48 @@ class CrossoverOperator(BaseCrossoverOperator[MTSPSolution, TspResult]):
         )
 
 
-class SwapMutationOperator(BaseMutationOperator[MTSPSolution, TspResult]):
+class ComplexMutationOperator(BaseMutationOperator[MTSPSolution, MTSPResult]):
+    __encoder: Encoder
     __probability: float
 
-    def __init__(self, probability: float):
+    def __init__(self, encoder: Encoder, probability: float):
+        self.__encoder = encoder
         self.__probability = probability
 
-    def run(self, child: Individual[MTSPSolution, TspResult]) -> Individual[MTSPSolution, TspResult]:
-        values = [segment.copy() for segment in child.genes]
-        runs = sum(len(segment) for segment in values)
+    def run(self, child: Individual[MTSPSolution, MTSPResult]) -> Individual[MTSPSolution, MTSPResult]:
+        if random.random() > self.__probability:
+            return child
 
-        for _ in range(runs):
-            if random.random() > self.__probability:
-                continue
+        values = self.__encoder.encode(value=child.genes)
 
-            segment_1 = random.randint(
-                a=0,
-                b=len(values) - 1,
-            )
-            segment_2 = random.randint(
-                a=0,
-                b=len(values) - 1,
-            )
-            value_1 = random.randint(a=0, b=len(values[segment_1]) - 1)
-            value_2 = random.randint(a=0, b=len(values[segment_2]) - 1)
+        values = self.__swap(values)
+        values = self.__reverse_swap(values)
+        values = self.__slide(values)
 
-            values[segment_1][value_1], values[segment_2][value_2] = (
-                values[segment_2][value_2],
-                values[segment_1][value_1],
-            )
-
-        child.genes = values
+        child.genes = self.__encoder.decode(value=values)
         return child
+
+    def __swap(self, values: t.List[int]) -> t.List[int]:
+        a = random.randint(a=0, b=len(values) - 1)
+        b = random.randint(a=0, b=len(values) - 1)
+
+        values[a], values[b] = values[b], values[a]
+
+        return values
+
+    def __reverse_swap(self, values: t.List[int]) -> t.List[int]:
+        a = random.randint(a=0, b=len(values) - 1)
+        b = random.randint(a=0, b=len(values) - 1)
+
+        values[a:b] = reversed(values[a:b])
+
+        return values
+
+    def __slide(self, values: t.List[int]) -> t.List[int]:
+        a = random.randint(a=0, b=len(values) - 1)
+        b = random.randint(a=0, b=len(values) - 1)
+
+        value = values.pop(a)
+        values.insert(b, value)
+
+        return values
