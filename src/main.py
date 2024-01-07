@@ -45,8 +45,7 @@ def build_discrete_instances():
                 probabilities=probabilities,
             )
             for dimension in [2, 3]
-            # for function_definition_constructor in [make_eil51, make_berlin52, make_eil76, make_rat99]
-            for function_definition_constructor in [make_eil51]
+            for function_definition_constructor in [make_eil51, make_berlin52, make_eil76, make_rat99]
             for generations in [10000]
             for probabilities in [
                 [("mutation", 0.02)],
