@@ -7,22 +7,23 @@ from algorithms.apso.operators import BasePathLinkerOperator, BaseSwapOperator, 
 from util.sort import maximise, minimise
 
 T = t.TypeVar("T")
+U = t.TypeVar("U")
 
 
-class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation[T]):
+class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation[T, U]):
     __metrics_runtime: t.List[t.Tuple[int, int]]
     __metrics_values: t.List[t.Tuple[int, T]]
-    __metrics_fitness: t.List[t.Tuple[int, float]]
+    __metrics_fitness: t.List[t.Tuple[int, U]]
 
     def __init__(
         self,
         generate_initial_population: t.Callable[[], t.List[T]],
-        fitness_function: t.Callable[[T], float],
-        fitness_compare_function: t.Callable[[float, float], bool],
-        criteria_function: t.Callable[[T, float, int], bool],
-        two_opt_operator: BaseTwoOptOperator[T],
-        path_linker_operator: BasePathLinkerOperator[T],
-        swap_operator: BaseSwapOperator[T],
+        fitness_function: t.Callable[[T, U], U],
+        fitness_compare_function: t.Callable[[U, U], bool],
+        criteria_function: t.Callable[[T, U, int], bool],
+        two_opt_operator: BaseTwoOptOperator[T, U],
+        path_linker_operator: BasePathLinkerOperator[T, U],
+        swap_operator: BaseSwapOperator[T, U],
         two_opt_operator_probability: float,
         path_linker_operator_probability: float,
         swap_operator_probability: float,
@@ -49,34 +50,33 @@ class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation
     @staticmethod
     def from_function_definition(
         function_definition: CombinatorialFunctionDefinition,
-        population_size: int = 100,
         generate_initial_population: t.Union[
             t.Literal["auto"],
             t.Callable[[], t.List[T]],
         ] = "auto",
         criteria_function: t.Union[
             t.Literal["auto"],
-            t.Callable[[T, float, int], bool],
+            t.Callable[[T, U, int], bool],
         ] = "auto",
-        two_opt_operator: t.Union[t.Literal["auto"], BaseTwoOptOperator[T]] = "auto",
-        path_linker_operator: t.Union[t.Literal["auto"], BasePathLinkerOperator[T]] = "auto",
-        swap_operator: t.Union[t.Literal["auto"], BaseSwapOperator[T]] = "auto",
+        two_opt_operator: t.Union[t.Literal["auto"], BaseTwoOptOperator[T, U]] = "auto",
+        path_linker_operator: t.Union[t.Literal["auto"], BasePathLinkerOperator[T, U]] = "auto",
+        swap_operator: t.Union[t.Literal["auto"], BaseSwapOperator[T, U]] = "auto",
         two_opt_operator_probability: float = 0.3333,
         path_linker_operator_probability: float = 0.3333,
         swap_operator_probability: float = 0.3334,
         debug: bool = False,
     ) -> t.Self:
-        def default_criteria_function(_values, _fitness, generation):
-            return generation > 100
-
         def default_generate_initial_population():
             return [
                 random.sample(
                     function_definition.values,
                     k=len(function_definition.values),
                 )
-                for _ in range(population_size)
+                for _ in range(100)
             ]
+
+        def default_criteria_function(_values, _fitness, generation):
+            return generation > 100
 
         generate_initial_population = (
             generate_initial_population
@@ -85,6 +85,7 @@ class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation
         )
         criteria_function = criteria_function if criteria_function != "auto" else default_criteria_function
         fitness_compare_function = maximise if function_definition.target == "maximise" else minimise
+
         two_opt_operator = two_opt_operator if two_opt_operator != "auto" else BaseTwoOptOperator()
         path_linker_operator = path_linker_operator if path_linker_operator != "auto" else BasePathLinkerOperator()
         swap_operator = swap_operator if swap_operator != "auto" else BaseSwapOperator()
@@ -103,7 +104,7 @@ class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation
             debug=debug,
         )
 
-    def run(self) -> t.Tuple[T, float, int]:
+    def run(self) -> t.Tuple[T, U, int]:
         then = time.time_ns()
 
         while not self._criteria_function(
@@ -127,5 +128,5 @@ class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation
         return self.__metrics_values
 
     @property
-    def metrics_fitness(self) -> t.List[t.Tuple[int, float]]:
+    def metrics_fitness(self) -> t.List[t.Tuple[int, U]]:
         return self.__metrics_fitness

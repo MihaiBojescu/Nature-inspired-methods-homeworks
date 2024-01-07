@@ -1,26 +1,27 @@
 import random
 import typing as t
 from algorithms.apso.operators import BaseTwoOptOperator, BasePathLinkerOperator, BaseSwapOperator
+from algorithms.apso.individual import Individual
+from functions.combinatorial.tsp.util.common import TspResult
+
+MTSPSolution = t.List[t.List[int]]
 
 
-class TwoOptOperator(BaseTwoOptOperator[t.List[t.List[int]]]):
-    __fitness_function: t.Callable[[t.List[t.List[int]]], float]
-    __fitness_compare_function: t.Callable[[float, float], bool]
+class TwoOptOperator(BaseTwoOptOperator[MTSPSolution, TspResult]):
+    __fitness_function: t.Callable[[MTSPSolution], TspResult]
+    __fitness_compare_function: t.Callable[[TspResult, TspResult], bool]
 
     def __init__(
         self,
-        fitness_function: t.Callable[[t.List[t.List[int]]], float],
-        fitness_compare_function: t.Callable[[float, float], bool],
+        fitness_function: t.Callable[[MTSPSolution], TspResult],
+        fitness_compare_function: t.Callable[[TspResult, TspResult], bool],
     ):
         self.__fitness_function = fitness_function
         self.__fitness_compare_function = fitness_compare_function
 
-    def run(self, values: t.List[t.List[int]]):
-        values_copy = [segment.copy() for segment in values]
-
-        for segment in values_copy:
+    def run(self, individual: Individual[MTSPSolution, TspResult]):
+        for segment in individual.position:
             improved = True
-
             while improved:
                 improved = False
 
@@ -45,7 +46,7 @@ class TwoOptOperator(BaseTwoOptOperator[t.List[t.List[int]]]):
                         segment[b_pos:d_pos] = reversed(segment[b_pos:d_pos])
                         improved = True
 
-        return values_copy
+        return individual
 
     def __is_cost_lower_edge_swap(self, a: int, b: int, c: int, d: int):
         original_cost = self.__fitness_function([[a, b]]) + self.__fitness_function([[c, d]])
@@ -60,30 +61,30 @@ class TwoOptOperator(BaseTwoOptOperator[t.List[t.List[int]]]):
         return self.__fitness_compare_function(swapped_cost, original_cost)
 
 
-class PathLinkerOperator(BasePathLinkerOperator[t.List[t.List[int]]]):
-    __fitness_function: t.Callable[[t.List[t.List[int]]], float]
-    __fitness_compare_function: t.Callable[[float, float], bool]
+class PathLinkerOperator(BasePathLinkerOperator[MTSPSolution, TspResult]):
+    __fitness_function: t.Callable[[MTSPSolution], TspResult]
+    __fitness_compare_function: t.Callable[[TspResult, TspResult], bool]
 
     def __init__(
         self,
-        fitness_function: t.Callable[[t.List[t.List[int]]], float],
-        fitness_compare_function: t.Callable[[float, float], bool],
+        fitness_function: t.Callable[[MTSPSolution], TspResult],
+        fitness_compare_function: t.Callable[[TspResult, TspResult], bool],
     ):
         self.__fitness_function = fitness_function
         self.__fitness_compare_function = fitness_compare_function
 
-    def run(self, values: t.List[t.List[int]]):
-        values_copy = [segment.copy() for segment in values]
-
-        for segment_index, _ in enumerate(values_copy):
-            values_without_segment = [
-                current_segment for current_segment in values_copy if current_segment == values_copy[segment_index]
-            ]
+    def run(self, individual: Individual[MTSPSolution, TspResult]):
+        for segment_index, _ in enumerate(individual.position):
             improved = True
+            values_without_segment = [
+                current_segment
+                for current_segment in individual.position
+                if current_segment == individual.position[segment_index]
+            ]
 
             while improved:
                 improved = False
-                segment = values_copy[segment_index]
+                segment = individual.position[segment_index]
 
                 for i in range(len(segment) - 1):
                     for j in range(i + 1, len(segment)):
@@ -97,10 +98,10 @@ class PathLinkerOperator(BasePathLinkerOperator[t.List[t.List[int]]]):
                         ):
                             continue
 
-                        values_copy[segment_index] = swapped_values
+                        individual.position[segment_index] = swapped_values
                         improved = True
 
-        return values_copy
+        return individual
 
     def __swap(self, values: t.List[int], i: int, j: int):
         swapped_values = values.copy()
@@ -108,24 +109,22 @@ class PathLinkerOperator(BasePathLinkerOperator[t.List[t.List[int]]]):
 
         return swapped_values
 
-    def __is_cost_lower_instance_swap(self, original_values: t.List[t.List[int]], swapped_values: t.List[t.List[int]]):
+    def __is_cost_lower_instance_swap(self, original_values: MTSPSolution, swapped_values: MTSPSolution):
         original_cost = self.__fitness_function(original_values)
         swapped_cost = self.__fitness_function(swapped_values)
 
         return self.__fitness_compare_function(swapped_cost, original_cost)
 
 
-class SwapOperator(BaseSwapOperator[t.List[t.List[int]]]):
-    def run(self, values: t.List[t.List[int]]):
-        values_copy = values.copy()
+class SwapOperator(BaseSwapOperator[MTSPSolution, TspResult]):
+    def run(self, individual: Individual[MTSPSolution, TspResult]):
+        [segment_1, segment_2] = random.sample(range(len(individual.position)), k=2)
+        value_1 = random.randint(a=0, b=len(individual.position[segment_1]) - 1)
+        value_2 = random.randint(a=0, b=len(individual.position[segment_2]) - 1)
 
-        [segment_1, segment_2] = random.sample(range(len(values_copy)), k=2)
-        value_1 = random.randint(a=0, b=len(values_copy[segment_1]) - 1)
-        value_2 = random.randint(a=0, b=len(values_copy[segment_2]) - 1)
-
-        values_copy[segment_1][value_1], values_copy[segment_2][value_2] = (
-            values_copy[segment_2][value_2],
-            values_copy[segment_1][value_1],
+        individual.position[segment_1][value_1], individual.position[segment_2][value_2] = (
+            individual.position[segment_2][value_2],
+            individual.position[segment_1][value_1],
         )
 
-        return values_copy
+        return individual.position
