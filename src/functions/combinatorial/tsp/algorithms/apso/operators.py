@@ -20,8 +20,11 @@ class TwoOptOperator(BaseTwoOptOperator[MTSPSolution, TspResult]):
         self.__fitness_compare_function = fitness_compare_function
 
     def run(self, individual: Individual[MTSPSolution, TspResult]):
-        for segment in individual.position:
+        values = [segment.copy() for segment in individual.position]
+
+        for segment in values:
             improved = True
+
             while improved:
                 improved = False
 
@@ -46,6 +49,7 @@ class TwoOptOperator(BaseTwoOptOperator[MTSPSolution, TspResult]):
                         segment[b_pos:d_pos] = reversed(segment[b_pos:d_pos])
                         improved = True
 
+        individual.position = values
         return individual
 
     def __is_cost_lower_edge_swap(self, a: int, b: int, c: int, d: int):
@@ -74,17 +78,19 @@ class PathLinkerOperator(BasePathLinkerOperator[MTSPSolution, TspResult]):
         self.__fitness_compare_function = fitness_compare_function
 
     def run(self, individual: Individual[MTSPSolution, TspResult]):
-        for segment_index, _ in enumerate(individual.position):
+        values = [segment.copy() for segment in individual.position]
+       
+        for segment_index, _ in enumerate(values):
             improved = True
             values_without_segment = [
                 current_segment
-                for current_segment in individual.position
-                if current_segment == individual.position[segment_index]
+                for current_segment in values
+                if current_segment == values[segment_index]
             ]
 
             while improved:
                 improved = False
-                segment = individual.position[segment_index]
+                segment = values[segment_index]
 
                 for i in range(len(segment) - 1):
                     for j in range(i + 1, len(segment)):
@@ -98,9 +104,10 @@ class PathLinkerOperator(BasePathLinkerOperator[MTSPSolution, TspResult]):
                         ):
                             continue
 
-                        individual.position[segment_index] = swapped_values
+                        values[segment_index] = swapped_values
                         improved = True
 
+        individual.position = values
         return individual
 
     def __swap(self, values: t.List[int], i: int, j: int):
