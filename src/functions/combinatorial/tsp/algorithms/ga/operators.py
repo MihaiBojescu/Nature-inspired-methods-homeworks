@@ -54,8 +54,30 @@ class RouletteWheelSelectionOperator(BaseMutationOperator[MTSPSolution, TspResul
         selection_probabilities = (
             [individual.fitness.optimal_cost / fitness_sum for individual in population]
             if self.__target == "maximise"
-            else [1 / individual.fitness.optimal_cost / fitness_sum for individual in population]
+            else [(fitness_sum - individual.fitness.optimal_cost) / fitness_sum for individual in population]
         )
+        selection_probabilities_max = max(selection_probabilities)
+        selection_probabilities_min = min(selection_probabilities)
+        selection_probabilities = (
+            [1 for _ in range(len(selection_probabilities))]
+            if selection_probabilities_max == selection_probabilities_min
+            else [
+                (probability - selection_probabilities_min)
+                / (selection_probabilities_max - selection_probabilities_min)
+                for probability in selection_probabilities
+            ]
+        )
+
+        maximise_probability_comparator = (
+            lambda current, selected, next: current_probability <= selected_probability <= next_probability
+        )
+        minimise_probability_comparator = (
+            lambda current, selected, next: current_probability >= selected_probability >= next_probability
+        )
+        probability_comparator = (
+            maximise_probability_comparator if self.__target == "maximise" else minimise_probability_comparator
+        )
+
         selected_individuals: t.List[Individual[MTSPSolution, TspResult]] = []
         selected_individual = None
 
@@ -66,7 +88,7 @@ class RouletteWheelSelectionOperator(BaseMutationOperator[MTSPSolution, TspResul
                 current_probability = selection_probabilities[index]
                 next_probability = selection_probabilities[index + 1]
 
-                if current_probability <= selected_probability <= next_probability:
+                if probability_comparator(current_probability, selected_probability, next_probability):
                     selected_individual = population[index]
                     break
 
