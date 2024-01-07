@@ -13,9 +13,9 @@ from functions.combinatorial.tsp.definitions.rat99 import make_rat99
 from functions.combinatorial.tsp.util.common import InitialPopulationGenerator
 from functions.combinatorial.tsp.algorithms.apso.operators import PathLinkerOperator, SwapOperator, TwoOptOperator
 from functions.combinatorial.tsp.algorithms.ga.operators import (
-    SwapMutationOperator,
+    ComplexMutationOperator,
     CrossoverOperator,
-    RouletteWheelSelectionOperator,
+    TournamentSelectionOperator,
 )
 from functions.combinatorial.tsp.algorithms.ga.encoder import Encoder
 from util.sort import maximise, minimise
@@ -24,7 +24,7 @@ from util.import_export import save_metrics
 
 def main():
     instances = build_instances()
-    instances = wrap_instances_in_processes(instances, 1)
+    instances = wrap_instances_in_processes(instances, 7)
 
     instances()
 
@@ -45,14 +45,15 @@ def build_discrete_instances():
                 probabilities=probabilities,
             )
             for dimension in [2, 3]
-            for function_definition_constructor in [make_eil51, make_berlin52, make_eil76, make_rat99]
-            for generations in [100, 2000]
+            # for function_definition_constructor in [make_eil51, make_berlin52, make_eil76, make_rat99]
+            for function_definition_constructor in [make_eil51]
+            for generations in [10000]
             for probabilities in [
-                [("mutation", 0)],
                 [("mutation", 0.02)],
                 [("mutation", 0.1)],
                 [("mutation", 0.2)],
                 [("mutation", 0.4)],
+                [("mutation", 0.8)],
             ]
         ),
         iter(
@@ -64,7 +65,7 @@ def build_discrete_instances():
             )
             for dimension in [2, 3]
             for function_definition_constructor in [make_eil51, make_berlin52, make_eil76, make_rat99]
-            for generations in [100, 2000]
+            for generations in [100]
             for probabilities in [
                 [("2-opt", 0.1), ("path-linker", 0.2), ("swap", 0.7)],
                 [("2-opt", 0.3), ("path-linker", 0.2), ("swap", 0.5)],
@@ -91,17 +92,20 @@ def ga_tsp_generator(
         MeteredGeneticAlgorithm.from_function_definition(
             function_definition=function_definition,
             generate_initial_population=InitialPopulationGenerator(
-                function_definition=function_definition, population_size=20
+                function_definition=function_definition, population_size=100
             ),
             criteria_function=lambda _best_individual, _best_individual_fitness, generation: generation > generations,
-            selection_operator=RouletteWheelSelectionOperator(target=function_definition.target),
+            selection_operator=TournamentSelectionOperator(
+                fitness_compare_function=maximise if function_definition.target == "maximise" else minimise,
+                tournament_size=10
+            ),
             crossover_operator=CrossoverOperator(
                 encoder=Encoder(segments=function_definition.segmentation),
                 fitness_function=function_definition.function,
             ),
-            mutation_operator=SwapMutationOperator(),
-            mutation_chance=probabilities[0][1],
-            debug=True,
+            mutation_operator=ComplexMutationOperator(
+                encoder=Encoder(segments=function_definition.segmentation), probability=probabilities[0][1]
+            ),
         ),
     )
 
@@ -122,7 +126,7 @@ def apso_tsp_generator(
         MeteredAdaptiveParticleSwarmOptimisation.from_function_definition(
             function_definition=function_definition,
             generate_initial_population=InitialPopulationGenerator(
-                function_definition=function_definition, population_size=20
+                function_definition=function_definition, population_size=100
             ),
             criteria_function=lambda _best_individual, _best_individual_fitness, generation: generation > generations,
             two_opt_operator=TwoOptOperator(
@@ -137,7 +141,6 @@ def apso_tsp_generator(
             two_opt_operator_probability=probabilities[0][1],
             path_linker_operator_probability=probabilities[1][1],
             swap_operator_probability=probabilities[2][1],
-            debug=True,
         ),
     )
 
@@ -148,7 +151,7 @@ def wrap_instances_in_processes(
             CombinatorialFunctionDefinition,
             int,
             int,
-            t.Tuple[float, float, float],
+            t.List[t.Tuple[str, float]],
             str,
             BaseAlgorithm,
         ]
