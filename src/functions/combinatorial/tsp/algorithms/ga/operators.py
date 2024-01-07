@@ -9,63 +9,6 @@ from util.sort import quicksort
 MTSPSolution = t.List[t.List[int]]
 
 
-class CrossoverOperator(BaseCrossoverOperator[MTSPSolution, TspResult]):
-    __encoder: Encoder
-    __fitness_function: t.Callable[[MTSPSolution], TspResult]
-
-    def __init__(self, encoder: Encoder, fitness_function: t.Callable[[MTSPSolution], TspResult]):
-        self.__encoder = encoder
-        self.__fitness_function = fitness_function
-
-    def run(
-        self, parent_1: Individual[MTSPSolution, TspResult], parent_2: Individual[MTSPSolution, TspResult]
-    ) -> t.Tuple[Individual[MTSPSolution, TspResult], Individual[MTSPSolution, TspResult]]:
-        """
-        Implements Crossover from https://www.growingscience.com/dsl/Vol10/dsl_2021_22.pdf. Order of operations is
-        reversed due to encoding.
-        """
-        n = sum(len(tour) for tour in parent_1.genes)
-
-        parent_1_encoded = self.__encoder.encode(parent_1.genes)
-        parent_2_encoded = self.__encoder.encode(parent_2.genes)
-        child_1 = [0 for _ in range(n)]
-        child_2 = [0 for _ in range(n)]
-
-        child_1[0] = parent_2_encoded[-1]
-        child_2[0] = parent_1_encoded[-1]
-        child_1[-1] = parent_2_encoded[0]
-        child_2[-1] = parent_1_encoded[0]
-
-        for i in range(0, n):
-            for j in range(1, n - 1):
-                if parent_2_encoded[i] == parent_1_encoded[j]:
-                    child_1[j] = parent_2_encoded[j]
-
-                if parent_1_encoded[i] == parent_2_encoded[j]:
-                    child_2[j] = parent_1_encoded[j]
-
-        child_1 = self.__encoder.decode(child_1)
-        child_2 = self.__encoder.decode(child_2)
-
-        return Individual(genes=child_1, fitness_function=self.__fitness_function), Individual(
-            genes=child_2, fitness_function=self.__fitness_function
-        )
-
-
-class SwapMutationOperator(BaseMutationOperator[MTSPSolution, TspResult]):
-    def run(self, child: Individual[MTSPSolution, TspResult]) -> Individual[MTSPSolution, TspResult]:
-        [segment_1, segment_2] = random.sample(range(len(child.genes)), k=2)
-        value_1 = random.randint(a=0, b=len(child.genes[segment_1]) - 1)
-        value_2 = random.randint(a=0, b=len(child.genes[segment_2]) - 1)
-
-        child.genes[segment_1][value_1], child.genes[segment_2][value_2] = (
-            child.genes[segment_2][value_2],
-            child.genes[segment_1][value_1],
-        )
-
-        return child
-
-
 class TournamentSelectionOperator(BaseSelectionOperator[MTSPSolution, TspResult]):
     __fitness_compare_function: t.Callable[[float, float], bool]
     __tournament_size: int
@@ -133,3 +76,80 @@ class RouletteWheelSelectionOperator(BaseMutationOperator[MTSPSolution, TspResul
             selected_individuals.append(selected_individual)
 
         return selected_individuals
+
+
+class CrossoverOperator(BaseCrossoverOperator[MTSPSolution, TspResult]):
+    __encoder: Encoder
+    __fitness_function: t.Callable[[MTSPSolution], TspResult]
+
+    def __init__(self, encoder: Encoder, fitness_function: t.Callable[[MTSPSolution], TspResult]):
+        self.__encoder = encoder
+        self.__fitness_function = fitness_function
+
+    def run(
+        self, parent_1: Individual[MTSPSolution, TspResult], parent_2: Individual[MTSPSolution, TspResult]
+    ) -> t.Tuple[Individual[MTSPSolution, TspResult], Individual[MTSPSolution, TspResult]]:
+        """
+        Implements Crossover from https://www.growingscience.com/dsl/Vol10/dsl_2021_22.pdf. Order of operations is
+        reversed due to encoding.
+        """
+        n = sum(len(tour) for tour in parent_1.genes)
+
+        parent_1_encoded = self.__encoder.encode(parent_1.genes)
+        parent_2_encoded = self.__encoder.encode(parent_2.genes)
+        child_1 = [0 for _ in range(n)]
+        child_2 = [0 for _ in range(n)]
+
+        child_1[0] = parent_2_encoded[-1]
+        child_2[0] = parent_1_encoded[-1]
+        child_1[-1] = parent_2_encoded[0]
+        child_2[-1] = parent_1_encoded[0]
+
+        for i in range(0, n):
+            for j in range(1, n - 1):
+                if parent_2_encoded[i] == parent_1_encoded[j]:
+                    child_1[j] = parent_2_encoded[j]
+
+                if parent_1_encoded[i] == parent_2_encoded[j]:
+                    child_2[j] = parent_1_encoded[j]
+
+        child_1 = self.__encoder.decode(child_1)
+        child_2 = self.__encoder.decode(child_2)
+
+        return Individual(genes=child_1, fitness_function=self.__fitness_function), Individual(
+            genes=child_2, fitness_function=self.__fitness_function
+        )
+
+
+class SwapMutationOperator(BaseMutationOperator[MTSPSolution, TspResult]):
+    __probability: float
+
+    def __init__(self, probability: float):
+        self.__probability = probability
+
+    def run(self, child: Individual[MTSPSolution, TspResult]) -> Individual[MTSPSolution, TspResult]:
+        values = [segment.copy() for segment in child.genes]
+        runs = sum(len(segment) for segment in values)
+
+        for _ in range(runs):
+            if random.random() > self.__probability:
+                continue
+
+            segment_1 = random.randint(
+                a=0,
+                b=len(values) - 1,
+            )
+            segment_2 = random.randint(
+                a=0,
+                b=len(values) - 1,
+            )
+            value_1 = random.randint(a=0, b=len(values[segment_1]) - 1)
+            value_2 = random.randint(a=0, b=len(values[segment_2]) - 1)
+
+            values[segment_1][value_1], values[segment_2][value_2] = (
+                values[segment_2][value_2],
+                values[segment_1][value_1],
+            )
+
+        child.genes = values
+        return child

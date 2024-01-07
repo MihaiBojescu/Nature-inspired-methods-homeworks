@@ -24,7 +24,6 @@ class MeteredGeneticAlgorithm(GeneticAlgorithm[T, U]):
         selection_operator: BaseSelectionOperator[T, U],
         crossover_operator: BaseCrossoverOperator[T, U],
         mutation_operator: BaseMutationOperator[T, U],
-        mutation_chance: float,
         debug: bool = False,
     ) -> None:
         super().__init__(
@@ -35,7 +34,6 @@ class MeteredGeneticAlgorithm(GeneticAlgorithm[T, U]):
             selection_operator=selection_operator,
             crossover_operator=crossover_operator,
             mutation_operator=mutation_operator,
-            mutation_chance=mutation_chance,
             debug=debug,
         )
 
@@ -66,7 +64,6 @@ class MeteredGeneticAlgorithm(GeneticAlgorithm[T, U]):
             t.Literal["auto"],
             BaseMutationOperator,
         ] = "auto",
-        mutation_chance: float = 0.02,
         debug: bool = False,
     ) -> t.Self:
         def default_generate_initial_population():
@@ -101,7 +98,6 @@ class MeteredGeneticAlgorithm(GeneticAlgorithm[T, U]):
             selection_operator=selection_operator,
             crossover_operator=crossover_operator,
             mutation_operator=mutation_operator,
-            mutation_chance=mutation_chance,
             debug=debug,
         )
 

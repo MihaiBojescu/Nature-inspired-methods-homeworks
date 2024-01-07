@@ -1,3 +1,4 @@
+import copy
 import random
 import typing as t
 from functions.combinatorial.definition import CombinatorialFunctionDefinition
@@ -20,7 +21,6 @@ class GeneticAlgorithm(BaseAlgorithm[T, U]):
     __crossover_operator: BaseCrossoverOperator[T, U]
     __mutation_operator: BaseMutationOperator[T, U]
 
-    __mutation_chance: float
     _generation: int
 
     __debug: bool
@@ -34,7 +34,6 @@ class GeneticAlgorithm(BaseAlgorithm[T, U]):
         selection_operator: BaseSelectionOperator[T, U],
         crossover_operator: BaseCrossoverOperator[T, U],
         mutation_operator: BaseMutationOperator[T, U],
-        mutation_chance: float,
         debug: bool = False,
     ) -> None:
         self.__population = [
@@ -47,7 +46,6 @@ class GeneticAlgorithm(BaseAlgorithm[T, U]):
         self.__selection_operator = selection_operator
         self.__crossover_operator = crossover_operator
         self.__mutation_operator = mutation_operator
-        self.__mutation_chance = mutation_chance
 
         self._generation = 0
         self.__debug = debug
@@ -79,7 +77,6 @@ class GeneticAlgorithm(BaseAlgorithm[T, U]):
             t.Literal["auto"],
             BaseMutationOperator,
         ] = "auto",
-        mutation_chance: float = 0.02,
         debug: bool = False,
     ) -> t.Self:
         cached_min_best_result = function_definition.best_result - 0.05
@@ -106,7 +103,6 @@ class GeneticAlgorithm(BaseAlgorithm[T, U]):
             selection_operator=selection_operator,
             crossover_operator=crossover_operator,
             mutation_operator=mutation_operator,
-            mutation_chance=mutation_chance,
             debug=debug,
         )
 
@@ -134,11 +130,8 @@ class GeneticAlgorithm(BaseAlgorithm[T, U]):
 
             child_1, child_2 = self.__crossover_operator.run(parent_1, parent_2)
 
-            if random.random() > self.__mutation_chance:
-                child_1 = self.__mutation_operator.run(child_1)
-
-            if random.random() > self.__mutation_chance:
-                child_2 = self.__mutation_operator.run(child_2)
+            child_1 = self.__mutation_operator.run(child_1)
+            child_2 = self.__mutation_operator.run(child_2)
 
             next_generation.extend([child_1, child_2])
 
@@ -147,7 +140,11 @@ class GeneticAlgorithm(BaseAlgorithm[T, U]):
             data=self.__population,
             comparator=lambda a, b: self.__fitness_compare_function(a.fitness, b.fitness),
         )
-        self._best_individual = self.__population[0]
+        self._best_individual = (
+            copy.deepcopy(self.__population[0])
+            if self.__fitness_compare_function(self.__population[0].fitness, self._best_individual.fitness)
+            else self._best_individual
+        )
         self._generation += 1
 
         return self._best_individual.genes, self._best_individual.fitness, self._generation
