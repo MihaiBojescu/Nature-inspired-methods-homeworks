@@ -3,20 +3,23 @@ import typing as t
 from algorithms.ga.operators import BaseCrossoverOperator, BaseMutationOperator, BaseSelectionOperator
 from algorithms.ga.individual import Individual
 from functions.combinatorial.tsp.algorithms.ga.encoder import Encoder
+from functions.combinatorial.tsp.util.common import TspResult
 from util.sort import quicksort
 
 MTSPSolution = t.List[t.List[int]]
 
 
-class CrossoverOperator(BaseCrossoverOperator[MTSPSolution]):
+class CrossoverOperator(BaseCrossoverOperator[MTSPSolution, TspResult]):
     __encoder: Encoder
+    __fitness_function: t.Callable[[MTSPSolution], TspResult]
 
-    def __init__(self, encoder: Encoder):
+    def __init__(self, encoder: Encoder, fitness_function: t.Callable[[MTSPSolution], TspResult]):
         self.__encoder = encoder
+        self.__fitness_function = fitness_function
 
     def run(
-        self, parent_1: Individual[MTSPSolution], parent_2: Individual[MTSPSolution]
-    ) -> t.Tuple[Individual[MTSPSolution], Individual[MTSPSolution]]:
+        self, parent_1: Individual[MTSPSolution, TspResult], parent_2: Individual[MTSPSolution, TspResult]
+    ) -> t.Tuple[Individual[MTSPSolution, TspResult], Individual[MTSPSolution, TspResult]]:
         """
         Implements Crossover from https://www.growingscience.com/dsl/Vol10/dsl_2021_22.pdf. Order of operations is
         reversed due to encoding.
@@ -49,21 +52,21 @@ class CrossoverOperator(BaseCrossoverOperator[MTSPSolution]):
         )
 
 
-class SwapMutationOperator(BaseMutationOperator[MTSPSolution]):
-    def run(self, child: Individual[MTSPSolution]) -> Individual[MTSPSolution]:
-        [segment_1, segment_2] = random.sample(range(len(child)), k=2)
-        value_1 = random.randint(a=0, b=len(child[segment_1]))
-        value_2 = random.randint(a=0, b=len(child[segment_2]))
+class SwapMutationOperator(BaseMutationOperator[MTSPSolution, TspResult]):
+    def run(self, child: Individual[MTSPSolution, TspResult]) -> Individual[MTSPSolution, TspResult]:
+        [segment_1, segment_2] = random.sample(range(len(child.genes)), k=2)
+        value_1 = random.randint(a=0, b=len(child.genes[segment_1]) - 1)
+        value_2 = random.randint(a=0, b=len(child.genes[segment_2]) - 1)
 
-        child[segment_1][value_1], child[segment_2][value_2] = (
-            child[segment_2][value_2],
-            child[segment_1][value_1],
+        child.genes[segment_1][value_1], child.genes[segment_2][value_2] = (
+            child.genes[segment_2][value_2],
+            child.genes[segment_1][value_1],
         )
 
         return child
 
 
-class TournamentSelectionOperator(BaseSelectionOperator[MTSPSolution]):
+class TournamentSelectionOperator(BaseSelectionOperator[MTSPSolution, TspResult]):
     __fitness_compare_function: t.Callable[[float, float], bool]
     __tournament_size: int
 
@@ -75,7 +78,9 @@ class TournamentSelectionOperator(BaseSelectionOperator[MTSPSolution]):
         self.__fitness_compare_function = fitness_compare_function
         self.__tournament_size = tournament_size
 
-    def run(self, population: t.List[Individual[MTSPSolution]]) -> t.List[Individual[MTSPSolution]]:
+    def run(
+        self, population: t.List[Individual[MTSPSolution, TspResult]]
+    ) -> t.List[Individual[MTSPSolution, TspResult]]:
         selected_parents = []
 
         while len(selected_parents) < len(population):
@@ -89,7 +94,7 @@ class TournamentSelectionOperator(BaseSelectionOperator[MTSPSolution]):
         return selected_parents
 
 
-class RouletteWheelSelectionOperator(BaseMutationOperator[MTSPSolution]):
+class RouletteWheelSelectionOperator(BaseMutationOperator[MTSPSolution, TspResult]):
     __target: t.Union[t.Literal["maximise"], t.Literal["minimise"]]
 
     def __init__(
@@ -100,15 +105,15 @@ class RouletteWheelSelectionOperator(BaseMutationOperator[MTSPSolution]):
 
     def run(
         self,
-        population: t.List[Individual[MTSPSolution]],
+        population: t.List[Individual[MTSPSolution, TspResult]],
     ) -> MTSPSolution:
-        fitness_sum = sum([individual.fitness for individual in population])
+        fitness_sum = sum(individual.fitness.optimal_cost for individual in population)
         selection_probabilities = (
-            [individual.fitness / fitness_sum for individual in population]
+            [individual.fitness.optimal_cost / fitness_sum for individual in population]
             if self.__target == "maximise"
-            else [1 / fitness / fitness_sum for fitness in population]
+            else [1 / individual.fitness.optimal_cost / fitness_sum for individual in population]
         )
-        selected_individuals: t.List[Individual[MTSPSolution]] = []
+        selected_individuals: t.List[Individual[MTSPSolution, TspResult]] = []
         selected_individual = None
 
         for _ in range(0, len(population)):

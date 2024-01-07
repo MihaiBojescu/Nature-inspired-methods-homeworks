@@ -7,17 +7,18 @@ from algorithms.ga.operators import BaseCrossoverOperator, BaseMutationOperator,
 from util.sort import maximise, minimise, quicksort
 
 T = t.TypeVar("T")
+U = t.TypeVar("U")
 
 
-class GeneticAlgorithm(BaseAlgorithm[T]):
-    __population: t.List[Individual[T]]
-    _best_individual: Individual[T]
-    __fitness_compare_function: t.Callable[[float, float], bool]
-    __criteria_function: t.Callable[[T, float, int], bool]
+class GeneticAlgorithm(BaseAlgorithm[T, U]):
+    __population: t.List[Individual[T, U]]
+    _best_individual: Individual[T, U]
+    __fitness_compare_function: t.Callable[[U, U], bool]
+    _criteria_function: t.Callable[[T, U, int], bool]
 
-    __selection_operator: BaseSelectionOperator[T]
-    __crossover_operator: BaseCrossoverOperator[T]
-    __mutation_operator: BaseMutationOperator[T]
+    __selection_operator: BaseSelectionOperator[T, U]
+    __crossover_operator: BaseCrossoverOperator[T, U]
+    __mutation_operator: BaseMutationOperator[T, U]
 
     __mutation_chance: float
     _generation: int
@@ -27,12 +28,12 @@ class GeneticAlgorithm(BaseAlgorithm[T]):
     def __init__(
         self,
         generate_initial_population: t.Callable[[], t.List[T]],
-        fitness_function: t.Callable[[T], float],
-        fitness_compare_function: t.Callable[[float, float], bool],
-        criteria_function: t.Callable[[T, float, int], bool],
-        selection_operator: BaseSelectionOperator[T],
-        crossover_operator: BaseCrossoverOperator[T],
-        mutation_operator: BaseMutationOperator[T],
+        fitness_function: t.Callable[[T], U],
+        fitness_compare_function: t.Callable[[U, U], bool],
+        criteria_function: t.Callable[[T, U, int], bool],
+        selection_operator: BaseSelectionOperator[T, U],
+        crossover_operator: BaseCrossoverOperator[T, U],
+        mutation_operator: BaseMutationOperator[T, U],
         mutation_chance: float,
         debug: bool = False,
     ) -> None:
@@ -41,7 +42,7 @@ class GeneticAlgorithm(BaseAlgorithm[T]):
         ]
         self.__fitness_compare_function = fitness_compare_function
         self.__selection_operator = selection_operator
-        self.__criteria_function = criteria_function
+        self._criteria_function = criteria_function
 
         self.__selection_operator = selection_operator
         self.__crossover_operator = crossover_operator
@@ -53,7 +54,7 @@ class GeneticAlgorithm(BaseAlgorithm[T]):
 
         self.__population = quicksort(
             data=self.__population,
-            comparator=lambda a, b: self.__fitness_compare_function(a, b),
+            comparator=lambda a, b: self.__fitness_compare_function(a.fitness, b.fitness),
         )
         self._best_individual = self.__population[0]
 
@@ -64,7 +65,7 @@ class GeneticAlgorithm(BaseAlgorithm[T]):
         generations: int = 100,
         criteria_function: t.Union[
             t.Literal["auto"],
-            t.Callable[[T, float, int], bool],
+            t.Callable[[T, U, int], bool],
         ] = "auto",
         selection_operator: t.Union[
             t.Literal["auto"],
@@ -113,15 +114,15 @@ class GeneticAlgorithm(BaseAlgorithm[T]):
     def name(self) -> str:
         return "Genetic algorithm"
 
-    def run(self) -> t.Tuple[T, float, int]:
-        while not self.__criteria_function(
+    def run(self) -> t.Tuple[T, U, int]:
+        while not self._criteria_function(
             self._best_individual.genes, self._best_individual.fitness, self._generation
         ):
             self.step()
 
         return self._best_individual.genes, self._best_individual.fitness, self._generation
 
-    def step(self) -> t.Tuple[T, float, int]:
+    def step(self) -> t.Tuple[T, U, int]:
         self.__print()
 
         next_generation = []
@@ -149,7 +150,7 @@ class GeneticAlgorithm(BaseAlgorithm[T]):
         self._best_individual = self.__population[0]
         self._generation += 1
 
-        return self._best_individual.decode(), self._best_individual.fitness, self._generation
+        return self._best_individual.genes, self._best_individual.fitness, self._generation
 
     def __print(self) -> None:
         if not self.__debug:
