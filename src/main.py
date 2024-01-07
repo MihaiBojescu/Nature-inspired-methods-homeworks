@@ -3,6 +3,7 @@ import typing as t
 from itertools import chain
 from multiprocessing import Process, Semaphore
 from algorithms.apso.metered_algorithm import MeteredAdaptiveParticleSwarmOptimisation
+from algorithms.ga.metered_algorithm import MeteredGeneticAlgorithm
 from algorithms.base.algorithm import BaseAlgorithm
 from functions.combinatorial.definition import CombinatorialFunctionDefinition
 from functions.combinatorial.tsp.definitions.eil51 import make_eil51
@@ -10,12 +11,19 @@ from functions.combinatorial.tsp.definitions.berlin52 import make_berlin52
 from functions.combinatorial.tsp.definitions.eil76 import make_eil76
 from functions.combinatorial.tsp.definitions.rat99 import make_rat99
 from functions.combinatorial.tsp.util.common import InitialPopulationGenerator
+from functions.combinatorial.tsp.algorithms.apso.operators import PathLinkerOperator, SwapOperator, TwoOptOperator
+from functions.combinatorial.tsp.algorithms.ga.operators import (
+    SwapMutationOperator,
+    CrossoverOperator,
+    RouletteWheelSelectionOperator,
+)
+from util.sort import maximise, minimise
 from util.import_export import save_metrics
 
 
 def main():
     instances = build_instances()
-    instances = wrap_instances_in_processes(instances, 8)
+    instances = wrap_instances_in_processes(instances, 1)
 
     instances()
 
@@ -61,14 +69,23 @@ def tsp_generator(
         "outputs/discrete",
         MeteredAdaptiveParticleSwarmOptimisation.from_function_definition(
             function_definition=function_definition,
-            dimensions=dimension,
             generate_initial_population=InitialPopulationGenerator(
                 function_definition=function_definition, population_size=20
             ),
             criteria_function=lambda _best_individual, _best_individual_fitness, generation: generation > generations,
+            two_opt_operator=TwoOptOperator(
+                fitness_function=function_definition.function,
+                fitness_compare_function=maximise if function_definition.target == "maximise" else minimise,
+            ),
+            path_linker_operator=PathLinkerOperator(
+                fitness_function=function_definition.function,
+                fitness_compare_function=maximise if function_definition.target == "maximise" else minimise,
+            ),
+            swap_operator=SwapOperator(),
             two_opt_operator_probability=probabilities[0],
             path_linker_operator_probability=probabilities[1],
             swap_operator_probability=probabilities[2],
+            debug=True
         ),
     )
 
