@@ -9,7 +9,7 @@ V = t.TypeVar("V")
 class CombinatorialFunctionDefinition:
     name: str
     description: str
-    function: t.Callable[[t.List[T]], U]
+    function: t.Callable[[T], U]
     target: t.Union[t.Literal["maximise"], t.Literal["minimise"]]
     values: t.List[T]
     segmentation: t.Optional[t.List[int]]
