@@ -52,13 +52,6 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
             Individual(
                 initial_position=position,
                 fitness_function=fitness_function,
-                fitness_compare_function=fitness_compare_function,
-                two_opt_operator=two_opt_operator,
-                path_linker_operator=path_linker_operator,
-                swap_operator=swap_operator,
-                two_opt_operator_probability=two_opt_operator_probability,
-                path_linker_operator_probability=path_linker_operator_probability,
-                swap_operator_probability=swap_operator_probability,
             )
             for position in generate_initial_population()
         ]
@@ -162,8 +155,8 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
     def step(self) -> t.Tuple[T, U, int]:
         self._print()
 
-        for individual in self.__population:
-            self.__update_individual(individual)
+        for i, individual in enumerate(self.__population):
+            self.__population[i] = self.__update_individual(individual)
 
         self.__population = quicksort(
             data=self.__population,
@@ -189,11 +182,11 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
             k=1,
         )[0]:
             case 1:
-                individual.position = self.__two_opt_operator.run(self)
+                return self.__two_opt_operator.run(individual)
             case 2:
-                individual.position = self.__path_linker_operator.run(self)
+                return self.__path_linker_operator.run(individual)
             case 3:
-                individual.position = self.__swap_operator.run(self)
+                return self.__swap_operator.run(individual)
 
     def _print(self) -> None:
         if not self.__debug:

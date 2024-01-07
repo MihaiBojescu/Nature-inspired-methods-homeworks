@@ -17,6 +17,7 @@ from functions.combinatorial.tsp.algorithms.ga.operators import (
     CrossoverOperator,
     RouletteWheelSelectionOperator,
 )
+from functions.combinatorial.tsp.algorithms.ga.encoder import Encoder
 from util.sort import maximise, minimise
 from util.import_export import save_metrics
 
@@ -35,30 +36,81 @@ def build_instances():
 
 
 def build_discrete_instances():
-    return iter(
-        tsp_generator(
-            function_definition_constructor=function_definition_constructor,
-            dimension=dimension,
-            generations=generations,
-            probabilities=probabilities,
+    return chain(
+        iter(
+            ga_tsp_generator(
+                function_definition_constructor=function_definition_constructor,
+                dimension=dimension,
+                generations=generations,
+                probabilities=probabilities,
+            )
+            for dimension in [2, 3]
+            for function_definition_constructor in [make_eil51, make_berlin52, make_eil76, make_rat99]
+            for generations in [100, 2000]
+            for probabilities in [
+                [("mutation", 0)],
+                [("mutation", 0.02)],
+                [("mutation", 0.1)],
+                [("mutation", 0.2)],
+                [("mutation", 0.4)],
+            ]
+        ),
+        iter(
+            apso_tsp_generator(
+                function_definition_constructor=function_definition_constructor,
+                dimension=dimension,
+                generations=generations,
+                probabilities=probabilities,
+            )
+            for dimension in [2, 3]
+            for function_definition_constructor in [make_eil51, make_berlin52, make_eil76, make_rat99]
+            for generations in [100, 2000]
+            for probabilities in [
+                [("2-opt", 0.1), ("path-linker", 0.2), ("swap", 0.7)],
+                [("2-opt", 0.3), ("path-linker", 0.2), ("swap", 0.5)],
+                [("2-opt", 0.3333), ("path-linker", 0.3333), ("swap", 0.3334)],
+                [("2-opt", 0.4), ("path-linker", 0.4), ("swap", 0.2)],
+            ]
         )
-        for dimension in [2, 3]
-        for function_definition_constructor in [make_eil51, make_berlin52, make_eil76, make_rat99]
-        for generations in [100, 2000]
-        for probabilities in [
-            (0.1, 0.2, 0.7),
-            (0.3, 0.2, 0.5),
-            (0.3333, 0.3333, 0.3334),
-            (0.4, 0.4, 0.2),
-        ]
     )
 
 
-def tsp_generator(
+def ga_tsp_generator(
     function_definition_constructor: t.Callable[[int], CombinatorialFunctionDefinition],
     dimension: int,
     generations: int,
-    probabilities: (float, float, float),
+    probabilities: t.List[t.Tuple[str, float]],
+):
+    function_definition = function_definition_constructor(dimension)
+    return (
+        function_definition,
+        dimension,
+        generations,
+        probabilities,
+        "outputs/discrete",
+        MeteredGeneticAlgorithm.from_function_definition(
+            function_definition=function_definition,
+            generate_initial_population=InitialPopulationGenerator(
+                function_definition=function_definition, population_size=20
+            ),
+            criteria_function=lambda _best_individual, _best_individual_fitness, generation: generation > generations,
+            selection_operator=RouletteWheelSelectionOperator(target=function_definition.target),
+            crossover_operator=CrossoverOperator(
+                encoder=Encoder(segments=function_definition.segmentation),
+                fitness_function=function_definition.function,
+            ),
+            mutation_operator=SwapMutationOperator(),
+            mutation_chance=probabilities[0][1],
+            debug=True,
+        ),
+    )
+
+
+def apso_tsp_generator(
+    function_definition_constructor: t.Callable[[int], CombinatorialFunctionDefinition],
+    dimension: int,
+    generations: int,
+    probabilities: t.List[t.Tuple[str, float]],
 ):
     function_definition = function_definition_constructor(dimension)
     return (
@@ -82,10 +134,10 @@ def tsp_generator(
                 fitness_compare_function=maximise if function_definition.target == "maximise" else minimise,
             ),
             swap_operator=SwapOperator(),
-            two_opt_operator_probability=probabilities[0],
-            path_linker_operator_probability=probabilities[1],
-            swap_operator_probability=probabilities[2],
-            debug=True
+            two_opt_operator_probability=probabilities[0][1],
+            path_linker_operator_probability=probabilities[1][1],
+            swap_operator_probability=probabilities[2][1],
+            debug=True,
         ),
     )
 
@@ -141,13 +193,14 @@ def process(
     function_definition: CombinatorialFunctionDefinition,
     dimensions: int,
     generations: int,
-    probabilities: (float, float, float),
+    probabilities: t.List[t.Tuple[str, float]],
     output_folder: str,
     algorithm: BaseAlgorithm,
     semaphore: Semaphore,
 ):
     try:
-        name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, generations = {generations}, 2-opt_probability = {probabilities[0]}, path-relinker_probability = {probabilities[1]}, swap_probability = {probabilities[2]})"
+        hyperparameters_string = ", ".join([f"{name} = {value}" for name, value in probabilities])
+        name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, generations = {generations}, {hyperparameters_string})"
 
         print(f"Running {name}")
         result = algorithm.run()

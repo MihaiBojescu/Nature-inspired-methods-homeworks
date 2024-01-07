@@ -127,4 +127,4 @@ class SwapOperator(BaseSwapOperator[MTSPSolution, TspResult]):
             individual.position[segment_1][value_1],
         )
 
-        return individual.position
+        return individual
