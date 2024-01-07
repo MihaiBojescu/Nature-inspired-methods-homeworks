@@ -50,54 +50,24 @@ class RouletteWheelSelectionOperator(BaseMutationOperator[MTSPSolution, MTSPResu
         self,
         population: t.List[Individual[MTSPSolution, MTSPResult]],
     ) -> MTSPSolution:
-        fitness_sum = sum(individual.fitness.optimal_cost for individual in population)
-        selection_probabilities = (
-            [individual.fitness.optimal_cost / fitness_sum for individual in population]
-            if self.__target == "maximise"
-            else [(fitness_sum - individual.fitness.optimal_cost) / fitness_sum for individual in population]
-        )
-        selection_probabilities_max = max(selection_probabilities)
-        selection_probabilities_min = min(selection_probabilities)
-        selection_probabilities = (
-            [1 for _ in range(len(selection_probabilities))]
-            if selection_probabilities_max == selection_probabilities_min
-            else [
-                (probability - selection_probabilities_min)
-                / (selection_probabilities_max - selection_probabilities_min)
-                for probability in selection_probabilities
-            ]
-        )
+        probabilities = self.__build_probabilities_list(population=population)
+        selected_individuals: t.List[Individual[MTSPSolution, MTSPResult]] = [None for _ in range(len(population))]
 
-        maximise_probability_comparator = (
-            lambda current, selected, next: current_probability <= selected_probability <= next_probability
-        )
-        minimise_probability_comparator = (
-            lambda current, selected, next: current_probability >= selected_probability >= next_probability
-        )
-        probability_comparator = (
-            maximise_probability_comparator if self.__target == "maximise" else minimise_probability_comparator
-        )
-
-        selected_individuals: t.List[Individual[MTSPSolution, MTSPResult]] = []
-        selected_individual = None
-
-        for _ in range(0, len(population)):
-            selected_probability = random.uniform(a=0, b=1)
-
-            for index in range(0, len(selection_probabilities) - 1):
-                current_probability = selection_probabilities[index]
-                next_probability = selection_probabilities[index + 1]
-
-                if probability_comparator(current_probability, selected_probability, next_probability):
-                    selected_individual = population[index]
-                    break
-
-            if selected_individual is None:
-                selected_individual = population[-1]
-
-            selected_individuals.append(selected_individual)
+        for i, _ in enumerate(population):
+            selected_individual = random.choices(population=population, weights=probabilities, k=1)[0]
+            selected_individuals[i] = selected_individual
 
         return selected_individuals
+
+    def __build_probabilities_list(self, population: t.List[Individual[MTSPSolution, MTSPResult]]) -> t.List[float]:
+        if self.__target == "maximise":
+            total = sum(individual.fitness.optimal_cost for individual in population)
+            probabilities = [individual.fitness.optimal_cost / total for individual in population]
+            return probabilities
+
+        total = sum(1 / individual.fitness.optimal_cost for individual in population)
+        probabilities = [(1 / individual.fitness.optimal_cost) / total for individual in population]
+        return probabilities
 
 
 class CrossoverOperator(BaseCrossoverOperator[MTSPSolution, MTSPResult]):
