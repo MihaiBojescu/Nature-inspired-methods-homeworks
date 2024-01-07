@@ -17,9 +17,7 @@ def quicksort(data: t.List[Data], comparator: t.Callable[[Data, Data], bool]):
     return data
 
 
-def partition(
-    data: t.List[Data], low: int, high: int, comparator: t.Callable[[Data, Data], bool]
-):
+def partition(data: t.List[Data], low: int, high: int, comparator: t.Callable[[Data, Data], bool]):
     pivot = data[high]
     i = low - 1
 
