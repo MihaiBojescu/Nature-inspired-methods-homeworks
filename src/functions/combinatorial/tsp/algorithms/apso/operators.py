@@ -72,7 +72,6 @@ class PathRelinkingOperator(BasePathRelinkingOperator[MTSPSolution, MTSPResult])
 
     def __init__(
         self,
-        encoder: Encoder,
         fitness_function: t.Callable[[MTSPSolution], MTSPResult],
         fitness_compare_function: t.Callable[[MTSPResult, MTSPResult], bool],
     ):
