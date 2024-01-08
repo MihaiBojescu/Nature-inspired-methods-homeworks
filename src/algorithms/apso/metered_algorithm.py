@@ -3,7 +3,7 @@ import time
 import typing as t
 from functions.combinatorial.definition import CombinatorialFunctionDefinition
 from algorithms.apso.algorithm import AdaptiveParticleSwarmOptimisation
-from algorithms.apso.operators import BasePathLinkerOperator, BaseSwapOperator, BaseTwoOptOperator
+from algorithms.apso.operators import BasePathRelinkerOperator, BaseSwapOperator, BaseTwoOptOperator
 from util.sort import maximise, minimise
 
 T = t.TypeVar("T")
@@ -22,7 +22,7 @@ class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation
         fitness_compare_function: t.Callable[[U, U], bool],
         criteria_function: t.Callable[[T, U, int], bool],
         two_opt_operator: BaseTwoOptOperator[T, U],
-        path_linker_operator: BasePathLinkerOperator[T, U],
+        path_linker_operator: BasePathRelinkerOperator[T, U],
         swap_operator: BaseSwapOperator[T, U],
         two_opt_operator_probability: float,
         path_linker_operator_probability: float,
@@ -59,7 +59,7 @@ class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation
             t.Callable[[T, U, int], bool],
         ] = "auto",
         two_opt_operator: t.Union[t.Literal["auto"], BaseTwoOptOperator[T, U]] = "auto",
-        path_linker_operator: t.Union[t.Literal["auto"], BasePathLinkerOperator[T, U]] = "auto",
+        path_linker_operator: t.Union[t.Literal["auto"], BasePathRelinkerOperator[T, U]] = "auto",
         swap_operator: t.Union[t.Literal["auto"], BaseSwapOperator[T, U]] = "auto",
         two_opt_operator_probability: float = 0.3333,
         path_linker_operator_probability: float = 0.3333,
@@ -87,7 +87,7 @@ class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation
         fitness_compare_function = maximise if function_definition.target == "maximise" else minimise
 
         two_opt_operator = two_opt_operator if two_opt_operator != "auto" else BaseTwoOptOperator()
-        path_linker_operator = path_linker_operator if path_linker_operator != "auto" else BasePathLinkerOperator()
+        path_linker_operator = path_linker_operator if path_linker_operator != "auto" else BasePathRelinkerOperator()
         swap_operator = swap_operator if swap_operator != "auto" else BaseSwapOperator()
 
         return MeteredAdaptiveParticleSwarmOptimisation(

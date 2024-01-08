@@ -1,6 +1,6 @@
 import random
 import typing as t
-from algorithms.apso.operators import BaseTwoOptOperator, BasePathLinkerOperator, BaseSwapOperator
+from algorithms.apso.operators import BaseTwoOptOperator, BasePathRelinkerOperator, BaseSwapOperator
 from algorithms.apso.individual import Individual
 from functions.combinatorial.tsp.util.common import MTSPResult
 
@@ -65,7 +65,7 @@ class TwoOptOperator(BaseTwoOptOperator[MTSPSolution, MTSPResult]):
         return self.__fitness_compare_function(swapped_cost, original_cost)
 
 
-class PathLinkerOperator(BasePathLinkerOperator[MTSPSolution, MTSPResult]):
+class PathRelinkerOperator(BasePathRelinkerOperator[MTSPSolution, MTSPResult]):
     __fitness_function: t.Callable[[MTSPSolution], MTSPResult]
     __fitness_compare_function: t.Callable[[MTSPResult, MTSPResult], bool]
 
