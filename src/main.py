@@ -46,7 +46,7 @@ def build_discrete_instances():
             )
             for dimension in [2, 3]
             for function_definition_constructor in [make_eil51, make_berlin52, make_eil76, make_rat99]
-            for generations in [10000]
+            for generations in [5000, 10000]
             for probabilities in [
                 [("mutation", 0.02)],
                 [("mutation", 0.1)],
@@ -62,14 +62,14 @@ def build_discrete_instances():
                 generations=generations,
                 probabilities=probabilities,
             )
-            for dimension in [2, 3]
+            for dimension in [2, 3, 5]
             for function_definition_constructor in [make_eil51, make_berlin52, make_eil76, make_rat99]
-            for generations in [100]
+            for generations in [100, 500]
             for probabilities in [
-                [("2-opt", 0.1), ("path-linker", 0.2), ("swap", 0.7)],
-                [("2-opt", 0.3), ("path-linker", 0.2), ("swap", 0.5)],
-                [("2-opt", 0.3333), ("path-linker", 0.3333), ("swap", 0.3334)],
-                [("2-opt", 0.4), ("path-linker", 0.4), ("swap", 0.2)],
+                [("2-opt", 0.1), ("path-relink", 0.2), ("swap", 0.7)],
+                [("2-opt", 0.3), ("path-relink", 0.2), ("swap", 0.5)],
+                [("2-opt", 0.3333), ("path-relink", 0.3333), ("swap", 0.3334)],
+                [("2-opt", 0.4), ("path-relink", 0.4), ("swap", 0.2)],
             ]
         )
     )
