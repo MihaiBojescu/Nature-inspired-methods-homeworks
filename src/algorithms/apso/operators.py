@@ -10,7 +10,7 @@ class BaseTwoOptOperator(t.Generic[T, U]):
         return individual
 
 
-class BasePathRelinkerOperator(t.Generic[T, U]):
+class BasePathRelinkingOperator(t.Generic[T, U]):
     def run(self, individual: Individual[T, U], best_individual: Individual[T, U]) -> T:
         return individual
 

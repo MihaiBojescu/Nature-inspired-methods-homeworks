@@ -4,7 +4,7 @@ import typing as t
 from functions.combinatorial.definition import CombinatorialFunctionDefinition
 from algorithms.base.algorithm import BaseAlgorithm
 from algorithms.apso.individual import Individual
-from algorithms.apso.operators import BasePathRelinkerOperator, BaseSwapOperator, BaseTwoOptOperator
+from algorithms.apso.operators import BasePathRelinkingOperator, BaseSwapOperator, BaseTwoOptOperator
 from util.sort import maximise, minimise, quicksort
 
 T = t.TypeVar("T")
@@ -18,7 +18,7 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
     _criteria_function: t.Callable[[T, U, int], bool]
 
     __two_opt_operator: BaseTwoOptOperator[T, U]
-    __path_linker_operator: BasePathRelinkerOperator[T, U]
+    __path_linker_operator: BasePathRelinkingOperator[T, U]
     __swap_operator: BaseSwapOperator[T, U]
     __two_opt_operator_probability: float
     __path_linker_operator_probability: float
@@ -35,7 +35,7 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
         fitness_compare_function: t.Callable[[U, U], bool],
         criteria_function: t.Callable[[T, U, int], bool],
         two_opt_operator: BaseTwoOptOperator[T, U],
-        path_linker_operator: BasePathRelinkerOperator[T, U],
+        path_linker_operator: BasePathRelinkingOperator[T, U],
         swap_operator: BaseSwapOperator[T, U],
         two_opt_operator_probability: float,
         path_linker_operator_probability: float,
@@ -96,7 +96,7 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
             t.Callable[[T, U, int], bool],
         ] = "auto",
         two_opt_operator: t.Union[t.Literal["auto"], BaseTwoOptOperator[T, U]] = "auto",
-        path_linker_operator: t.Union[t.Literal["auto"], BasePathRelinkerOperator[T, U]] = "auto",
+        path_linker_operator: t.Union[t.Literal["auto"], BasePathRelinkingOperator[T, U]] = "auto",
         swap_operator: t.Union[t.Literal["auto"], BaseSwapOperator[T, U]] = "auto",
         two_opt_operator_probability: float = 0.3333,
         path_linker_operator_probability: float = 0.3333,
@@ -123,7 +123,7 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
         criteria_function = criteria_function if criteria_function != "auto" else default_criteria_function
         fitness_compare_function = maximise if function_definition.target == "maximise" else minimise
         two_opt_operator = two_opt_operator if two_opt_operator != "auto" else BaseTwoOptOperator()
-        path_linker_operator = path_linker_operator if path_linker_operator != "auto" else BasePathRelinkerOperator()
+        path_linker_operator = path_linker_operator if path_linker_operator != "auto" else BasePathRelinkingOperator()
         swap_operator = swap_operator if swap_operator != "auto" else BaseSwapOperator()
 
         return AdaptiveParticleSwarmOptimisation(
