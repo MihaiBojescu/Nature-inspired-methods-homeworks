@@ -11,7 +11,7 @@ from functions.combinatorial.tsp.definitions.berlin52 import make_berlin52
 from functions.combinatorial.tsp.definitions.eil76 import make_eil76
 from functions.combinatorial.tsp.definitions.rat99 import make_rat99
 from functions.combinatorial.tsp.util.common import InitialPopulationGenerator
-from functions.combinatorial.tsp.algorithms.apso.operators import PathLinkerOperator, SwapOperator, TwoOptOperator
+from functions.combinatorial.tsp.algorithms.apso.operators import PathRelinkingOperator, SwapOperator, TwoOptOperator
 from functions.combinatorial.tsp.algorithms.ga.operators import (
     ComplexMutationOperator,
     CrossoverOperator,
@@ -96,7 +96,7 @@ def ga_tsp_generator(
             criteria_function=lambda _best_individual, _best_individual_fitness, generation: generation > generations,
             selection_operator=TournamentSelectionOperator(
                 fitness_compare_function=maximise if function_definition.target == "maximise" else minimise,
-                tournament_size=10
+                tournament_size=10,
             ),
             crossover_operator=CrossoverOperator(
                 encoder=Encoder(segments=function_definition.segmentation),
@@ -132,7 +132,7 @@ def apso_tsp_generator(
                 fitness_function=function_definition.function,
                 fitness_compare_function=maximise if function_definition.target == "maximise" else minimise,
             ),
-            path_linker_operator=PathLinkerOperator(
+            path_linker_operator=PathRelinkingOperator(
                 fitness_function=function_definition.function,
                 fitness_compare_function=maximise if function_definition.target == "maximise" else minimise,
             ),
