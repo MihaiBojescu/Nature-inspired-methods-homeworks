@@ -46,7 +46,7 @@ class TwoOptOperator(BaseTwoOptOperator[MTSPSolution, MTSPResult]):
                         if not self.__is_cost_lower_instance_swap(segment, swapped_segment):
                             continue
 
-                        segment[b_pos:d_pos] = swapped_segment
+                        segment[b_pos:d_pos] = reversed(segment[b_pos:d_pos])
                         improved = True
 
         individual.position = values
