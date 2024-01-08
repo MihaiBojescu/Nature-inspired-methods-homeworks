@@ -46,7 +46,7 @@ class TwoOptOperator(BaseTwoOptOperator[MTSPSolution, MTSPResult]):
                         if not self.__is_cost_lower_instance_swap(segment, swapped_segment):
                             continue
 
-                        segment[b_pos:d_pos] = reversed(segment[b_pos:d_pos])
+                        segment[b_pos:d_pos] = swapped_segment
                         improved = True
 
         individual.position = values
@@ -77,50 +77,51 @@ class PathLinkerOperator(BasePathLinkerOperator[MTSPSolution, MTSPResult]):
         self.__fitness_function = fitness_function
         self.__fitness_compare_function = fitness_compare_function
 
-    def run(self, individual: Individual[MTSPSolution, MTSPResult]):
-        values = [segment.copy() for segment in individual.position]
-       
-        for segment_index, _ in enumerate(values):
-            improved = True
-            values_without_segment = [
-                current_segment
-                for current_segment in values
-                if current_segment == values[segment_index]
+    def run(
+        self, individual: Individual[MTSPSolution, MTSPResult], best_individual: Individual[MTSPSolution, MTSPResult]
+    ):
+        symmetric_difference_indices = [
+            (i, j)
+            for i in range(len(individual.position))
+            for j in range(len(individual.position[i]))
+            if individual.position[i][j] != best_individual.position[i][j]
+        ]
+        best_values, best_cost = (
+            (individual.position, individual.fitness)
+            if self.__fitness_compare_function(individual.fitness, best_individual.fitness)
+            else (best_individual.position, best_individual.fitness)
+        )
+
+        while len(symmetric_difference_indices) > 0:
+            current_moves = [
+                self.__build_swapped_solution(
+                    individual=individual, best_individual=best_individual, swap_indices=indices
+                )
+                for indices in symmetric_difference_indices
             ]
+            current_best_move_index = current_moves.index(min(current_moves, key=lambda entry: entry[1]))
+            symmetric_difference_indices.pop(current_best_move_index)
+            current_best_values, current_best_values_cost = current_moves[current_best_move_index]
 
-            while improved:
-                improved = False
-                segment = values[segment_index]
+            if self.__fitness_compare_function(current_best_values_cost, best_cost):
+                best_values = current_best_values
+                best_cost = current_best_values_cost
 
-                for i in range(len(segment) - 1):
-                    for j in range(i + 1, len(segment)):
-                        swapped_values = self.__swap(segment, i, j)
-
-                        if not self.__is_cost_lower_instance_swap([segment], [swapped_values]):
-                            continue
-
-                        if not self.__is_cost_lower_instance_swap(
-                            [*values_without_segment, segment], [*values_without_segment, swapped_values]
-                        ):
-                            continue
-
-                        values[segment_index] = swapped_values
-                        improved = True
-
-        individual.position = values
+        individual.position = best_values
         return individual
 
-    def __swap(self, values: t.List[int], i: int, j: int):
-        swapped_values = values.copy()
-        swapped_values[i], swapped_values[j] = swapped_values[j], swapped_values[i]
+    def __build_swapped_solution(
+        self,
+        individual: Individual[MTSPSolution, MTSPResult],
+        best_individual: Individual[MTSPSolution, MTSPResult],
+        swap_indices: t.Tuple[int, int],
+    ) -> t.Tuple[MTSPSolution, MTSPResult]:
+        i, j = swap_indices
+        values = [value.copy() for value in individual.position]
+        values[i][j] = best_individual.position[i][j]
+        cost = self.__fitness_function(values)
 
-        return swapped_values
-
-    def __is_cost_lower_instance_swap(self, original_values: MTSPSolution, swapped_values: MTSPSolution):
-        original_cost = self.__fitness_function(original_values)
-        swapped_cost = self.__fitness_function(swapped_values)
-
-        return self.__fitness_compare_function(swapped_cost, original_cost)
+        return values, cost
 
 
 class SwapOperator(BaseSwapOperator[MTSPSolution, MTSPResult]):

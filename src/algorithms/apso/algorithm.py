@@ -182,11 +182,11 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
             k=1,
         )[0]:
             case 1:
-                return self.__two_opt_operator.run(individual)
+                return self.__two_opt_operator.run(individual=individual)
             case 2:
-                return self.__path_linker_operator.run(individual)
+                return  self.__path_linker_operator.run(individual=individual, best_individual=self._best_individual)
             case 3:
-                return self.__swap_operator.run(individual)
+                return self.__swap_operator.run(individual=individual)
 
     def _print(self) -> None:
         if not self.__debug:

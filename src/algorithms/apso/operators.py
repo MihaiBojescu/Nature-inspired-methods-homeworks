@@ -6,15 +6,15 @@ U = t.TypeVar("U")
 
 
 class BaseTwoOptOperator(t.Generic[T, U]):
-    def run(self, values: Individual[T, U]) -> T:
-        return values
+    def run(self, individual: Individual[T, U]) -> T:
+        return individual
 
 
 class BasePathLinkerOperator(t.Generic[T, U]):
-    def run(self, values: Individual[T, U]) -> T:
-        return values
+    def run(self, individual: Individual[T, U], best_individual: Individual[T, U]) -> T:
+        return individual
 
 
 class BaseSwapOperator(t.Generic[T, U]):
-    def run(self, values: Individual[T, U]) -> T:
-        return values
+    def run(self, individual: Individual[T, U]) -> T:
+        return individual
