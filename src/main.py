@@ -17,7 +17,7 @@ from functions.combinatorial.tsp.algorithms.ga.operators import (
     CrossoverOperator,
     TournamentSelectionOperator,
 )
-from functions.combinatorial.tsp.algorithms.ga.encoder import Encoder
+from functions.combinatorial.tsp.util.encoder import Encoder
 from util.sort import maximise, minimise
 from util.import_export import save_metrics
 

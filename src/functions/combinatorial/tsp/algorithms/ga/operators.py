@@ -2,7 +2,7 @@ import random
 import typing as t
 from algorithms.ga.operators import BaseCrossoverOperator, BaseMutationOperator, BaseSelectionOperator
 from algorithms.ga.individual import Individual
-from functions.combinatorial.tsp.algorithms.ga.encoder import Encoder
+from functions.combinatorial.tsp.util.encoder import Encoder
 from functions.combinatorial.tsp.util.common import MTSPResult
 from util.sort import quicksort
 

@@ -3,6 +3,7 @@ import typing as t
 from algorithms.apso.operators import BaseTwoOptOperator, BasePathRelinkingOperator, BaseSwapOperator
 from algorithms.apso.individual import Individual
 from functions.combinatorial.tsp.util.common import MTSPResult
+from functions.combinatorial.tsp.util.encoder import Encoder
 
 MTSPSolution = t.List[t.List[int]]
 
@@ -71,6 +72,7 @@ class PathRelinkingOperator(BasePathRelinkingOperator[MTSPSolution, MTSPResult])
 
     def __init__(
         self,
+        encoder: Encoder,
         fitness_function: t.Callable[[MTSPSolution], MTSPResult],
         fitness_compare_function: t.Callable[[MTSPResult, MTSPResult], bool],
     ):
@@ -117,6 +119,8 @@ class PathRelinkingOperator(BasePathRelinkingOperator[MTSPSolution, MTSPResult])
         swap_indices: t.Tuple[int, int],
     ) -> t.Tuple[MTSPSolution, MTSPResult]:
         i, j = swap_indices
+        replacement_value = best_individual.position[i][j]
+
         values = [value.copy() for value in individual.position]
         values[i][j] = best_individual.position[i][j]
         cost = self.__fitness_function(values)
