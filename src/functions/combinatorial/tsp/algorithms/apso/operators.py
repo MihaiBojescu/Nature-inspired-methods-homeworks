@@ -117,14 +117,28 @@ class PathRelinkingOperator(BasePathRelinkingOperator[MTSPSolution, MTSPResult])
         best_individual: Individual[MTSPSolution, MTSPResult],
         swap_indices: t.Tuple[int, int],
     ) -> t.Tuple[MTSPSolution, MTSPResult]:
-        i, j = swap_indices
-        replacement_value = best_individual.position[i][j]
-
         values = [value.copy() for value in individual.position]
-        values[i][j] = best_individual.position[i][j]
+        i_new_value, j_new_value = swap_indices
+        i_old_value, j_old_value = self.__find_indices(
+            haystack=individual, needle=best_individual.position[i_new_value][j_new_value]
+        )
+        old_value = values[i_new_value][j_new_value]
+
+        values[i_new_value][j_new_value], values[i_old_value][j_old_value] = (
+            best_individual.position[i_new_value][j_new_value],
+            old_value,
+        )
         cost = self.__fitness_function(values)
 
         return values, cost
+
+    def __find_indices(self, haystack: Individual[MTSPSolution, MTSPResult], needle: int) -> t.Tuple[int, int]:
+        for i, row in enumerate(haystack.position):
+            for j, value in enumerate(row):
+                if value == needle:
+                    return (i, j)
+
+        return -1, -1
 
 
 class SwapOperator(BaseSwapOperator[MTSPSolution, MTSPResult]):
