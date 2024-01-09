@@ -13,6 +13,7 @@ U = t.TypeVar("U")
 
 class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
     __population: t.List[Individual[T, U]]
+    __population_bests: t.List[Individual[T, U]]
     _best_individual: Individual
     __fitness_compare_function: t.Callable[[U, U], bool]
     _criteria_function: t.Callable[[T, U, int], bool]
@@ -55,6 +56,7 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
             )
             for position in generate_initial_population()
         ]
+        self.__population_bests = self.__population
         self.__fitness_compare_function = fitness_compare_function
         self._criteria_function = criteria_function
 
@@ -155,8 +157,13 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
     def step(self) -> t.Tuple[T, U, int]:
         self._print()
 
-        for i, individual in enumerate(self.__population):
-            self.__population[i] = self.__update_individual(individual)
+        for i, (individual, individual_best) in enumerate(zip(self.__population, self.__population_bests)):
+            updated_individual = self.__update_individual(individual=individual, individual_best=individual_best)
+
+            if self.__fitness_compare_function(updated_individual.fitness, individual_best.fitness):
+                self.__population_bests[i] = copy.deepcopy(updated_individual)
+
+            self.__population[i] = updated_individual
 
         self.__population = quicksort(
             data=self.__population,
@@ -171,7 +178,7 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
 
         return self._best_individual.position, self._best_individual.fitness, self._generation
 
-    def __update_individual(self, individual: Individual[T, U]):
+    def __update_individual(self, individual: Individual[T, U], individual_best: Individual[T, U]):
         match random.choices(
             [1, 2, 3],
             weights=[
@@ -184,9 +191,11 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
             case 1:
                 return self.__two_opt_operator.run(individual=individual)
             case 2:
-                return  self.__path_linker_operator.run(individual=individual, best_individual=self._best_individual)
+                return self.__path_linker_operator.run(individual=individual, best_individual=individual_best)
             case 3:
                 return self.__swap_operator.run(individual=individual)
+
+        return individual
 
     def _print(self) -> None:
         if not self.__debug:
