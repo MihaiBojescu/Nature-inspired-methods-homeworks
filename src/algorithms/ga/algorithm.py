@@ -153,4 +153,4 @@ class GeneticAlgorithm(BaseAlgorithm[T, U]):
         if not self.__debug:
             return
 
-        print(f"Genetic algorithm generation: {self._generation}: {self._best_individual.fitness}")
+        print(f"Genetic algorithm generation {self._generation}: {self._best_individual.fitness}")
