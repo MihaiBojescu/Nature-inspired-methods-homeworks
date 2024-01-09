@@ -122,9 +122,6 @@ class ComplexMutationOperator(BaseMutationOperator[MTSPSolution, MTSPResult]):
         self.__probability = probability
 
     def run(self, child: Individual[MTSPSolution, MTSPResult]) -> Individual[MTSPSolution, MTSPResult]:
-        if random.random() > self.__probability:
-            return child
-
         values = self.__encoder.encode(value=child.genes)
 
         values = self.__swap(values)
@@ -135,6 +132,9 @@ class ComplexMutationOperator(BaseMutationOperator[MTSPSolution, MTSPResult]):
         return child
 
     def __swap(self, values: t.List[int]) -> t.List[int]:
+        if random.random() > self.__probability:
+            return values
+
         a = random.randint(a=0, b=len(values) - 1)
         b = random.randint(a=0, b=len(values) - 1)
 
@@ -143,6 +143,9 @@ class ComplexMutationOperator(BaseMutationOperator[MTSPSolution, MTSPResult]):
         return values
 
     def __reverse_swap(self, values: t.List[int]) -> t.List[int]:
+        if random.random() > self.__probability:
+            return values
+
         a = random.randint(a=0, b=len(values) - 1)
         b = random.randint(a=0, b=len(values) - 1)
 
@@ -151,6 +154,9 @@ class ComplexMutationOperator(BaseMutationOperator[MTSPSolution, MTSPResult]):
         return values
 
     def __slide(self, values: t.List[int]) -> t.List[int]:
+        if random.random() > self.__probability:
+            return values
+
         a = random.randint(a=0, b=len(values) - 1)
         b = random.randint(a=0, b=len(values) - 1)
 
