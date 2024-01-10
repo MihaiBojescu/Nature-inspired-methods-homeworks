@@ -153,3 +153,55 @@ class SwapOperator(BaseSwapOperator[MTSPSolution, MTSPResult]):
         )
 
         return individual
+
+class ComplexSwapOperator(BaseSwapOperator[MTSPSolution, MTSPResult]):
+    __encoder: Encoder
+    __probability: float
+
+    def __init__(self, encoder: Encoder, probability: float):
+        self.__encoder = encoder
+        self.__probability = probability
+
+    def run(self, individual: Individual[MTSPSolution, MTSPResult]) -> Individual[MTSPSolution, MTSPResult]:
+        values = self.__encoder.encode(value=individual.position)
+
+        values = self.__swap(values)
+        values = self.__reverse_swap(values)
+        values = self.__slide(values)
+
+        individual.position = self.__encoder.decode(value=values)
+        return individual
+
+    def __swap(self, values: t.List[int]) -> t.List[int]:
+        if random.random() > self.__probability:
+            return values
+
+        a = random.randint(a=0, b=len(values) - 1)
+        b = random.randint(a=0, b=len(values) - 1)
+
+        values[a], values[b] = values[b], values[a]
+
+        return values
+
+    def __reverse_swap(self, values: t.List[int]) -> t.List[int]:
+        if random.random() > self.__probability:
+            return values
+
+        a = random.randint(a=0, b=len(values) - 1)
+        b = random.randint(a=0, b=len(values) - 1)
+
+        values[a:b] = reversed(values[a:b])
+
+        return values
+
+    def __slide(self, values: t.List[int]) -> t.List[int]:
+        if random.random() > self.__probability:
+            return values
+
+        a = random.randint(a=0, b=len(values) - 1)
+        b = random.randint(a=0, b=len(values) - 1)
+
+        value = values.pop(a)
+        values.insert(b, value)
+
+        return values
