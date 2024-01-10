@@ -28,7 +28,7 @@ from util.import_export import save_metrics
 
 def main():
     instances = build_instances()
-    instances = wrap_instances_in_processes(instances, 0)
+    instances = wrap_instances_in_processes(instances, 7)
 
     instances()
 
@@ -68,7 +68,7 @@ def build_discrete_instances():
             )
             for dimension in [2, 3, 5]
             for function_definition_constructor in [make_eil51, make_berlin52, make_eil76, make_rat99]
-            for generations in [100]
+            for generations in [200]
             for population_size in [100]
             for probabilities in [
                 [("2-opt", 0.2), ("path-relink with pBest", 0.3), ("path-relink with gBest", 0.3), ("swap", 0.2)],
@@ -152,7 +152,6 @@ def apso_tsp_generator(
             path_linker_personal_best_operator_probability=probabilities[1][1],
             path_linker_global_best_operator_probability=probabilities[2][1],
             swap_operator_probability=probabilities[3][1],
-            debug=True,
         ),
     )
 
