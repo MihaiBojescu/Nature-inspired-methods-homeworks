@@ -22,7 +22,8 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
     __path_linker_operator: BasePathRelinkingOperator[T, U]
     __swap_operator: BaseSwapOperator[T, U]
     __two_opt_operator_probability: float
-    __path_linker_operator_probability: float
+    __path_linker_personal_best_operator_probability: float
+    __path_linker_global_best_operator_probability: float
     __swap_operator_probability: float
 
     _generation: int
@@ -39,13 +40,15 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
         path_linker_operator: BasePathRelinkingOperator[T, U],
         swap_operator: BaseSwapOperator[T, U],
         two_opt_operator_probability: float,
-        path_linker_operator_probability: float,
+        path_linker_personal_best_operator_probability: float,
+        path_linker_global_best_operator_probability: float,
         swap_operator_probability: float,
         debug: bool = False,
     ) -> None:
         self.__check_operator_probabilities(
             two_opt_operator_probability=two_opt_operator_probability,
-            path_linker_operator_probability=path_linker_operator_probability,
+            path_linker_personal_best_operator_probability=path_linker_personal_best_operator_probability,
+            path_linker_global_best_operator_probability=path_linker_global_best_operator_probability,
             swap_operator_probability=swap_operator_probability,
         )
 
@@ -64,7 +67,8 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
         self.__path_linker_operator = path_linker_operator
         self.__swap_operator = swap_operator
         self.__two_opt_operator_probability = two_opt_operator_probability
-        self.__path_linker_operator_probability = path_linker_operator_probability
+        self.__path_linker_personal_best_operator_probability = path_linker_personal_best_operator_probability
+        self.__path_linker_global_best_operator_probability = path_linker_global_best_operator_probability
         self.__swap_operator_probability = swap_operator_probability
 
         self._generation = 0
@@ -79,10 +83,17 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
     def __check_operator_probabilities(
         self,
         two_opt_operator_probability: float,
-        path_linker_operator_probability: float,
+        path_linker_personal_best_operator_probability: float,
+        path_linker_global_best_operator_probability: float,
         swap_operator_probability: float,
     ):
-        if two_opt_operator_probability + path_linker_operator_probability + swap_operator_probability != 1.0:
+        if (
+            two_opt_operator_probability
+            + path_linker_personal_best_operator_probability
+            + path_linker_global_best_operator_probability
+            + swap_operator_probability
+            != 1.0
+        ):
             raise RuntimeError("Operator probabilities do not sum up to 1.0f")
 
     @staticmethod
@@ -100,9 +111,10 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
         two_opt_operator: t.Union[t.Literal["auto"], BaseTwoOptOperator[T, U]] = "auto",
         path_linker_operator: t.Union[t.Literal["auto"], BasePathRelinkingOperator[T, U]] = "auto",
         swap_operator: t.Union[t.Literal["auto"], BaseSwapOperator[T, U]] = "auto",
-        two_opt_operator_probability: float = 0.3333,
-        path_linker_operator_probability: float = 0.3333,
-        swap_operator_probability: float = 0.3334,
+        two_opt_operator_probability: float = 0.25,
+        path_linker_personal_best_operator_probability: float = 0.25,
+        path_linker_global_best_operator_probability: float = 0.25,
+        swap_operator_probability: float = 0.25,
         debug: bool = False,
     ) -> t.Self:
         def default_criteria_function(_values, _fitness, generation):
@@ -137,7 +149,8 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
             path_linker_operator=path_linker_operator,
             swap_operator=swap_operator,
             two_opt_operator_probability=two_opt_operator_probability,
-            path_linker_operator_probability=path_linker_operator_probability,
+            path_linker_personal_best_operator_probability=path_linker_personal_best_operator_probability,
+            path_linker_global_best_operator_probability=path_linker_global_best_operator_probability,
             swap_operator_probability=swap_operator_probability,
             debug=debug,
         )
@@ -180,10 +193,11 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
 
     def __update_individual(self, individual: Individual[T, U], individual_best: Individual[T, U]):
         match random.choices(
-            [1, 2, 3],
+            [1, 2, 3, 4],
             weights=[
                 self.__two_opt_operator_probability,
-                self.__path_linker_operator_probability,
+                self.__path_linker_personal_best_operator_probability,
+                self.__path_linker_global_best_operator_probability,
                 self.__swap_operator_probability,
             ],
             k=1,
@@ -193,6 +207,8 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
             case 2:
                 return self.__path_linker_operator.run(individual=individual, best_individual=individual_best)
             case 3:
+                return self.__path_linker_operator.run(individual=individual, best_individual=self._best_individual)
+            case 4:
                 return self.__swap_operator.run(individual=individual)
 
         return individual

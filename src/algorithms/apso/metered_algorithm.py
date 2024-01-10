@@ -25,7 +25,8 @@ class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation
         path_linker_operator: BasePathRelinkingOperator[T, U],
         swap_operator: BaseSwapOperator[T, U],
         two_opt_operator_probability: float,
-        path_linker_operator_probability: float,
+        path_linker_personal_best_operator_probability: float,
+        path_linker_global_best_operator_probability: float,
         swap_operator_probability: float,
         debug: bool = False,
     ) -> None:
@@ -38,7 +39,8 @@ class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation
             path_linker_operator=path_linker_operator,
             swap_operator=swap_operator,
             two_opt_operator_probability=two_opt_operator_probability,
-            path_linker_operator_probability=path_linker_operator_probability,
+            path_linker_personal_best_operator_probability=path_linker_personal_best_operator_probability,
+            path_linker_global_best_operator_probability=path_linker_global_best_operator_probability,
             swap_operator_probability=swap_operator_probability,
             debug=debug,
         )
@@ -61,9 +63,10 @@ class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation
         two_opt_operator: t.Union[t.Literal["auto"], BaseTwoOptOperator[T, U]] = "auto",
         path_linker_operator: t.Union[t.Literal["auto"], BasePathRelinkingOperator[T, U]] = "auto",
         swap_operator: t.Union[t.Literal["auto"], BaseSwapOperator[T, U]] = "auto",
-        two_opt_operator_probability: float = 0.3333,
-        path_linker_operator_probability: float = 0.3333,
-        swap_operator_probability: float = 0.3334,
+        two_opt_operator_probability: float = 0.25,
+        path_linker_personal_best_operator_probability: float = 0.25,
+        path_linker_global_best_operator_probability: float = 0.25,
+        swap_operator_probability: float = 0.25,
         debug: bool = False,
     ) -> t.Self:
         def default_generate_initial_population():
@@ -99,7 +102,8 @@ class MeteredAdaptiveParticleSwarmOptimisation(AdaptiveParticleSwarmOptimisation
             path_linker_operator=path_linker_operator,
             swap_operator=swap_operator,
             two_opt_operator_probability=two_opt_operator_probability,
-            path_linker_operator_probability=path_linker_operator_probability,
+            path_linker_personal_best_operator_probability=path_linker_personal_best_operator_probability,
+            path_linker_global_best_operator_probability=path_linker_global_best_operator_probability,
             swap_operator_probability=swap_operator_probability,
             debug=debug,
         )

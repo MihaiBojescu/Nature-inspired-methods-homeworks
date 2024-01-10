@@ -11,7 +11,11 @@ from functions.combinatorial.tsp.definitions.berlin52 import make_berlin52
 from functions.combinatorial.tsp.definitions.eil76 import make_eil76
 from functions.combinatorial.tsp.definitions.rat99 import make_rat99
 from functions.combinatorial.tsp.util.common import InitialPopulationGenerator
-from functions.combinatorial.tsp.algorithms.apso.operators import PathRelinkingOperator, SwapOperator, TwoOptOperator
+from functions.combinatorial.tsp.algorithms.apso.operators import (
+    ComplexSwapOperator,
+    PathRelinkingOperator,
+    TwoOptOperator,
+)
 from functions.combinatorial.tsp.algorithms.ga.operators import (
     ComplexMutationOperator,
     CrossoverOperator,
@@ -24,7 +28,7 @@ from util.import_export import save_metrics
 
 def main():
     instances = build_instances()
-    instances = wrap_instances_in_processes(instances, 7)
+    instances = wrap_instances_in_processes(instances, 0)
 
     instances()
 
@@ -42,36 +46,35 @@ def build_discrete_instances():
                 function_definition_constructor=function_definition_constructor,
                 dimension=dimension,
                 generations=generations,
+                population_size=population_size,
                 probabilities=probabilities,
             )
-            for dimension in [2, 3]
+            for dimension in [2, 3, 5]
             for function_definition_constructor in [make_eil51, make_berlin52, make_eil76, make_rat99]
-            for generations in [5000, 10000]
+            for generations in [2000]
+            for population_size in [100]
             for probabilities in [
-                [("mutation", 0.02)],
                 [("mutation", 0.1)],
-                [("mutation", 0.2)],
-                [("mutation", 0.4)],
-                [("mutation", 0.8)],
             ]
+            for _ in range(5)
         ),
         iter(
             apso_tsp_generator(
                 function_definition_constructor=function_definition_constructor,
                 dimension=dimension,
                 generations=generations,
+                population_size=population_size,
                 probabilities=probabilities,
             )
             for dimension in [2, 3, 5]
             for function_definition_constructor in [make_eil51, make_berlin52, make_eil76, make_rat99]
-            for generations in [100, 500]
+            for generations in [100]
+            for population_size in [100]
             for probabilities in [
-                [("2-opt", 0.1), ("path-relink", 0.2), ("swap", 0.7)],
-                [("2-opt", 0.3), ("path-relink", 0.2), ("swap", 0.5)],
-                [("2-opt", 0.3333), ("path-relink", 0.3333), ("swap", 0.3334)],
-                [("2-opt", 0.4), ("path-relink", 0.4), ("swap", 0.2)],
+                [("2-opt", 0.2), ("path-relink with pBest", 0.3), ("path-relink with gBest", 0.3), ("swap", 0.2)],
             ]
-        )
+            for _ in range(5)
+        ),
     )
 
 
@@ -79,6 +82,7 @@ def ga_tsp_generator(
     function_definition_constructor: t.Callable[[int], CombinatorialFunctionDefinition],
     dimension: int,
     generations: int,
+    population_size: int,
     probabilities: t.List[t.Tuple[str, float]],
 ):
     function_definition = function_definition_constructor(dimension)
@@ -86,12 +90,13 @@ def ga_tsp_generator(
         function_definition,
         dimension,
         generations,
+        population_size,
         probabilities,
         "outputs/discrete",
         MeteredGeneticAlgorithm.from_function_definition(
             function_definition=function_definition,
             generate_initial_population=InitialPopulationGenerator(
-                function_definition=function_definition, population_size=100
+                function_definition=function_definition, population_size=population_size
             ),
             criteria_function=lambda _best_individual, _best_individual_fitness, generation: generation > generations,
             selection_operator=TournamentSelectionOperator(
@@ -105,6 +110,7 @@ def ga_tsp_generator(
             mutation_operator=ComplexMutationOperator(
                 encoder=Encoder(segments=function_definition.segmentation), probability=probabilities[0][1]
             ),
+            # debug=True
         ),
     )
 
@@ -113,6 +119,7 @@ def apso_tsp_generator(
     function_definition_constructor: t.Callable[[int], CombinatorialFunctionDefinition],
     dimension: int,
     generations: int,
+    population_size: int,
     probabilities: t.List[t.Tuple[str, float]],
 ):
     function_definition = function_definition_constructor(dimension)
@@ -120,12 +127,13 @@ def apso_tsp_generator(
         function_definition,
         dimension,
         generations,
+        population_size,
         probabilities,
         "outputs/discrete",
         MeteredAdaptiveParticleSwarmOptimisation.from_function_definition(
             function_definition=function_definition,
             generate_initial_population=InitialPopulationGenerator(
-                function_definition=function_definition, population_size=100
+                function_definition=function_definition, population_size=population_size
             ),
             criteria_function=lambda _best_individual, _best_individual_fitness, generation: generation > generations,
             two_opt_operator=TwoOptOperator(
@@ -136,10 +144,15 @@ def apso_tsp_generator(
                 fitness_function=function_definition.function,
                 fitness_compare_function=maximise if function_definition.target == "maximise" else minimise,
             ),
-            swap_operator=SwapOperator(),
+            # swap_operator=SwapOperator(),
+            swap_operator=ComplexSwapOperator(
+                encoder=Encoder(segments=function_definition.segmentation), probability=probabilities[2][1]
+            ),
             two_opt_operator_probability=probabilities[0][1],
-            path_linker_operator_probability=probabilities[1][1],
-            swap_operator_probability=probabilities[2][1],
+            path_linker_personal_best_operator_probability=probabilities[1][1],
+            path_linker_global_best_operator_probability=probabilities[2][1],
+            swap_operator_probability=probabilities[3][1],
+            debug=True,
         ),
     )
 
@@ -148,6 +161,7 @@ def wrap_instances_in_processes(
     instances: t.List[
         t.Tuple[
             CombinatorialFunctionDefinition,
+            int,
             int,
             int,
             t.List[t.Tuple[str, float]],
@@ -165,6 +179,7 @@ def wrap_instances_in_processes(
             function_definition,
             dimensions,
             generations,
+            population_size,
             probabilities,
             output_folder,
             algorithm,
@@ -175,6 +190,7 @@ def wrap_instances_in_processes(
                     function_definition,
                     dimensions,
                     generations,
+                    population_size,
                     probabilities,
                     output_folder,
                     algorithm,
@@ -195,6 +211,7 @@ def process(
     function_definition: CombinatorialFunctionDefinition,
     dimensions: int,
     generations: int,
+    population_size: int,
     probabilities: t.List[t.Tuple[str, float]],
     output_folder: str,
     algorithm: BaseAlgorithm,
@@ -202,7 +219,7 @@ def process(
 ):
     try:
         hyperparameters_string = ", ".join([f"{name} = {value}" for name, value in probabilities])
-        name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, generations = {generations}, {hyperparameters_string})"
+        name = f"{algorithm.name}: {function_definition.name}(dimensions = {dimensions}, generations = {generations}, population_size = {population_size}, {hyperparameters_string})"
 
         print(f"Running {name}")
         result = algorithm.run()
