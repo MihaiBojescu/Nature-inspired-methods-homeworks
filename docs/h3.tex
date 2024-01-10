@@ -18,7 +18,7 @@
 
 \begin{document}
 
-\title{Single-Depot Multiple Travelling Salesman Problem optimisation using a Genetic algorithm and an Adaptive Particle Swarm Optimisation algorithm}
+\title{Single-Depot Multiple Travelling Salesman Problem optimisation using a Genetic algorithm and a Particle Swarm Optimisation algorithm}
 
 \author{\IEEEauthorblockN{Mihai Bojescu}
 \IEEEauthorblockA{\textit{Master in Artificial Intelligence and optimisation} \\
@@ -30,14 +30,14 @@ bojescu.mihai@gmail.com}
 
 \begin{abstract}
     This document contains a study on optimising the Single-Depot, Multiple Travelling Salesman Problem using a combinatorial
-    Genetic algorithm and a combinatorial Partile Swarm Optimisation algorithm named APSO, Adaptive Particle Swarm Optimisation.
-    The studied problem is detailed, along with the algorithms, their inner workings, diagrams, hyperparameters, timings and
-    results. The study was conducted on the eil51, berlin52, eil76, rat99 datasets with 2, 3 and 5 salesmen.
+    Genetic algorithm and a combinatorial Partile Swarm Optimisation algorithm. The studied problem is detailed, along with
+    the algorithms, their inner workings, diagrams, hyperparameters, timings and results. The study was conducted on the eil51,
+    berlin52, eil76, rat99 datasets with 2, 3 and 5 salesmen.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Single-Depot Multiple Travelling Salesman Problem, Genetic algorithm, Adaptive Particle Swarm Optimisation algorithm, SD-MTSP,
-TSPLIB, optimisation, combinatorial function optimisation.
+Single-Depot Multiple Travelling Salesman Problem, Genetic algorithm, Particle Swarm Optimisation algorithm, SD-MTSP,
+GA, PSO, TSPLIB, optimisation, combinatorial function optimisation.
 \end{IEEEkeywords}
 
 \section{Introduction}
@@ -144,10 +144,10 @@ In this paper, the following hyperparameters were chosen:
 \begin{enumerate}
     \item population size = 100
     \item generations = 2000
-    \item mutation chance = 0.1
+    \item mutation probability = 0.1
 \end{enumerate}
 
-\subsection{Population generation}
+\subsection{Population generation} \label{Genetic algorithm population generation}
 In this paper, a population of 100 individuals was generated randomly and was segmented in multiple tours with their maximum
 length according to formula \ref{tour maximum length}, in order to match the tour sizes in the provided datasets \cite{b5}.
 
@@ -171,7 +171,11 @@ Individual(
     ],
     fitness=10361.20300592295
 )
-\end{lstlisting} 
+\end{lstlisting}
+
+\subsection{Algorithm}
+The base algorithm was not modified, as it did not need any modifications performed. Mainly, the only change needed was to
+perform dependency injection on the operators, in order to ensure that the algorithm respects the Open-Closed principle.
 
 \subsection{Selection operator}
 In this paper, a tournament selection operator was used, where $size(tournament) = 10$, thus from a random selection of 10
@@ -179,7 +183,7 @@ individuals, only the best one is picked. There were attempts to use the roulett
 the tournament selection operator were better.
 
 \subsection{Crossover operator}
-For the crossover operator, the distance-preserving crossover operator was used as described by Singh et al. (2018). The operator,
+For the crossover operator, the distance-preserving crossover operator was used as described by Singh et al. (2018) \cite{b7}. The operator,
 originally used on chromosomes with two-part representation, was \textit{trivially} adapted to work using one-chromosome
 representations. In order for the operator to be used, an encoder was created that, given a segmentation, can encode the
 tours from a \texttt{t.List[t.List[int]]} to a \texttt{t.List[int]} and decode them back.
@@ -217,8 +221,8 @@ An example can be found in the figure below:
 The justification behind this crossover strategy depends on the idea that the city in optimal/suboptimal tour takes place
 in the same location \cite{b6}.
 
-\subsection{Mutation operator}
-The mutation operator in this paper is comprised of 3 operations, each executed according to the mutation chance hyperparameter:
+\subsection{Mutation operator} \label{Genetic algorithm mutation operator}
+The mutation operator in this paper is comprised of 3 operations, each executed according to the mutation probability hyperparameter:
 
 \begin{enumerate}
     \item Swap operation
@@ -227,31 +231,122 @@ The mutation operator in this paper is comprised of 3 operations, each executed 
 \end{enumerate}
 
 The swap operation, randomly picking two position $a$ and $b$ with $a, b \leq |genes_{child}|$, performs a simple swap between
-gene $a$ and gene $b$ of the child:
+gene $a$ and gene $b$ of the child. A sample can be found in figure \ref{Swap operation}
+below.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.20\textwidth]{images/mutation.png}
-    \caption{Swap operator}
+    \includegraphics[width=0.20\textwidth]{images/mutation 1.png}
+    \caption{Swap operation} \label{Swap operation}
 \end{figure}
 
-The slide operator, randomly picking two position $a$ and $b$ with $a, b \leq |genes_{child}|$, moves gene $a$ to gene
-$b$ and slides each gene before gene $b$ one step before.
+The slide operation, randomly picking two position $a$ and $b$ with $a, b \leq |genes_{child}|$, moves gene $a$ to gene
+$b$ and slides each gene before gene $b$ one step before. A sample can be found in figure \ref{Slide operation}
+below.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.20\textwidth]{images/mutation 2.png}
-    \caption{Slide operator}
+    \caption{Slide operation} \label{Slide operation}
 \end{figure}
 
-The reverse-swap operator, randomly picking two position $a$ and $b$ with $a, b \leq |genes_{child}|$, reverses the genes
-array between gene $a$ and gene $b$, including gene $a$ and gene $b$.
+The reverse-swap operation, randomly picking two position $a$ and $b$ with $a, b \leq |genes_{child}|$, reverses the genes
+array between gene $a$ and gene $b$, including gene $a$ and gene $b$. A sample can be found in figure \ref{Reverse-swap operation}
+below.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.20\textwidth]{images/mutation 3.png}
-    \caption{Reverse-swap operator}
+    \caption{Reverse-swap operation} \label{Reverse-swap operation}
 \end{figure}
+
+\section{Particle Swarm Optimisation}
+
+\subsection{Introduction}
+PSO is a wonderful optimisation technique, inspired from the flocking behaviour of birds. It was successfully applied in
+many fields that implied numerical function optimisations, fields such as industry engineering, civil engineering, energy
+systems engineering, electrical engineering and geology engineering \cite{b8}.
+
+In order to be able to apply PSO to MTSP, several changes needed to be performed. The motion aspect was transformed in order
+to be applied for combinatorial functions. This will be detailed in the following section, \ref{PSO motion subsection}.
+
+\subsection{From motion to operators} \label{PSO motion subsection}
+PSO is well known for being an algorithm which incorporates motion. The particles ``move'' through the problem space, exploring
+it according to their hyperparameters:
+
+\begin{enumerate}
+    \item inertia
+    \item their tendency towards their personal best
+    \item their tendency towards their global best
+\end{enumerate}
+
+Along their some randomly parameters chosen at each step, in order to explore the space better.
+
+The above statement works perfectly for numerical functions, but is troublesome for combinatorial functions. The values needing
+to be discrete, can cause a lot of aproximation errors, thus, in this paper, the concepts were replaced:
+
+\begin{enumerate}
+    \item For velocity and inertia, a 2-opt algorithm was used instead
+    \item For tendency towards a particle's personal best, the path-relinker from the GRASP algorithm was used
+    \item For tendency towards a particle's global best, the path-relinker from the GRASP algorithm was used
+    \item For randomness, the same swap, slide and reverse-swap operator from the Genetic Algorithm (section \ref{Genetic algorithm mutation operator})
+    was used
+\end{enumerate}
+
+\subsection{Hyperparameters}
+In this paper, the following hyperparameters were chosen:
+\begin{enumerate}
+    \item population size = 100
+    \item iterations = 100
+    \item 2-opt probability = 0.2
+    \item path-relinker towards personal best probability = 0.4
+    \item path-relinker towards global best probability = 0.3
+    \item swap probability = 0.1
+\end{enumerate}
+
+\subsection{Population generation}
+Same as the Genetic algorithm in section \ref{Genetic algorithm population generation}, the population was generated randomly,
+without any changes.
+
+\subsection{Algorithm}
+The algorithm performs the following steps, as described in the bibliography \cite{b8}:
+\begin{enumerate}
+    \item $\forall individual \in population$:
+    \begin{enumerate}
+        \item Select a random number $k, k \in \{1, 2, 3, 4\}$ respecting the input hyperparameters
+        \item If $k = 1$, run the 2-opt algorithm operator on the $individual$
+        \item If $k = 2$, run the path-relinker algorithm operator on the $individual$, with their $individual$'s personal best as the guiding solution
+        \item If $k = 3$, run the path-relinker algorithm operator on the $individual$, with the global best as the guiding solution
+        \item If $k = 4$, run the swap operator $individual$
+    \end{enumerate}
+    \item Update the individual best of each individual
+    \item Update the global best
+\end{enumerate}
+
+A flow diagram of the algorithm can be found in figure \ref{Combinatorial PSO algorithm} below:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.39\textwidth]{images/pso.png}
+    \caption{Combinatorial PSO algorithm} \label{Combinatorial PSO algorithm}
+\end{figure}
+
+\subsection{2-opt algorithm operator}
+The 2-opt algorithm is a local search algorithm developed by Croes. It aims to recombine edges in the MTSP tour such that
+better alternatives are found, until no more updates can be performed. At each, the algorithm checks wether the objective
+function returned better result than the currently known one \cite{b8}.
+
+A diagram showing how the algorithm works is provided in figure \ref{2-opt algorithm sample} below.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.15\textwidth]{images/2-opt.png}
+    \caption{2-opt algorithm sample} \label{2-opt algorithm sample}
+\end{figure}
+
+This operator aims to simulate a PSO's particle's velocity and independent movement.
+
+\subsection{Path-relinker algorithm operator}
 
 \begin{thebibliography}{00}
     \bibitem{b1} O. Cheikhrouhou, I. Khoufi (2021). ``A comprehensive survey on the Multiple Traveling Salesman Problem: Applications, approaches and taxonomy''. Computer Science Review, 40, 100369. doi: 10.1016/j.cosrev.2021.1003.
@@ -261,6 +356,11 @@ array between gene $a$ and gene $b$, including gene $a$ and gene $b$.
     \bibitem{b5} \url{https://profs.info.uaic.ro/~mtsplib/MinMaxMTSP/index.html}
     \bibitem{b6} P. Singamsetty, J. K. Thenepalledoi (2021). ``An efficient genetic algorithm for solving open multiple travelling salesman problem with load
     balancing constraint''. Department of Mathematics, School of Advanced Sciences, VIT, Vellore-632014, Tamil Nadu, India. doi: 10.5267/j.dsl.2021.5.003
+    \bibitem{b7} D. R. Singh, M. K. Singh, T. Singh, R. Prasad (2018). ``Genetic algorithm for solving multiple traveling salesmen
+    problem using a new crossover and population generation''. Computación y Sistemas, 22(2).
+    \bibitem{b8} S. D. Gulcu, H. K. Ornek (2019). ``Solution of Multiple Travelling Salesman Problem using Particle Swarm
+    Optimization based Algorithms''. International Journal of
+    Intelligent Systems and Applications in Engineering. ISSN: 2147-6799
 \end{thebibliography}
     
 \end{document}
