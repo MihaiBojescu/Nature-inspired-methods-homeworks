@@ -33,17 +33,37 @@ class MTSPResult:
     optimal_min_max: MTSPResultOptimalMinMax = field(default_factory=MTSPResultOptimalMinMax)
     optimal_cost: float = 0
 
-    def __add__(self, other):
-        return self.optimal_cost + other.optimal_cost
+    def __add__(self, other: t.Self):
+        self.optimal_cost += other.optimal_cost
+        self.optimal_min_max.min = (
+            self.optimal_min_max.min
+            if self.optimal_min_max.min < other.optimal_min_max.min
+            else other.optimal_min_max.min
+        )
+        self.optimal_min_max.max = (
+            self.optimal_min_max.max
+            if self.optimal_min_max.max > other.optimal_min_max.max
+            else other.optimal_min_max.max
+        )
+        return self
 
-    def __gt__(self, other):
-        return self.optimal_cost > other.optimal_cost
+    def __gt__(self, other: t.Self):
+        return self.optimal_cost > other.optimal_cost and (
+            self.optimal_min_max.min > other.optimal_min_max.min
+            or self.optimal_min_max.max > other.optimal_min_max.max
+        )
 
-    def __eq__(self, other):
-        return self.optimal_cost == other.optimal_cost
+    def __eq__(self, other: t.Self):
+        return self.optimal_cost == other.optimal_cost and (
+            self.optimal_min_max.min == other.optimal_min_max.min
+            or self.optimal_min_max.max == other.optimal_min_max.max
+        )
 
-    def __lt__(self, other):
-        return self.optimal_cost < other.optimal_cost
+    def __lt__(self, other: t.Self):
+        return self.optimal_cost < other.optimal_cost and (
+            self.optimal_min_max.min < other.optimal_min_max.min
+            or self.optimal_min_max.max < other.optimal_min_max.max
+        )
 
 
 class InstanceTransformer:

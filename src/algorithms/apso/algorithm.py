@@ -1,5 +1,6 @@
 import copy
 import random
+import sys
 import typing as t
 from functions.combinatorial.definition import CombinatorialFunctionDefinition
 from algorithms.base.algorithm import BaseAlgorithm
@@ -87,13 +88,13 @@ class AdaptiveParticleSwarmOptimisation(BaseAlgorithm[T, U]):
         path_linker_global_best_operator_probability: float,
         swap_operator_probability: float,
     ):
-        if (
+        operator_probability_sum = (
             two_opt_operator_probability
             + path_linker_personal_best_operator_probability
             + path_linker_global_best_operator_probability
             + swap_operator_probability
-            != 1.0
-        ):
+        )
+        if not (1.0 - sys.float_info.epsilon <= operator_probability_sum <= 1.0 + sys.float_info.epsilon):
             raise RuntimeError("Operator probabilities do not sum up to 1.0f")
 
     @staticmethod
