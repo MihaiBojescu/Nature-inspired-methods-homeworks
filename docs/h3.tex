@@ -332,21 +332,86 @@ A flow diagram of the algorithm can be found in figure \ref{Combinatorial PSO al
 \end{figure}
 
 \subsection{2-opt algorithm operator}
-The 2-opt algorithm is a local search algorithm developed by Croes. It aims to recombine edges in the MTSP tour such that
-better alternatives are found, until no more updates can be performed. At each, the algorithm checks wether the objective
-function returned better result than the currently known one \cite{b8}.
+The 2-opt algorithm is a local search algorithm first proposed by Croes in 1958, with the bassic moves suggested by Flood.
+It aims to recombine edges in the MTSP tour such that better alternatives are found, until no more updates can be performed.
+At each, the algorithm checks wether the objective function returned better result than the currently known one \cite{b8}.
+The main idea of the algorithm is to ensure that there are no edges in a route that cross over themselves \cite{b9}.
 
 A diagram showing how the algorithm works is provided in figure \ref{2-opt algorithm sample} below.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.15\textwidth]{images/2-opt.png}
+    \includegraphics[width=0.175\textwidth]{images/2-opt.png}
     \caption{2-opt algorithm sample} \label{2-opt algorithm sample}
 \end{figure}
 
-This operator aims to simulate a PSO's particle's velocity and independent movement.
+This operator aims to replace a PSO's particle's velocity and independent movement.
 
 \subsection{Path-relinker algorithm operator}
+The relinking procedure (Glover et al. 2004) is used to generate new solutions by exploring trajectories confined in the neighbourhood space
+that connect high-quality solutions. The solution that begins the path is named the initiating solution, while the solution
+ending the path is named the guiding solution \cite{b10}.
+
+In literature, multiple variants can be found for this procedure, categorised by how the path is built between the initiating
+solution and the guiding solution: forward relinking, backward relinking, backward-and-forward relinking, relinking (Glover
+et al. 1996, implemented by Resende and Ribeiro 2010a), greedy randomised adaptive path relinking and evolutionary path-relinking \cite{b11}.
+Each variant has its own set of advantages and disadvantages. In the computational experiments performed by Aiex et al. (2005),
+backward relinking stood out as better performing than forward relinking, and had equivalent performance as backward-and-forward relinking,
+but with lower computational costs \cite{b11}.
+
+In this paper, the backward path relinking was used. Thus, the initial solution was the current individual's position and the
+guiding solution was - depending on the function call - the individual's best position or the global best position.
+
+A sample can be found in figure \ref{Path-relinker algorithm sample} below. When step 4 is reached, no other better paths moving
+towards the given guiding solution could be found, thus the algorithm returns the solution built at step 4.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.45\textwidth]{images/path-relinker.png}
+    \caption{Path-relinker algorithm sample} \label{Path-relinker algorithm sample}
+\end{figure}
+
+This operator aims to replace a PSO's particle's tendency towards their personal best and the global best.
+
+\subsection{Swap operator}
+For the PSO algorithm, the same swap + slide + reverse-swap operator as the genetic algorithm was used with remarkable success.
+During the first implementation of the algorithm, only a simple swap of two elements was used as in figure \ref{Swap operation},
+but the results it produced were 10-20\% worse overall. As an example, for the eil51 dataset with 2 salesmen, the simple swap operator
+produced a mean value of 569, while the mean value for the swap + slide + reverse-swap operator was 489.
+
+This operator aims to enhance PSO's exploration of the problem space by introducing more randomness with which 2-opt and
+path-relinker can work.
+
+\section{Results}
+The algorithms were run using the following datasets:
+\begin{enumerate}
+    \item \texttt{eil51}, a 51-city MTSP problem by Christofides/Eilon
+    \item \texttt{berlin51}, a 52-locations MTSP problem by Groetschel based on real-life Berlin, Germany
+    \item \texttt{eil76}, a 76-city MTSP problem by Christofides/Eilon
+    \item \texttt{rat99}, a 99-locations MTSP problem by Pulleyblank
+\end{enumerate}
+
+Each of the datasets was run with $n \in \{2, 3, 5\}$ salesmen. The runs were executed on a machine with an Intel Core i7
+1260p processor at a constant frequency of 2GHz, using 10 of the 12 physical cores available. The algorithms can run on as
+little as 1GB of RAM.
+
+%The results of the runs can be seen in tables \ref{a}, \ref{} for the genetic algorithm, tables \ref{}, \ref{} for the
+%PSO, and visualisations can be seen on figures \ref{}, \ref{}, on the next pages.
+
+\section{Discussions}
+The two algorithms detailed in this paper were successful in finding near-optimal results for the MTSP problem datasets used
+in this paper. Their runtimes - albeit high from a normal user perspective - exhibit a notable reduction in comparison when
+compared to those of the CPLEX algorithm (GA 1m36s, PSO 4m45s, CPLEX 10080m for \texttt{rat99}, $n = 5$ salesmen). In this paper,
+the Genetic algorithm provided better results, was faster overall and needed far fewer modifications to work with combinatorial
+data. As for the particle swarm optimisation algorithm, the runtime was higher, but the results were comparable to the genetic
+algorithm.
+
+\section{Conclusions}
+Optimisation algorithms like Genetic Algorithms and Particle Swarm Optimisation - often used for numerical function optimisation -
+can be used for combinatorial function optimisation like MTSP with some modifications. The results of running the alforementioned
+algorithms on combinatorial functions are often near-optimal, all while showing superior time efficiency. The algorithms can
+further be improved through stochastic hyperparameter tuning or through hybridisation.
+
 
 \begin{thebibliography}{00}
     \bibitem{b1} O. Cheikhrouhou, I. Khoufi (2021). ``A comprehensive survey on the Multiple Traveling Salesman Problem: Applications, approaches and taxonomy''. Computer Science Review, 40, 100369. doi: 10.1016/j.cosrev.2021.1003.
@@ -354,13 +419,12 @@ This operator aims to simulate a PSO's particle's velocity and independent movem
     \bibitem{b3} S. Mirjalili (2018). ``Particle Swarm Optimisation. Evolutionary Algorithms and Neural Networks''. 15-31. doi: 10.1007/978-3-319-93025-1\_2.
     \bibitem{b4} M. A. Al-Furhud, Z. H. Ahmed (2020). ``Experimental Study of a Hybrid Genetic Algorithm for the Multiple Travelling Salesman Problem''. Mathematical Problems in Engineering, vol. 2020, p. 3431420. doi: 10.1155/2020/3431420.
     \bibitem{b5} \url{https://profs.info.uaic.ro/~mtsplib/MinMaxMTSP/index.html}
-    \bibitem{b6} P. Singamsetty, J. K. Thenepalledoi (2021). ``An efficient genetic algorithm for solving open multiple travelling salesman problem with load
-    balancing constraint''. Department of Mathematics, School of Advanced Sciences, VIT, Vellore-632014, Tamil Nadu, India. doi: 10.5267/j.dsl.2021.5.003
-    \bibitem{b7} D. R. Singh, M. K. Singh, T. Singh, R. Prasad (2018). ``Genetic algorithm for solving multiple traveling salesmen
-    problem using a new crossover and population generation''. Computación y Sistemas, 22(2).
-    \bibitem{b8} S. D. Gulcu, H. K. Ornek (2019). ``Solution of Multiple Travelling Salesman Problem using Particle Swarm
-    Optimization based Algorithms''. International Journal of
-    Intelligent Systems and Applications in Engineering. ISSN: 2147-6799
+    \bibitem{b6} P. Singamsetty, J. K. Thenepalledoi (2021). ``An efficient genetic algorithm for solving open multiple travelling salesman problem with load balancing constraint''. Department of Mathematics, School of Advanced Sciences, VIT, Vellore-632014, Tamil Nadu, India. doi: 10.5267/j.dsl.2021.5.003
+    \bibitem{b7} D. R. Singh, M. K. Singh, T. Singh, R. Prasad (2018). ``Genetic algorithm for solving multiple traveling salesmen problem using a new crossover and population generation''. Computación y Sistemas, 22(2).
+    \bibitem{b8} S. D. Gulcu, H. K. Ornek (2019). ``Solution of Multiple Travelling Salesman Problem using Particle Swarm Optimization based Algorithms''. International Journal of Intelligent Systems and Applications in Engineering. ISSN: 2147-6799
+    \bibitem{b9} \url{https://en.wikipedia.org/wiki/2-opt}
+    \bibitem{b10} B. Penga, Zhipeng Lü, T.C.E. Cheng (2014). ``A Tabu Search/Path Relinking Algorithm to Solve the Job Shop Scheduling Problem''. hool of Computer Science and Technology, Huazhong University of Science and Technology, Wuhan, 430074, P.R. China. doi: 10.48550/arXiv.1402.5613
+    \bibitem{b11} C. C. C. Ribeiro, M. G. C. Resend (2010). ``Path-relinking intensification methods for stochastic Local Search Algorithms''. Department of Computer Science, Universidade Federal Fluminense, Rua Passo da Pátria, 156, Niteráoi, RJ 24210-240 Brazil. URL: \url{https://mauricio.resende.info/doc/spr.pdf}
 \end{thebibliography}
     
 \end{document}
