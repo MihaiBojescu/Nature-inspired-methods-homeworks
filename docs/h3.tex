@@ -31,8 +31,8 @@ bojescu.mihai@gmail.com}
 
 \begin{abstract}
     This document contains a study on optimising the Single-Depot, Multiple Travelling Salesman Problem using a combinatorial
-    Genetic algorithm and a combinatorial Partile Swarm Optimisation algorithm. The studied problem is detailed, along with
-    the algorithms, their inner workings, diagrams, hyperparameters, timings and results. The study was conducted on the eil51,
+    Genetic algorithm and a combinatorial Partile Swarm Optimisation algorithm. The studied problem is presented in detail, along
+    with the algorithms, their inner workings, diagrams, hyperparameters, timings and results. The study was conducted on the eil51,
     berlin52, eil76, rat99 datasets with 2, 3 and 5 salesmen.
 \end{abstract}
 
@@ -59,7 +59,7 @@ of the most well-regarded algorithm in the literature. There are different versi
 to solve constrained, dynamic, discrete, multi-objective, multi-modal, and many-objective problems \cite{b3}. In this study,
 we will be using a modified PSO which can work with combinatorial problems.
 
-This paper will apply the algorithms stated above in order to minimise the problem stated above.
+This paper will apply the algorithms stated above in order to optimise the problem stated above.
 
 \section{Single-Depot, Multiple Travelling Salesman Problem}
 MTSP is one of the most important optimisation problems, and it has been applied in several real-life scenarios. Depending
@@ -141,7 +141,7 @@ operator, Sedighpour et al. (2012) proposed an order crossover operator, and Sin
 crossover operator for solving the MTSP.
 
 \subsection{Hyperparameters}
-In this paper, the following hyperparameters were chosen:
+In this paper, the following hyperparameters were chosen for the genetic algorithm:
 \begin{enumerate}
     \item population size = 100
     \item generations = 2000
@@ -295,7 +295,7 @@ to be discrete, can cause a lot of aproximation errors, thus, in this paper, the
 \end{enumerate}
 
 \subsection{Hyperparameters}
-In this paper, the following hyperparameters were chosen:
+In this paper, the following hyperparameters were chosen for the Particle Swarm Optimisation algorithm:
 \begin{enumerate}
     \item population size = 100
     \item iterations = 100
@@ -318,7 +318,7 @@ The algorithm performs the following steps, as described in the bibliography \ci
         \item If $k = 1$, run the 2-opt algorithm operator on the $individual$
         \item If $k = 2$, run the path-relinker algorithm operator on the $individual$, with their $individual$'s personal best as the guiding solution
         \item If $k = 3$, run the path-relinker algorithm operator on the $individual$, with the global best as the guiding solution
-        \item If $k = 4$, run the swap operator $individual$
+        \item If $k = 4$, run the swap operator on $individual$
     \end{enumerate}
     \item Update the individual best of each individual
     \item Update the global best
@@ -394,7 +394,8 @@ The algorithms were run using the following datasets:
 
 Each of the datasets was run with $n \in \{2, 3, 5\}$ salesmen. The runs were executed on a machine with an Intel Core i7
 1260p processor at a constant frequency of 2GHz, using 10 of the 12 physical cores available. The algorithms can run on as
-little as 1GB of RAM.
+little as 1GB of RAM. In order to achieve good timings, the CPU should run on as a high frequency as it can achieve, as the
+algorithms are compute-intensive.
 
 The results of the runs can be seen in tables \ref{Fitness results for the genetic algorithm},
 \ref{Runtime results for the genetic algorithm} for the genetic algorithm and tables
