@@ -10,6 +10,7 @@
 \usepackage{url}
 \usepackage{listings}
 \usepackage{epstopdf}
+\usepackage{subcaption}
 \usepackage[inkscapeformat=png]{svg}
 \usepackage[font=small,labelfont=bf]{caption}
 
@@ -398,7 +399,9 @@ little as 1GB of RAM.
 The results of the runs can be seen in tables \ref{Fitness results for the genetic algorithm},
 \ref{Runtime results for the genetic algorithm} for the genetic algorithm and tables
 \ref{Fitness results for the particle swarm optimisation algorithm}, \ref{Runtime results for the particle swarm optimisation algorithm}
-for the PSO, and visualisations can be seen on figures \ref{}, \ref{}, on the next pages.
+for the PSO, and visualisations are available on figures \ref{eil52, 3 salesmen}, \ref{eil52, 5 salesmen}, \ref{berlin52, 3 salesmen},
+\ref{berlin52, 5 salesmen}, \ref{eil76, 3 salesmen}, \ref{eil76, 5 salesmen}, \ref{rat99, 3 salesmen} and \ref{rat99, 5 salesmen}
+on the next pages.
 
 \section{Discussions}
 The two algorithms detailed in this paper were successful in finding near-optimal results for the MTSP problem datasets used
@@ -536,5 +539,109 @@ optimisation algorithm using the GRASP algorithm \cite{b8} with good results.
     \end{tabular}
     \captionof{figure}{Runtime results for the particle swarm optimisation algorithm} \label{Runtime results for the particle swarm optimisation algorithm}
 \end{table*}
+
+\begin{figure*}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{images/Genetic algorithm: eil51, 3 salesmen.png}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{images/Particle swarm optimisation algorithm: eil51, 3 salesmen.png}
+    \end{subfigure}%
+    \caption{\texttt{eil52}, 3 salesmen} \label{eil52, 3 salesmen}
+\end{figure*}
+
+\begin{figure*}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{images/Genetic algorithm: eil51, 5 salesmen.png}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{images/Particle swarm optimisation algorithm: eil51, 5 salesmen.png}
+    \end{subfigure}%
+    \caption{\texttt{eil52}, 3 salesmen} \label{eil52, 5 salesmen}
+\end{figure*}
+
+\begin{figure*}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{images/Genetic algorithm: berlin52, 3 salesmen.png}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{images/Particle swarm optimisation algorithm: berlin52, 3 salesmen.png}
+    \end{subfigure}%
+    \caption{\texttt{berlin52}, 3 salesmen} \label{berlin52, 3 salesmen}
+\end{figure*}
+
+\begin{figure*}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{images/Genetic algorithm: berlin52, 5 salesmen.png}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{images/Particle swarm optimisation algorithm: berlin52, 5 salesmen.png}
+    \end{subfigure}%
+    \caption{\texttt{berlin52}, 5 salesmen} \label{berlin52, 5 salesmen}
+\end{figure*}
+
+\begin{figure*}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{images/Genetic algorithm: eil76, 3 salesmen.png}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{images/Particle swarm optimisation algorithm: eil76, 3 salesmen.png}
+    \end{subfigure}%
+    \caption{\texttt{eil76}, 3 salesmen} \label{eil76, 3 salesmen}
+\end{figure*}
+
+\begin{figure*}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{images/Genetic algorithm: eil76, 5 salesmen.png}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{images/Particle swarm optimisation algorithm: eil76, 5 salesmen.png}
+    \end{subfigure}%
+    \caption{\texttt{eil76}, 5 salesmen} \label{eil76, 5 salesmen}
+\end{figure*}
+
+\begin{figure*}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{images/Genetic algorithm: rat99, 3 salesmen.png}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{images/Particle swarm optimisation algorithm: rat99, 3 salesmen.png}
+    \end{subfigure}%
+    \caption{\texttt{rat99}, 3 salesmen} \label{rat99, 3 salesmen}
+\end{figure*}
+
+\begin{figure*}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{images/Genetic algorithm: rat99, 5 salesmen.png}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{images/Particle swarm optimisation algorithm: rat99, 5 salesmen.png}
+    \end{subfigure}%
+    \caption{\texttt{rat99}, 5 salesmen} \label{rat99, 5 salesmen}
+\end{figure*}
 
 \end{document}
