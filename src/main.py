@@ -28,7 +28,7 @@ from util.import_export import save_metrics
 
 def main():
     instances = build_instances()
-    instances = wrap_instances_in_processes(instances, 7)
+    instances = wrap_instances_in_processes(instances, 9)
 
     instances()
 
@@ -49,8 +49,8 @@ def build_discrete_instances():
                 population_size=population_size,
                 probabilities=probabilities,
             )
-            for dimension in [2, 3, 5]
             for function_definition_constructor in [make_eil51, make_berlin52, make_eil76, make_rat99]
+            for dimension in [2, 3, 5]
             for generations in [2000]
             for population_size in [100]
             for probabilities in [
@@ -66,8 +66,8 @@ def build_discrete_instances():
                 population_size=population_size,
                 probabilities=probabilities,
             )
-            for dimension in [2, 3, 5]
             for function_definition_constructor in [make_eil51, make_berlin52, make_eil76, make_rat99]
+            for dimension in [2, 3, 5]
             for generations in [200]
             for population_size in [100]
             for probabilities in [
@@ -110,7 +110,6 @@ def ga_tsp_generator(
             mutation_operator=ComplexMutationOperator(
                 encoder=Encoder(segments=function_definition.segmentation), probability=probabilities[0][1]
             ),
-            # debug=True
         ),
     )
 
@@ -144,7 +143,6 @@ def apso_tsp_generator(
                 fitness_function=function_definition.function,
                 fitness_compare_function=maximise if function_definition.target == "maximise" else minimise,
             ),
-            # swap_operator=SwapOperator(),
             swap_operator=ComplexSwapOperator(
                 encoder=Encoder(segments=function_definition.segmentation), probability=probabilities[2][1]
             ),
