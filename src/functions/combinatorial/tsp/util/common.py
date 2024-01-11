@@ -1,7 +1,8 @@
-from dataclasses import dataclass, field
 import math
 import random
+import re
 import typing as t
+from dataclasses import dataclass, field
 from functions.combinatorial.definition import CombinatorialFunctionDefinition
 from functions.combinatorial.tsp.util.data import City
 
@@ -63,6 +64,20 @@ class MTSPResult:
         return self.optimal_cost < other.optimal_cost and (
             self.optimal_min_max.min < other.optimal_min_max.min
             or self.optimal_min_max.max < other.optimal_min_max.max
+        )
+
+    def __str__(self) -> str:
+        return (
+            f"MTSPResult: {self.optimal_cost:.4f}, [{self.optimal_min_max.min:.4f}, {self.optimal_min_max.max:.4f}]"
+        )
+
+    @staticmethod
+    def from_data(data: str) -> t.Self:
+        metrics = re.findall(r"(\w+)=(\d+\.\d+)", data)
+        metrics = [(metric[0], float(metric[1])) for metric in metrics]
+
+        return MTSPResult(
+            optimal_cost=metrics[2][1], optimal_min_max=MTSPResultOptimalMinMax(min=metrics[0][1], max=metrics[1][1])
         )
 
 
