@@ -395,8 +395,10 @@ Each of the datasets was run with $n \in \{2, 3, 5\}$ salesmen. The runs were ex
 1260p processor at a constant frequency of 2GHz, using 10 of the 12 physical cores available. The algorithms can run on as
 little as 1GB of RAM.
 
-%The results of the runs can be seen in tables \ref{a}, \ref{} for the genetic algorithm, tables \ref{}, \ref{} for the
-%PSO, and visualisations can be seen on figures \ref{}, \ref{}, on the next pages.
+The results of the runs can be seen in tables \ref{Fitness results for the genetic algorithm},
+\ref{Runtime results for the genetic algorithm} for the genetic algorithm and tables
+\ref{Fitness results for the particle swarm optimisation algorithm}, \ref{Runtime results for the particle swarm optimisation algorithm}
+for the PSO, and visualisations can be seen on figures \ref{}, \ref{}, on the next pages.
 
 \section{Discussions}
 The two algorithms detailed in this paper were successful in finding near-optimal results for the MTSP problem datasets used
@@ -409,9 +411,11 @@ algorithm.
 \section{Conclusions}
 Optimisation algorithms like Genetic Algorithms and Particle Swarm Optimisation - often used for numerical function optimisation -
 can be used for combinatorial function optimisation like MTSP with some modifications. The results of running the alforementioned
-algorithms on combinatorial functions are often near-optimal, all while showing superior time efficiency. The algorithms can
-further be improved through stochastic hyperparameter tuning or through hybridisation.
+algorithms on combinatorial functions are often near-optimal, all while showing superior time efficiency.
 
+The algorithms can further be improved through stochastic hyperparameter tuning and through hybridisation. In literature, there were
+attempts to hybridise the Ant Colony Optimisation algorithm with the 2-opt operator \cite{b12} and to hybridise a particle swarm
+optimisation algorithm using the GRASP algorithm \cite{b8} with good results.
 
 \begin{thebibliography}{00}
     \bibitem{b1} O. Cheikhrouhou, I. Khoufi (2021). ``A comprehensive survey on the Multiple Traveling Salesman Problem: Applications, approaches and taxonomy''. Computer Science Review, 40, 100369. doi: 10.1016/j.cosrev.2021.1003.
@@ -425,6 +429,112 @@ further be improved through stochastic hyperparameter tuning or through hybridis
     \bibitem{b9} \url{https://en.wikipedia.org/wiki/2-opt}
     \bibitem{b10} B. Penga, Zhipeng Lü, T.C.E. Cheng (2014). ``A Tabu Search/Path Relinking Algorithm to Solve the Job Shop Scheduling Problem''. hool of Computer Science and Technology, Huazhong University of Science and Technology, Wuhan, 430074, P.R. China. doi: 10.48550/arXiv.1402.5613
     \bibitem{b11} C. C. C. Ribeiro, M. G. C. Resend (2010). ``Path-relinking intensification methods for stochastic Local Search Algorithms''. Department of Computer Science, Universidade Federal Fluminense, Rua Passo da Pátria, 156, Niteráoi, RJ 24210-240 Brazil. URL: \url{https://mauricio.resende.info/doc/spr.pdf}
+    \bibitem{b12} K. Saraswathi, A. Tamilarasi (2016). ``Ant Colony Optimization Based Feature Selection for Opinion Mining Classification''.  Journal of Medical Imaging and Health Informatics, Volume 6. doi: 10.1166/jmihi.2016.1856
 \end{thebibliography}
-    
+
+
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline 
+        Dataset & Dimensions & Best cost [min, max] & Median cost [min, max] & Worst cost [min, max] \\
+        \hline
+        & 2 & 452.4917, [205.7164, 246.7753] & 489.3968, [242.2249, 247.1719] & 515.7682, [221.6817, 294.0865] \\
+        eil51 & 3 & 498.3084, [156.9638, 183.4012] & 518.9448, [160.8375, 184.4372] & 566.9566, [161.5549, 207.9621] \\
+        & 5 & 572.3836, [77.3725, 131.3495] & 661.8094, [101.8904, 150.5947] & 733.4215, [68.8432, 183.4685] \\
+        \hline
+        & 2 & 8201.6263, [2595.4587, 5606.1676] & 8590.6848, [2697.2115, 5893.4733] & 9307.7586, [2992.1265, 6315.6321] \\
+        berlin52 & 3 & 8996.8522, [2115.4115, 4001.3250] & 9594.4198, [1223.1735, 4365.7421] & 10863.9695, [1867.7822, 4966.9029] \\
+        & 5 & 10892.5415, [578.9702, 3015.3396] & 11556.2447, [931.1152, 2959.9547] & 11912.2920, [700.1437, 2974.0190] \\
+        \hline
+        & 2 & 581.0691, [276.2812, 304.7880] & 622.9683, [300.8131, 322.1552] & 670.6645, [289.7983, 380.8662] \\
+        eil76 & 3 & 638.9018, [195.2157, 222.1578] & 687.3440, [189.9131, 252.9988] & 737.6305, [180.3664, 292.0079] \\
+        & 5 & 801.1751, [131.5410, 170.4222] & 878.9306, [125.3454, 189.6171] & 947.2019, [119.7203, 219.1424] \\
+        \hline
+        & 2 & 1478.4560, [726.2807, 752.1753] & 1564.7694, [778.9769, 785.7925] & 1641.2690, [799.5244, 841.7446] \\
+        rat99 & 3 & 1738.7757, [561.4327, 610.7246] & 1873.4486, [604.1806, 644.0537] & 1936.9353, [581.5455, 680.7555] \\
+        & 5 & 2419.9191, [404.0482, 520.0018] & 2569.2387, [410.6488, 548.4963] & 2757.0272, [456.9319, 604.7306] \\
+        \hline
+    \end{tabular}
+    \captionof{figure}{Fitness results for the genetic algorithm} \label{Fitness results for the genetic algorithm}
+\end{table*}
+
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline 
+        Dataset & Dimensions & Best time (seconds) & Median time (seconds) & Worst time (seconds) \\
+        \hline
+        & 2 & 35.0730 & 39.3025 & 40.2845 \\
+        eil51 & 3 & 36.6657 & 40.6693 & 40.9740 \\
+        & 5 & 38.3636 & 40.4140 & 42.9961 \\
+        \hline
+        & 2 & 35.8471 & 40.5474 & 40.7477 \\
+        berlin52 & 3 & 36.7146 & 41.5331 & 42.1390 \\
+        & 5 & 38.5821 & 43.4023 & 44.1265 \\
+        \hline
+        & 2 & 59.2793 & 62.9946 & 63.8993 \\
+        eil76 & 3 & 61.3011 & 64.2504 & 65.2739 \\
+        & 5 & 62.8406 & 66.3060 & 67.2039 \\
+        \hline
+        & 2 & 88.9989 & 91.9548 & 93.5630 \\
+        rat99 & 3 & 88.7005 & 93.2481 & 94.1409 \\
+        & 5 & 90.4842 & 94.3258 & 96.2429 \\
+        \hline
+    \end{tabular}
+    \captionof{figure}{Runtime results for the genetic algorithm} \label{Runtime results for the genetic algorithm}
+\end{table*}
+
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline 
+        Dataset & Dimensions & Best cost [min, max] & Median cost [min, max] & Worst cost [min, max] \\
+        \hline
+        & 2 & 449.7163 [214.1512, 235.5651] & 475.5942, [192.9591, 282.6351] & 499.3102, [244.9411, 254.3691] \\
+        eil51 & 3 & 489.5325, [157.1746, 166.5948] & 531.2806, [142.3028, 196.6333] & 578.3335, [181.7417, 201.7480] \\
+        & 5 & 640.2244, [88.7013, 146.2878] & 697.6553, [102.2351, 153.4138] & 784.5660, [117.1869, 173.1557] \\
+        \hline
+        & 2 & 7976.8215, [2996.0896, 4980.7319] & 8415.4363, [2969.9692, 5445.4672] & 8647.5823, [4186.8835, 4460.6987] \\
+        berlin52 & 3 & 8771.5855, [2360.1379, 3811.5594] & 9661.0789, [3082.9605, 3393.0226] & 10190.7955, [2871.2697, 3782.7879] \\
+        & 5 & 11253.1301, [577.7584, 3023.0627] & 12362.8712, [1312.6386, 3029.0983] & 13593.6078, [1099.0985, 3678.7885] \\
+        \hline
+        & 2 & 582.0823, [267.7988, 314.2835] & 609.2940, [258.9784, 350.3156] & 639.0766, [306.9239, 332.1527] \\
+        eil76 & 3 & 650.3413, [188.5105, 235.7174] & 682.4711, [188.3825, 247.9872] & 741.4631, [234.9759, 256.2703] \\
+        & 5 & 836.9620, [127.3422, 187.9968] & 949.0180, [142.0018, 209.3440] & 967.5711, [161.3675, 222.9497] \\
+        \hline
+        & 2 & 1404.4009, [677.7814, 726.6194] & 1466.0078, [708.4931, 757.5147] & 1530.4149, [761.7108, 768.7042] \\
+        rat99 & 3 & 1705.9939, [436.4255, 666.6766] & 1814.2634, [514.3615, 672.1688] & 1968.9282, [620.0822, 677.6363] \\
+        & 5 & 2460.4928, [327.3417, 574.1595] & 2662.7770, [436.9524, 586.0860] & 2779.0884, [436.0260, 609.4613] \\
+        \hline
+    \end{tabular}
+    \captionof{figure}{Fitness results for the particle swarm optimisation algorithm} \label{Fitness results for the particle swarm optimisation algorithm}
+\end{table*}
+
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline 
+        Dataset & Dimensions & Best time (seconds) & Median time (seconds) & Worst time (seconds) \\
+        \hline
+        & 2 & 60.0396 & 86.3428 & 101.1629 \\
+        eil51 & 3 & 47.5369 & 61.4150 & 76.4317 \\
+        & 5 & 36.8183 & 48.7286 & 61.3814 \\
+        \hline
+        & 2 & 63.2038 & 91.6510 & 103.4645 \\
+        berlin52 & 3 & 48.7222 & 59.6309 & 84.4854 \\
+        & 5 & 43.3237 & 54.1800 & 62.8043 \\
+        \hline
+        & 2 & 187.6626 & 238.9693 & 287.5738 \\
+        eil76 & 3 & 145.2984 & 180.1258 & 215.3485 \\
+        & 5 & 110.0897 & 140.1826 & 165.7784 \\
+        \hline
+        & 2 & 363.4923 & 511.2023 & 552.7536 \\
+        rat99 & 3 & 281.8676 & 348.8739 & 430.0076 \\
+        & 5 & 211.3089 & 288.1322 & 1411.9221 \\
+        \hline
+    \end{tabular}
+    \captionof{figure}{Runtime results for the particle swarm optimisation algorithm} \label{Runtime results for the particle swarm optimisation algorithm}
+\end{table*}
+
 \end{document}
